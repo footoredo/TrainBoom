@@ -1,1 +1,5 @@
 test/*.out
+build/*
+bin/*
+
+.DS_Store
