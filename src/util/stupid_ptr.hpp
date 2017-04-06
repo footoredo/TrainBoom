@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <functional>
+#include "exception.hpp"
 
 namespace util {
 
@@ -31,6 +32,11 @@ struct array_deleter {
 
 template<typename T, class Deleter = single_deleter<T>>
 class stupid_ptr {
+	friend void swap(stupid_ptr& A, stupid_ptr& B) {
+		stupid_ptr tmp(std::move(A));
+		A = std::move(B);
+		B = std::move(tmp);
+	}
 public:
 
 	class multiple_reference : public exception {
@@ -48,26 +54,94 @@ public:
 			"You made a copy to a empty stupid_ptr!!!") {}
 	};
 
-	constexpr stupid_ptr();
-	stupid_ptr(T *_ptr);
-	T* operator->() const;
-    T& operator*() const;
-	stupid_ptr(const stupid_ptr<T>& other);
-	~stupid_ptr();
-	stupid_ptr<T>& operator=(T *_ptr);
-	stupid_ptr<T>& operator=(const stupid_ptr<T>& other);
-	bool operator==(T* other_ptr) const;
-	bool operator!=(T* other_ptr) const;
-	operator bool() const;
+	constexpr stupid_ptr () noexcept : ptr(nullptr), ref_counter(nullptr) {}
+	constexpr stupid_ptr (nullptr_t) noexcept : ptr(nullptr), ref_counter(nullptr) {}
+	explicit stupid_ptr (T *ptr) : ptr(ptr) {
+		ref_counter = new size_t(1);
+	}
+	stupid_ptr (const stupid_ptr<T, Deleter>& that) noexcept
+		: ptr(that.ptr), ref_counter(that.ref_counter) {
+			if (ref_counter) {
+				inc();
+			}
+	}
 
-	friend void swap(stupid_ptr<T>& A, stupid_ptr<T>& B);
+	~stupid_ptr () {
+		if (ref_counter) {
+			dec();
+		}
+	}
+
+	stupid_ptr<T, Deleter>& operator= (const stupid_ptr<T, Deleter>& that) noexcept {
+		if (this != &that) {
+			if (ref_counter) {
+				dec();
+			}
+			ptr = that.ptr;
+			ref_counter = that.ref_counter;
+			if (ref_counter) {
+				inc();
+			}
+		}
+		return *this;
+	}
+	stupid_ptr<T, Deleter>& operator= (stupid_ptr<T, Deleter>&& that) noexcept {
+		if (this != &that) {
+			if (ref_counter) {
+				dec();
+			}
+			ptr = that.ptr;
+			ref_counter = that.ref_counter;
+			that.ptr = nullptr;
+			that.ref_counter = nullptr;
+		}
+		return *this;
+	}
+
+	T& operator* () const {
+		return *ptr;
+	}
+	T* operator-> () const {
+		return ptr;
+	}
+
+	bool operator== (T* other_ptr) const {
+		return ptr == other_ptr;
+	}
+	bool operator!= (T* other_ptr) const {
+		return ptr != other_ptr;
+	}
+	bool operator< (T* other_ptr) const {
+		return ptr < other_ptr;
+	}
+	bool operator> (T* other_ptr) const {
+		return ptr > other_ptr;
+	}
+	bool operator<= (T* other_ptr) const {
+		return ptr <= other_ptr;
+	}
+	bool operator>= (T* other_ptr) const {
+		return ptr >= other_ptr;
+	}
+	operator bool () const {
+		return ptr;
+	}
 
 private:
 	T *ptr;
 	size_t *ref_counter;
 
-	void inc();  // Increase ref_counter.
-	void dec();  // Decrease ref_counter.
+	void inc() {
+		++ *ref_counter;
+	}
+	void dec() {
+		-- *ref_counter;
+		if (*ref_counter == 0) {
+			Deleter()(ptr);
+			delete ref_counter;
+			ref_counter = nullptr;
+		}
+	}
 };
 
 }
