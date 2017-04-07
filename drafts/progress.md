@@ -10,10 +10,9 @@
 - [ ] util
     - [x] stupid_ptr
     - [ ] pair
-    - [ ] vector
     - [ ] map
     - [ ] Datetime
-    - [ ] csv
+    - [ ] CSV
 - [ ] Station
 - [ ] Train
 - [ ] Segment
