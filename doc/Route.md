@@ -8,7 +8,7 @@
 
 Name|Type|Description
 --|--|--
-`segments`|`util::map<Station, Segment>`|以路径起点为关键字组织的每一小段路径车票信息
+`segments`|`util::vector<Segment>`|每一小段路径车票信息
 `isSold`|`bool`|是否有票被售出过
 
 ## Member functions
