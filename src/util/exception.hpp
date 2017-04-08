@@ -48,6 +48,12 @@ public:
 		"container_is_empty",
 		"Your container is empty!!!") {}
 };
-}
 
+class open_file_error : public exception {
+public:
+	open_file_error() : exception(
+		"open_file_error",
+		"Your file doesn't exist!!!") {}
+};
+}
 #endif

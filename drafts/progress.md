@@ -12,9 +12,10 @@
     - [ ] pair
     - [ ] map
     - [ ] Datetime
-    - [ ] CSV
+    - [x] CSV
 - [ ] Station
 - [ ] Train
+- [ ] Route 
 - [ ] Segment
 - [ ] Ticket
 
