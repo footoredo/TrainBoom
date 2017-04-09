@@ -1,5 +1,7 @@
 test/*.out
 build/*
 bin/*
+src/test_bin/*
+*.dSYM/
 
 .DS_Store
