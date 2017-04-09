@@ -55,5 +55,6 @@ public:
 		"open_file_error",
 		"Your file doesn't exist!!!") {}
 };
+
 }
 #endif
