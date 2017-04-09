@@ -105,23 +105,23 @@ public:
 		return ptr;
 	}
 
-	bool operator== (T* other_ptr) const {
-		return ptr == other_ptr;
+	bool operator== (const stupid_ptr<T>& other_ptr) const {
+		return ptr == other_ptr.ptr;
 	}
-	bool operator!= (T* other_ptr) const {
-		return ptr != other_ptr;
+	bool operator!= (const stupid_ptr<T>& other_ptr) const {
+		return ptr != other_ptr.ptr;
 	}
-	bool operator< (T* other_ptr) const {
-		return ptr < other_ptr;
+	bool operator< (const stupid_ptr<T>& other_ptr) const {
+		return ptr < other_ptr.ptr;
 	}
-	bool operator> (T* other_ptr) const {
-		return ptr > other_ptr;
+	bool operator> (const stupid_ptr<T>& other_ptr) const {
+		return ptr > other_ptr.ptr;
 	}
-	bool operator<= (T* other_ptr) const {
-		return ptr <= other_ptr;
+	bool operator<= (const stupid_ptr<T>& other_ptr) const {
+		return ptr <= other_ptr.ptr;
 	}
-	bool operator>= (T* other_ptr) const {
-		return ptr >= other_ptr;
+	bool operator>= (const stupid_ptr<T>& other_ptr) const {
+		return ptr >= other_ptr.ptr;
 	}
 	operator bool () const {
 		return ptr;
