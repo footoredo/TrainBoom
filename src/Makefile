@@ -13,3 +13,7 @@ test_Ticket:
 
 test_map:
 	$(CXX) -o $(BIN)/map_tests $(CXXFLAGS) test/map_tests.cpp
+
+test_Datetime:
+	$(CXX) -o $(BIN)/Datetime_tests $(CXXFLAGS) test/Datetime_tests.cpp
+
