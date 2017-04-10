@@ -8,8 +8,7 @@
 
 Name|Type|Description
 --|--|--
-`segments`|`util::vector<Segment>`|每一小段路径车票信息
-``
+`segments`|`IntervalManip<Segment>`|每一小段路径车票信息（支持区间查询修改）
 `isExpired`|`bool`|是否已过期
 
 ## Member functions
