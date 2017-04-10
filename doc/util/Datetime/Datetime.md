@@ -23,6 +23,7 @@ Name|Description
 `operator string()`|格式化后转化成字符串
 `operator+(Duration)`|
 `operator-(Duration)`|
+`operator-(Datetime)`|
 `getYear`|
 `getMonth`|
 `getDay`|

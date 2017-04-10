@@ -16,7 +16,7 @@ Name|Type|Description
 
 Name|Description
 --|--
-`(constructor)`|构造函数（支持从字符串构造）
+`(constructor)`|构造函数
 `format`|格式化时间
 `operator string()`|格式化后转化成字符串
 `operator+(Duration)`|
