@@ -5,8 +5,6 @@
 #include <cstring>
 #include <string>
 
-namespace util {
-
 class exception {
 protected:
 	const std::string variant = "";
@@ -56,5 +54,4 @@ public:
 		"Your file doesn't exist!!!") {}
 };
 
-}
 #endif
