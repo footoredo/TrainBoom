@@ -7,28 +7,39 @@
 
 ## 代码主体
 
-- [ ] util
+- [x] util
     - [x] stupid_ptr
-    - [ ] pair
-    - [ ] map
-    - [ ] Datetime
+    - [x] pair
+    - [x] map
+    - [x] Datetime
     - [x] CSV
 - [ ] Station
 - [ ] Train
 - [ ] Route 
 - [ ] Segment
-- [ ] Ticket
+- [x] Ticket
 
 
 ## 测试
 
 - [ ] util
     - [ ] stupid_ptr
+    - [ ] CSV
     - [ ] map
+    - [ ] Datetime
+- [ ] Ticket
 
 
 ## 文档
 
 - [ ] util
-    - [x] stupid_ptr
+    - [ ] stupid_ptr
+    - [ ] pair
     - [ ] map
+    - [ ] Datetime
+    - [ ] CSV
+- [ ] Station
+- [ ] Train
+- [ ] Route 
+- [ ] Segment
+- [x] Ticket
