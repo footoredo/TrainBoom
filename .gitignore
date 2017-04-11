@@ -5,3 +5,5 @@ src/test_bin/*
 *.dSYM/
 
 .DS_Store
+
+*~
