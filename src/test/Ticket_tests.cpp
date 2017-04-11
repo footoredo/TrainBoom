@@ -3,7 +3,7 @@
 using namespace std;
 
 int main(){
-	Ticket t1("Ò»µÈ×ù", 1000, 1000);
+	Ticket t1("ä¸€ç­‰åº§", 1000, 1000);
     Ticket t2(t1);
 	Ticket t3;
 	Ticket t4 = t1;
