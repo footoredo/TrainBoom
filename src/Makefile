@@ -17,3 +17,6 @@ test_map:
 test_Datetime:
 	$(CXX) -o $(BIN)/Datetime_tests $(CXXFLAGS) test/Datetime_tests.cpp
 
+test_IntervalManip:
+	$(CXX) -o $(BIN)/IntervalManip_tests $(CXXFLAGS) test/IntervalManip_tests.cpp
+
