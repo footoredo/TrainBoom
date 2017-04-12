@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++11 -Wall -g -I.
 BIN = test_bin
 
 test_stupid_ptr:
-	$(CXX) -O $(BIN)/STUPID_PTR_TESTS $(CXXFLAGS) TEST/STUPID_PTR_TESTS.CPP
+	$(CXX) -o $(BIN)/stupid_ptr_tests $(CXXFLAGS) test/stupid_ptr_tests.cpp
 
 test_CSV:
 	$(CXX) -o $(BIN)/CSV_tests $(CXXFLAGS) test/CSV_tests.cpp

@@ -104,6 +104,9 @@ public:
 	T* operator-> () const {
 		return ptr;
 	}
+	T& operator[] (size_t pos) const {
+		return ptr[pos];
+	}
 
 	bool operator== (const stupid_ptr<T>& other_ptr) const {
 		return ptr == other_ptr.ptr;
