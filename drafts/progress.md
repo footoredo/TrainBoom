@@ -18,6 +18,8 @@
 - [ ] Route 
 - [ ] Segment
 - [x] Ticket
+- [ ] User
+- [ ] Order
 
 
 ## 测试
@@ -43,3 +45,5 @@
 - [ ] Route 
 - [ ] Segment
 - [x] Ticket
+- [x] User
+- [ ] Order
