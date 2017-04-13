@@ -29,12 +29,16 @@ struct MergerM {
 };
 
 int main() {
-    stupid_ptr<int, array_deleter<int>> a(new int(5));
+    stupid_array<int> a(new int[5], 5);
     for (int i = 0; i < 5; ++ i) a[i] = i;
 
     IntervalManip<int, int, ModifierAdd, MergerTAdd, MergerM>
         intervalManipAdd(a, 5);
 
+            intervalManipAdd.apply();
+            for (int i = 0; i < 5; ++ i)
+                std::cout << a[i] << " ";
+            std::cout << std::endl;
     try {
         std::cout << intervalManipAdd.query(0, 5) << std::endl;;
     } catch (const index_out_of_range& e) {
@@ -52,8 +56,8 @@ int main() {
 
     std::cout << "now [0, 2] add -3 -> [-3, -2, -1, 3, 4]" << std::endl;
     intervalManipAdd.modify(0, 2, -3);
-
     std::cout << "querying [2, 3]: " << intervalManipAdd.query(2, 3) << std::endl;  // Should be 2
     std::cout << "querying [0, 4]: " << intervalManipAdd.query(0, 4) << std::endl;  // Should be 1
+
 
 }

@@ -23,6 +23,7 @@ template<
     class MergerM
 > class IntervalManip {
 private:
+    stupid_array<T> data;
     size_t n;
     struct Node {
         T ans;
@@ -44,6 +45,7 @@ private:
 
         void push() {
             if (tagged) {
+                // std::cout <<  "!!!!" << std::endl;
                 if (ch[0]) ch[0]->modify(tag);
                 if (ch[1]) ch[1]->modify(tag);
                 tag = M();
@@ -60,16 +62,17 @@ private:
 
     stupid_ptr<Node> root;
 
-    stupid_ptr<Node> build(size_t l, size_t r, const stupid_ptr<T, array_deleter<T>>& data) {
+    stupid_ptr<Node> build(size_t l, size_t r) {
         stupid_ptr<Node> u(new Node(l, r));
         if (l != r) {
             size_t mid((l + r) / 2);
-            u->ch[0] = build(l, mid, data);
-            u->ch[1] = build(mid + 1, r, data);
+            u->ch[0] = build(l, mid);
+            u->ch[1] = build(mid + 1, r);
             u->update();
         }
         else {
             u->ans = data[l];
+            std::cout << l << " " << data[l] << " " << u->ans << std::endl;
         }
         return u;
     }
@@ -113,12 +116,26 @@ private:
         }
     }
 
-public:
-    IntervalManip(const stupid_ptr<T, array_deleter<T>>& data, size_t n): n(n), root(build(0, n - 1, data)) {}
+    void apply(const stupid_ptr<Node>& u) {
+        if (u->l != u->r) {
+            u->push();
+            apply(u->ch[0]);
+            apply(u->ch[1]);
+        }
+        else {
+            // std::cout << u->l << " " << u->ans << std::endl;
+            data[u->l] = u->ans;
+        }
+    }
 
-    void rebuild(const stupid_ptr<T, array_deleter<T>>& data, size_t _n) {
+public:
+    IntervalManip(const stupid_array<T>& data, size_t n):
+        data(data), n(n), root(build(0, n - 1)) {}
+
+    void rebuild(const stupid_array<T>& _data, size_t _n) {
+        data = _data;
         n = _n;
-        root = build(0, n - 1, data);
+        root = build(0, n - 1);
     }
 
     T query(size_t l, size_t r) {
@@ -133,6 +150,10 @@ public:
             throw index_out_of_range();
         else
             modify(root, l, r, m);
+    }
+
+    void apply() {
+        apply(root);
     }
 };
 
