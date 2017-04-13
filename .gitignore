@@ -7,3 +7,6 @@ src/test_bin/*
 .DS_Store
 
 *~
+
+src/test_builder
+src/test_runner
