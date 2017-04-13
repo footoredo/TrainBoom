@@ -3,6 +3,12 @@ CXXFLAGS = -std=c++11 -Wall -g -I.
 SOURCE = test
 BIN = test_bin
 
+test_builder:
+	$(CXX) -o test_builder $(CXXFLAGS) test_builder.cpp
+
+test_runner:
+	$(CXX) -o test_runner $(CXXFLAGS) test_runner.cpp
+
 test_stupid_ptr:
 	$(CXX) -o $(BIN)/stupid_ptr_tests $(CXXFLAGS) $(SOURCE)/stupid_ptr_tests.cpp
 
@@ -20,4 +26,3 @@ test_Datetime:
 
 test_IntervalManip:
 	$(CXX) -o $(BIN)/IntervalManip_tests $(CXXFLAGS) $(SOURCE)/IntervalManip_tests.cpp
-
