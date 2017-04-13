@@ -2,39 +2,39 @@
 
 ## Introduction
 
-ÆÕÍ¨ÓÃ»§µÄÀà¡£ 
+æ™®é€šç”¨æˆ·çš„ç±»ã€‚
 
 ## Members
 
 Name|Type|Description
 --|--|--
-`ID` | size_t | ÓÃ»§±àºÅ 
-`username` | `std::string` | ÓÃ»§Ãû
-`password` | `Password` | ÃÜÂë(Ä¬ÈÏ0000) 
-`avatar` | `std::string` | Í·ÏñÍøÖ·
-`realname` | `std::string` | ÕæÊµĞÕÃû 
-`phone` | std::string | ÊÖ»úºÅÂë
-`email` | std::string | ÓÊÏäµØÖ· 
-`gender` | `Gender` | ĞÔ±ğ 
-`motto` | `std::string` | ¸öÈËÇ©Ãû 
-`root` | `bool` | ÊÇ·ñÊÇ¹ÜÀíÔ± 
-`order` | `util::vector<Order>` | ¶©µ¥
- 
+`id` | size_t | ç”¨æˆ·ç¼–å·
+`username` | `std::string` | ç”¨æˆ·å
+`password` | `Password` | å¯†ç (é»˜è®¤0000)
+`avatar` | `std::string` | å¤´åƒç½‘å€
+`realname` | `std::string` | çœŸå®å§“å
+`phone` | std::string | æ‰‹æœºå·ç 
+`email` | std::string | é‚®ç®±åœ°å€
+`gender` | `Gender` | æ€§åˆ«
+`motto` | `std::string` | ä¸ªäººç­¾å
+`root` | `bool` | æ˜¯å¦æ˜¯ç®¡ç†å‘˜
+`order` | `util::vector<Order>` | è®¢å•
+
 ## Member classes
 
 Name|Description
 --|--
-[`Password`](User/Password.md)|ÃÜÂëµÄÀà  
+[`Password`](User/Password.md)|å¯†ç çš„ç±»  
 
 
 ## Member functions
 
 Name|Description
 --|--
-`(constructor)`|¹¹Ôìº¯Êı
-`(destructor)`|Îö¹¹º¯Êı
-`operator=`|¸³Öµº¯Êı
-`getID` |
+`(constructor)`|æ„é€ å‡½æ•°
+`(destructor)`|ææ„å‡½æ•°
+`operator=`|èµ‹å€¼å‡½æ•°
+`getId` |
 `getUsername` |
 `getPassword` |
 `getAvatar` |
