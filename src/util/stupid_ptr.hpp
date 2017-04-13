@@ -113,6 +113,10 @@ public:
 	operator bool () const {
 		return ptr;
 	}
+
+protected:
+	ptrT ptr;
+	size_t *ref_counter;
 	void inc() {
 		++ *ref_counter;
 	}
@@ -125,14 +129,9 @@ public:
 			ref_counter = nullptr;
 		}
 	}
-protected:
-	ptrT ptr;
-	size_t *ref_counter;
 
 private:
 	virtual void free_memory() = 0;
-
-
 };
 
 template<class T>
@@ -144,8 +143,8 @@ class stupid_ptr : public stupid_base<T*> {
 	}
 
 public:
-	constexpr stupid_ptr() noexcept {}
-	constexpr stupid_ptr(nullptr_t): stupid_base<T*>(nullptr) {}
+	constexpr stupid_ptr() noexcept : stupid_base<T*>()  {}
+	constexpr stupid_ptr(nullptr_t) noexcept : stupid_base<T*>(nullptr) {}
 	explicit stupid_ptr(T* ptr): stupid_base<T*>(ptr) {}
 
 	T& operator* () const {
@@ -184,8 +183,8 @@ public:
 			"You index is out of range!!") {}
 	};
 
-	constexpr stupid_array() noexcept {}
-	constexpr stupid_array(nullptr_t): stupid_base<T*>(nullptr) {}
+	constexpr stupid_array() noexcept : stupid_base<T*>() {}
+	constexpr stupid_array(nullptr_t) noexcept : stupid_base<T*>(nullptr) {}
 	explicit stupid_array(T* ptr, size_t n): stupid_base<T*>(ptr), n(n) {}
 	stupid_array (const stupid_array<T>& that) noexcept
 		: stupid_base<T*>(that), n(that.n) {}
