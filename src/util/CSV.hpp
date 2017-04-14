@@ -6,10 +6,12 @@
 #include <string>
 #include "exception.hpp"
 
+namespace util {
+
+namespace CSV {
+
 using namespace std;
 
-namespace util {
-	
 class CSV
 {
 private:
@@ -18,7 +20,7 @@ private:
 	{
 	public:
 		int n;
-		string *s;
+		std::string *s;
 		line()
 		{
 			n=0;
@@ -134,5 +136,8 @@ public:
 };
 
 }
- 
+
+}
+
+
 #endif

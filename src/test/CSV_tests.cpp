@@ -4,7 +4,7 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
-    using util::CSV;
+    using util::CSV::CSV;
 	CSV a,b;
 	b.load("test/test.csv");
 	a=b;
