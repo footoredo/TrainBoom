@@ -143,7 +143,7 @@ namespace Datetime {
                 month = _month;
                 year = _year;
         }
-        signed_Date_t getNum(const std::string& s, int st, int en)
+        static signed_Date_t getNum(const std::string& s, int st, int en)
         {
         	signed_Date_t num = 0;
         	for(int i = st; i <= en; i++)
@@ -152,13 +152,13 @@ namespace Datetime {
 	        	num = num * 10 + s[i] - '0';
 	        	if (num > 9999) throw time_out_of_range();
 	        }
-	        return num; 
+	        return num;
         }
-        Datetime(const std::string& fmttime) // YYYY-MM-DD hh:mm 
+        static Datetime parse(const std::string& fmttime) // YYYY/MM/DD hh:mm
         {
         	int len = fmttime.size();
         	int _1 = 0, _2 = 0, colon = 0, comma = 0;
-        	
+
         	for (int i = 0; i < len; i++)
         	{
 	        	if (fmttime[i] == ':')
@@ -167,23 +167,23 @@ namespace Datetime {
 					else if (!colon) colon = i;
 					else throw time_format_wrong();
 				}
-				else if (fmttime[i] == ',')
+				else if (fmttime[i] == ' ')
 				{
 					if (!_1 || !_2) throw time_format_wrong();
 					else if (!comma) comma = i;
 					else throw time_format_wrong();
 				}
-	        	else if (fmttime[i] == '-')
+	        	else if (fmttime[i] == '/')
 	        	{
 	        		if (!_1) _1 = i;
 	        		else _2 = i;
-	        		else throw time_format_wrong();
+	        		// else throw time_format_wrong();
 	        	}
 	        }
        		if (!_1 || !_2 || !comma || !colon) throw time_format_wrong();
-        	signed_Date_t year = getNum(fmttime, 0, _1 - 1), month = getNum(fmttime, _1 + 1, _2 - 1), day = getNum(fmttime, _2 + 1, comma - 1)
+        	signed_Date_t year = getNum(fmttime, 0, _1 - 1), month = getNum(fmttime, _1 + 1, _2 - 1), day = getNum(fmttime, _2 + 1, comma - 1);
 			signed_Date_t hour = getNum(fmttime, comma + 1, colon - 1), minute = getNum(fmttime, colon + 1, len - 1);
-		 	return Datetime(year, month, day, hour, minute);
+            return Datetime(year, month, day, hour, minute);
         }
 
         std::string format() const noexcept {
