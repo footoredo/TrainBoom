@@ -52,21 +52,25 @@ class Attribute {
 				"Your tickets have been overbooked!!!") {}
 		};
 
-		friend Attribute modifyNumber(const Attribute& attr, const int& delta) {
-			if ((int) attr.number + delta < 0)
-				throw tickets_overbooked();
-			return Attribute(attr.price, attr.number + delta);
-		}
+		friend Attribute Ticket::modifyNumber(const Attribute& attr, const int& delta);
 
-		friend Attribute mergeAttribute(const Attribute& attr0, const Attribute& attr1) {
-			return Attribute(attr0.price + attr1.price,
-				attr0.number < attr1.number ? attr0.number : attr1.number);
-		}
+		friend Attribute Ticket::mergeAttribute(const Attribute& attr0, const Attribute& attr1);
 
 		// bool operator< (const Ticket& other) {
 		// 	return type < other.type;
 		// }
-	};
+};
+
+Attribute modifyNumber(const Attribute& attr, const int& delta) {
+	if ((int) attr.number + delta < 0)
+		throw Attribute::tickets_overbooked();
+	return Attribute(attr.price, attr.number + delta);
+}
+
+Attribute mergeAttribute(const Attribute& attr0, const Attribute& attr1) {
+	return Attribute(attr0.price + attr1.price,
+		attr0.number < attr1.number ? attr0.number : attr1.number);
+}
 
 }
 
