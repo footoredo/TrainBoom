@@ -26,3 +26,6 @@ test_Datetime:
 
 test_IntervalManip:
 	$(CXX) -o $(BIN)/IntervalManip_tests $(CXXFLAGS) $(SOURCE)/IntervalManip_tests.cpp
+
+test_Segment:
+	$(CXX) -o $(BIN)/Segment_tests $(CXXFLAGS) $(SOURCE)/Segment_tests.cpp
