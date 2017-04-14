@@ -37,7 +37,7 @@ public:
 		const map *who;
 
 	public:
-		iterator(): p(nullptr), who(nullptr) {
+		constexpr iterator(): p(nullptr), who(nullptr) {
 		}
 		iterator(const stupid_ptr<Node>& p, const map *who): p(p), who(who) {
 		}
@@ -131,11 +131,11 @@ public:
 			const map *who;
 
 		public:
-			const_iterator(): p(nullptr), who(nullptr) {
+			constexpr const_iterator(): p(nullptr), who(nullptr) {
 			}
 			const_iterator(const stupid_ptr<Node>& p, const map *who): p(p), who(who) {}
-			const_iterator(const const_iterator &other): p(other.p), who(who) {
-			}
+			// const_iterator(const const_iterator &other): p(other.p), who(who) {
+			// }
 			const_iterator(const iterator &other): p(other.p), who(who) {
 			}
 
@@ -211,7 +211,7 @@ public:
 	/**
 	 * TODO two constructors
 	 */
-	map(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0) {
+	constexpr map(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0) {
 	}
 	map(const map &other): _size(other._size) {
 		root = copy_tree(other.root);
