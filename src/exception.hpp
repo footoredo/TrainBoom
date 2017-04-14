@@ -14,7 +14,7 @@ public:
 	exception(const std::string& _variant, const std::string& _detail):
 		variant(_variant), detail(_detail) {}
 	exception(const exception &ec) : variant(ec.variant), detail(ec.detail) {}
-	virtual std::string what() {
+	virtual std::string what() const {
 		return variant + " " + detail;
 	}
 };
