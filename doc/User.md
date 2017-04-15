@@ -8,13 +8,13 @@
 
 Name|Type|Description
 --|--|--
-`id` | size_t | 用户编号
+`id` | `id_t` | 用户编号
 `username` | `std::string` | 用户名
 `password` | `Password` | 密码(默认0000)
 `avatar` | `std::string` | 头像网址
 `realname` | `std::string` | 真实姓名
-`phone` | std::string | 手机号码
-`email` | std::string | 邮箱地址
+`phone` | `std::string` | 手机号码
+`email` | `std::string` | 邮箱地址
 `gender` | `Gender` | 性别
 `motto` | `std::string` | 个人签名
 `root` | `bool` | 是否是管理员

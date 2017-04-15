@@ -5,6 +5,8 @@
 #include <cstring>
 #include <string>
 
+namespace TrainBoom {
+
 class exception {
 protected:
 	const std::string variant = "";
@@ -53,5 +55,7 @@ public:
 		"open_file_error",
 		"Your file doesn't exist!!!") {}
 };
+
+}	// TrainBoom
 
 #endif

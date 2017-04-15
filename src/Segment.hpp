@@ -6,6 +6,10 @@
 #include "exception.hpp"
 #include "Ticket.hpp"
 
+namespace TrainBoom {
+
+typedef util::map<Ticket::Type, int> TicketDelta;
+
 class Segment {
 private:
     util::map<Ticket::Type, Ticket::Attribute> tickets;
@@ -35,13 +39,15 @@ public:
     class Modifier {
         friend class Segment;
     public:
-        Segment operator()(const Segment& segment, const util::pair<Ticket::Type, int>& delta) {
+        Segment operator()(const Segment& segment, const TicketDelta& deltas, size_t l, size_t r) {
             Segment ret(segment);
-            auto iter(ret.tickets.find(delta.first));
-            if (iter == ret.tickets.end())
-                throw ticket_not_found();
-            else {
-                iter->second = Ticket::modifyNumber(iter->second, delta.second);
+            for (const auto& delta : deltas) {
+                auto iter(ret.tickets.find(delta.first));
+                if (iter == ret.tickets.end())
+                    throw ticket_not_found();
+                else {
+                    iter->second = Ticket::modifyNumber(iter->second, delta.second);
+                }
             }
             return ret;
         }
@@ -64,6 +70,17 @@ public:
         }
     };
 
+    class MergerM {
+    public:
+        TicketDelta operator()(const TicketDelta& deltas0, const TicketDelta& deltas1) {
+            TicketDelta ret(deltas0);
+            for (const auto& delta : deltas1) {
+                ret[delta.first] += delta.second;
+            }
+            return ret;
+        }
+    };
+
     constexpr Segment() noexcept: tickets() {}
     Segment(const util::map<Ticket::Type, Ticket::Attribute>& tickets) noexcept: tickets(tickets) {}
     Segment(const Segment& other) noexcept: tickets(other.tickets) {}
@@ -75,10 +92,14 @@ public:
     }
 
     void display() const {
+        std::cout << "#####################" << std::endl;
         for (const auto& item : tickets) {
             std::cout << item.first << "\n" << item.second << std::endl;
         }
+        std::cout << "#####################" << std::endl;
     }
 };
+
+}   // TrainBoom
 
 #endif

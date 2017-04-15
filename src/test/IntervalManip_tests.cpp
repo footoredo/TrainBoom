@@ -2,6 +2,7 @@
 #include "util/IntervalManip.hpp"
 #include "util/stupid_ptr.hpp"
 
+using namespace TrainBoom;
 using namespace util;
 
 struct ModifierAdd {

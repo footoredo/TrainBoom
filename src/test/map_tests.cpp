@@ -1,6 +1,7 @@
 #include <iostream>
 #include "util/map.hpp"
 
+using namespace TrainBoom;
 using namespace util;
 
 class Integer {

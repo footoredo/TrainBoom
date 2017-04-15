@@ -6,6 +6,8 @@
 #include "exception.hpp"
 #include "stupid_ptr.hpp"
 
+namespace TrainBoom {
+
 namespace util {
 
 class index_out_of_range : public exception {
@@ -72,7 +74,7 @@ private:
         }
         else {
             u->ans = data[l];
-            std::cout << l << " " << data[l] << " " << u->ans << std::endl;
+            // std::cout << l << " " << data[l] << " " << u->ans << std::endl;
         }
         return u;
     }
@@ -86,7 +88,7 @@ private:
             size_t mid((u->l + u->r) / 2);
             if (l <= mid) {
                 if (r > mid) {
-                    return MergerM()(query(u->ch[0], l, r), query(u->ch[1], l, r));
+                    return MergerT()(query(u->ch[0], l, r), query(u->ch[1], l, r));
                 }
                 else {
                     return query(u->ch[0], l, r);
@@ -157,6 +159,8 @@ public:
     }
 };
 
-}
+}   // util
+
+}   // TrainBoom
 
 #endif

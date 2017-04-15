@@ -2,6 +2,7 @@
 #include <cstdio>
 #include "util/CSV.hpp"
 using namespace std;
+using namespace TrainBoom;
 int main(int argc, char *argv[])
 {
     using util::CSV::CSV;

@@ -6,6 +6,8 @@
 #include <iostream>
 #include "exception.hpp"
 
+namespace TrainBoom {
+
 namespace util {
 
 class brain_is_fucked : public exception {
@@ -52,7 +54,7 @@ public:
 
 	constexpr stupid_base () noexcept : ptr(nullptr), ref_counter(nullptr) {}
 	constexpr stupid_base (nullptr_t) noexcept : ptr(nullptr), ref_counter(nullptr) {}
-	explicit stupid_base (ptrT ptr) : ptr(ptr) {
+	stupid_base (ptrT ptr) : ptr(ptr) {
 		ref_counter = new size_t(1);
 	}
 	stupid_base (const stupid_base<ptrT>& that) noexcept
@@ -145,7 +147,7 @@ class stupid_ptr : public stupid_base<T*> {
 public:
 	constexpr stupid_ptr() noexcept : stupid_base<T*>()  {}
 	constexpr stupid_ptr(nullptr_t) noexcept : stupid_base<T*>(nullptr) {}
-	explicit stupid_ptr(T* ptr): stupid_base<T*>(ptr) {}
+	stupid_ptr(T* ptr): stupid_base<T*>(ptr) {}
 
 	T& operator* () const {
 		return *(this->ptr);
@@ -185,7 +187,7 @@ public:
 
 	constexpr stupid_array() noexcept : stupid_base<T*>() {}
 	constexpr stupid_array(nullptr_t) noexcept : stupid_base<T*>(nullptr) {}
-	explicit stupid_array(T* ptr, size_t n): stupid_base<T*>(ptr), n(n) {}
+	stupid_array(T* ptr, size_t n): stupid_base<T*>(ptr), n(n) {}
 	stupid_array (const stupid_array<T>& that) noexcept
 		: stupid_base<T*>(that), n(that.n) {}
 
@@ -231,6 +233,10 @@ public:
 		return this->ptr[pos];
 	}
 
+	size_t size() const {
+		return n;
+	}
+
 private:
 	size_t n;
 	virtual void free_memory() {
@@ -245,6 +251,8 @@ private:
 	}
 };
 
-}
+}	// util
+
+}	// TrainBoom
 
 #endif

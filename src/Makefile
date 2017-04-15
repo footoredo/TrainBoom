@@ -29,3 +29,6 @@ test_IntervalManip:
 
 test_Segment:
 	$(CXX) -o $(BIN)/Segment_tests $(CXXFLAGS) $(SOURCE)/Segment_tests.cpp
+
+test_Route:
+	$(CXX) -o $(BIN)/Route_tests $(CXXFLAGS) $(SOURCE)/Route_tests.cpp

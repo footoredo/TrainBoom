@@ -5,9 +5,12 @@
 #include <string>
 #include <iostream>
 #include "exception.hpp"
-using std :: ostream;
+
+namespace TrainBoom {
 
 namespace Ticket {
+
+using std :: ostream;
 
 typedef std::string Type;
 
@@ -72,6 +75,8 @@ Attribute mergeAttribute(const Attribute& attr0, const Attribute& attr1) {
 		attr0.number < attr1.number ? attr0.number : attr1.number);
 }
 
-}
+}	// Ticket
+
+}	// TrainBoom
 
 #endif

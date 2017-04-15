@@ -1,6 +1,7 @@
 #include "util/Datetime.hpp"
 #include <iostream>
 
+using namespace TrainBoom;
 using namespace util::Datetime;
 
 int main() {

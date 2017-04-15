@@ -1,6 +1,8 @@
 #ifndef TRAINBOOM_UTIL_PAIR_HPP
 #define TRAINBOOM_UTIL_PAIR_HPP
 
+namespace TrainBoom {
+
 namespace util {
 
 template<class T1, class T2>
@@ -33,6 +35,8 @@ pair<U1, U2> make_pair(const U1& x, const U2& y) {
 	return pair<U1, U2>(x, y);
 }
 
-}
+}	// util
+
+}	// TrainBoom
 
 #endif

@@ -1,5 +1,6 @@
 #include "util/stupid_ptr.hpp"
 #include <iostream>
+using namespace TrainBoom;
 
 int main() {
     using util::stupid_ptr;

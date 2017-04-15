@@ -5,6 +5,8 @@
 #include "pair.hpp"
 #include "exception.hpp"
 
+namespace TrainBoom {
+
 namespace util {
 
 template<
@@ -759,6 +761,8 @@ private:
 
 };
 
-}
+}	// util
+
+}	// TrainBoom
 
 #endif

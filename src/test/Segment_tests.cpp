@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Segment.hpp"
+using namespace TrainBoom;
 
 int main() {
     Segment s0;

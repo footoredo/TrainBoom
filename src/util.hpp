@@ -8,4 +8,11 @@
 #include "util/pair.hpp"
 #include "util/stupid_ptr.hpp"
 
+namespace TrainBoom {
+
+typedef size_t id_t;
+using TrainBoom::id_t;
+
+}
+
 #endif

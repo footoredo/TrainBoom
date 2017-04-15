@@ -6,6 +6,8 @@
 #include <string>
 #include "exception.hpp"
 
+namespace TrainBoom {
+
 namespace util {
 
 namespace CSV {
@@ -135,9 +137,11 @@ public:
 	}
 };
 
-}
+}	// CSV
 
-}
+}	// util
+
+}	// TrainBoom
 
 
 #endif

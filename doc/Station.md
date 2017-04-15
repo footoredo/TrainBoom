@@ -8,8 +8,9 @@
 
 Name|Type|Description
 --|--|--
-`Name`|std::string|车站名称（上海/上海南/...）
-`toStation`|`util::map<Station, util::stupid_ptr<Route>>`|
+`id`|`id_t`|
+`name`|std::string|车站名称（上海/上海南/...）
+`toStation`|`util::map<size_t, util::stupid_ptr<Route>>`|邻接表结构
 
 ## Member functions
 

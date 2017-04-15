@@ -1,6 +1,7 @@
 #include<iostream>
 #include"Ticket.hpp"
 using namespace std;
+using namespace TrainBoom;
 using namespace Ticket;
 
 int main(){

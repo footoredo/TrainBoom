@@ -7,6 +7,8 @@
 #include <sstream>
 #include <iostream>
 
+namespace TrainBoom {
+
 namespace util {
 
 namespace Datetime {
@@ -236,10 +238,32 @@ namespace Datetime {
         Date_t getMinute() const noexcept {
             return minute;
         }
+
+        Datetime clearTime() const {
+            return Datetime(year, month, day, 0, 0);
+        }
+
+        bool operator<(const Datetime& other) const {
+            if (year == other.year)
+                if (month == other.month)
+                    if (day == other.day)
+                        if (hour == other.hour)
+                            return minute < other.minute;
+                        else
+                            return hour < other.hour;
+                    else
+                        return day < other.day;
+                else
+                    return month < other.month;
+            else
+                return year < other.year;
+        }
     };
 
-}
+}   // Datetime
 
-}
+}   // util
+
+}   // TrainBoom
 
 #endif
