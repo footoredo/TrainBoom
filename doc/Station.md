@@ -17,5 +17,5 @@ Name|Type|Description
 Name|Description
 --|--
 `(constructor)`|构造函数
-`add(id_t stationId, id_t, routeId)`|增加一条通过 routeId 到 stationId 的边
-`del(id_t stationId, id_t, routeId)`|删除一条通过 routeId 到 stationId 的边
+`add(id_t stationId, id_t routeId)`|增加一条通过 routeId 到 stationId 的边
+`del(id_t stationId, id_t routeId)`|删除一条通过 routeId 到 stationId 的边
