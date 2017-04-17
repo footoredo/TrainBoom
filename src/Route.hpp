@@ -180,6 +180,10 @@ public:
         return informations[pos];
     }
 
+    util::Datetime::Datetime getRunningDay() const noexcept {
+        return informations[0].getLeaveTime().clearTime();
+    }
+
     void display() {
         segmentsIntervalManip->forceApply();
         std::cout << "\n----\n" << std::endl;

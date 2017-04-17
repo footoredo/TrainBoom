@@ -22,4 +22,4 @@ Name|Description
 [`(constructor)`](Train/Train.md)|构造函数
 `getId`|
 `getName`|
-`getRunningTime`|获取运行日期 (以发车时的日期为准)
+`getRunningDay`|获取运行日期 (以发车时的日期为准)

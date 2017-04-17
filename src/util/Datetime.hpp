@@ -105,7 +105,7 @@ namespace Datetime {
     class Datetime {
     private:
         Date_t year, month, day, hour, minute;
-        bool initiated;
+        bool initiated, dayOnly;
         static bool isLeapYear(Date_t year) {
             if (year % 100 == 0)
                 return year % 400 == 0;
@@ -126,7 +126,7 @@ namespace Datetime {
     public:
         Datetime() noexcept: initiated(false) {}
         Datetime(signed_Date_t _year, signed_Date_t _month, signed_Date_t _day,
-            signed_Date_t _hour = 0, signed_Date_t _minute = 0): initiated(true) {
+            signed_Date_t _hour, signed_Date_t _minute): initiated(true), dayOnly(false) {
                 if (_year < 0 || _year > 9999 || _month < 1 || _month > 12) {
                     // std::cout << "!!!" << std::endl;
                     throw time_out_of_range();
@@ -157,6 +157,39 @@ namespace Datetime {
                 month = _month;
                 year = _year;
         }
+        Datetime(signed_Date_t _year, signed_Date_t _month, signed_Date_t _day)
+            : initiated(true), dayOnly(true) {
+                if (_year < 0 || _year > 9999 || _month < 1 || _month > 12) {
+                    // std::cout << "!!!" << std::endl;
+                    throw time_out_of_range();
+                }
+                minute = 0;
+                hour = 0;
+                while (_day > getDayOfMonth(_year, _month)) {
+                    _day -= getDayOfMonth(_year, _month);
+                    ++ _month;
+                    if (_month > 12) {
+                        _month -= 12;
+                        ++ _year;
+                    }
+                }
+
+                while (_day < 1) {
+                    -- _month;
+                    if (_month < 1) {
+                        _month += 12;
+                        -- _year;
+                        if (_year < 0)
+                            throw time_out_of_range();
+                    }
+                    _day += getDayOfMonth(_year, _month);
+                }
+
+                day = _day;
+                month = _month;
+                year = _year;
+        }
+
         static signed_Date_t getNum(const std::string& s, int st, int en)
         {
         	signed_Date_t num = 0;
@@ -204,9 +237,13 @@ namespace Datetime {
             if (!initiated)
                 throw not_initiated();
             std::stringstream buffer;
-            buffer << year << '/' << month << '/' << day << ' '
+            buffer << year << '/' << month << '/' << day;
+            if (!dayOnly)
+            buffer << ' '
                 << std::setw(2) << std::setfill('0')
-                << hour << ':' << minute;
+                << hour << ':'
+                << std::setw(2) << std::setfill('0')
+                << minute;
 
             return buffer.str();
         }
@@ -270,7 +307,7 @@ namespace Datetime {
         Datetime clearTime() const {
             if (!initiated)
                 throw not_initiated();
-            return Datetime(year, month, day, 0, 0);
+            return Datetime(year, month, day);
         }
 
         bool operator<(const Datetime& other) const {
@@ -289,6 +326,21 @@ namespace Datetime {
                     return month < other.month;
             else
                 return year < other.year;
+        }
+
+        bool operator==(const Datetime& other) const {
+            if (!initiated || !other.initiated)
+                throw not_initiated();
+            if (dayOnly != other.dayOnly) return false;
+            if (!( year == other.year &&
+                    month == other.month &&
+                    day == other.day ))
+                return false;
+            if (!dayOnly)
+                if (!( hour == other.hour &&
+                    minute == other.minute))
+                    return false;
+            return true;
         }
 
         friend std::ostream& operator<<(std::ostream& os, const Datetime& datetime) {
