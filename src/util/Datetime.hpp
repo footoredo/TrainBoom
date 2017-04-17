@@ -27,7 +27,12 @@ namespace Datetime {
     		"Your time format is wrong!!!") {}
     };
 
-    class Duration;
+    class not_initiated : public exception {
+    public:
+    	not_initiated() : exception(
+    		"not_initiated",
+    		"Your time is not initiated!!!") {}
+    };
 
     typedef unsigned short Date_t;
     typedef short signed_Date_t;
@@ -90,11 +95,17 @@ namespace Datetime {
         Date_t getMinute() const noexcept {
             return minute;
         }
+
+        friend std::ostream& operator<<(std::ostream& os, const Duration& duration) {
+            os << duration.format();
+            return os;
+        }
     };
 
     class Datetime {
     private:
         Date_t year, month, day, hour, minute;
+        bool initiated;
         static bool isLeapYear(Date_t year) {
             if (year % 100 == 0)
                 return year % 400 == 0;
@@ -113,8 +124,9 @@ namespace Datetime {
                 return 30;
         }
     public:
+        Datetime() noexcept: initiated(false) {}
         Datetime(signed_Date_t _year, signed_Date_t _month, signed_Date_t _day,
-            signed_Date_t _hour = 0, signed_Date_t _minute = 0) {
+            signed_Date_t _hour = 0, signed_Date_t _minute = 0): initiated(true) {
                 if (_year < 0 || _year > 9999 || _month < 1 || _month > 12) {
                     // std::cout << "!!!" << std::endl;
                     throw time_out_of_range();
@@ -188,7 +200,9 @@ namespace Datetime {
             return Datetime(year, month, day, hour, minute);
         }
 
-        std::string format() const noexcept {
+        std::string format() const {
+            if (!initiated)
+                throw not_initiated();
             std::stringstream buffer;
             buffer << year << '/' << month << '/' << day << ' '
                 << std::setw(2) << std::setfill('0')
@@ -197,11 +211,13 @@ namespace Datetime {
             return buffer.str();
         }
 
-        operator std::string() const noexcept {
+        operator std::string() const {
             return format();
         }
 
         Datetime operator+(const Duration& duration) const {
+            if (!initiated)
+                throw not_initiated();
             return Datetime (
                 year, month,
                 day + duration.getDay(),
@@ -211,6 +227,8 @@ namespace Datetime {
         }
 
         Datetime operator-(const Duration& duration) const {
+            if (!initiated)
+                throw not_initiated();
             return Datetime (
                 year, month,
                 signed_Date_t(day) - duration.getDay(),
@@ -219,31 +237,45 @@ namespace Datetime {
             );
         }
 
-        Date_t getYear() const noexcept {
+        Date_t getYear() const {
+            if (!initiated)
+                throw not_initiated();
             return year;
         }
 
-        Date_t getMonth() const noexcept {
+        Date_t getMonth() const {
+            if (!initiated)
+                throw not_initiated();
             return month;
         }
 
-        Date_t getDay() const noexcept {
+        Date_t getDay() const {
+            if (!initiated)
+                throw not_initiated();
             return day;
         }
 
-        Date_t getHour() const noexcept {
+        Date_t getHour() const {
+            if (!initiated)
+                throw not_initiated();
             return hour;
         }
 
-        Date_t getMinute() const noexcept {
+        Date_t getMinute() const {
+            if (!initiated)
+                throw not_initiated();
             return minute;
         }
 
         Datetime clearTime() const {
+            if (!initiated)
+                throw not_initiated();
             return Datetime(year, month, day, 0, 0);
         }
 
         bool operator<(const Datetime& other) const {
+            if (!initiated || !other.initiated)
+                throw not_initiated();
             if (year == other.year)
                 if (month == other.month)
                     if (day == other.day)
@@ -257,6 +289,13 @@ namespace Datetime {
                     return month < other.month;
             else
                 return year < other.year;
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Datetime& datetime) {
+            if (!datetime.initiated)
+                throw not_initiated();
+            os << datetime.format();
+            return os;
         }
     };
 

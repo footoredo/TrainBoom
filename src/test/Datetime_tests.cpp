@@ -37,4 +37,6 @@ int main() {
 
     std::cout << std::string(Datetime::parse("1015/12/6 7:33")) << std::endl;
 
+    std::cout << Datetime::parse("1015/12/6 7:33") << std::endl;
+
 }
