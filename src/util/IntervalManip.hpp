@@ -118,11 +118,11 @@ private:
         }
     }
 
-    void apply(const stupid_ptr<Node>& u) {
+    void forceApply(const stupid_ptr<Node>& u) {
         if (u->l != u->r) {
             u->push();
-            apply(u->ch[0]);
-            apply(u->ch[1]);
+            forceApply(u->ch[0]);
+            forceApply(u->ch[1]);
         }
         else {
             // std::cout << u->l << " " << u->ans << std::endl;
@@ -154,8 +154,8 @@ public:
             modify(root, l, r, m);
     }
 
-    void apply() {
-        apply(root);
+    void forceApply() {
+        forceApply(root);
     }
 };
 

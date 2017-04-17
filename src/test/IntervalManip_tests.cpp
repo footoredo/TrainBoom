@@ -36,10 +36,11 @@ int main() {
     IntervalManip<int, int, ModifierAdd, MergerTAdd, MergerM>
         intervalManipAdd(a, 5);
 
-            intervalManipAdd.apply();
-            for (int i = 0; i < 5; ++ i)
-                std::cout << a[i] << " ";
-            std::cout << std::endl;
+    intervalManipAdd.forceApply();
+    for (int i = 0; i < 5; ++ i)
+        std::cout << a[i] << " ";
+    std::cout << std::endl;
+    
     try {
         std::cout << intervalManipAdd.query(0, 5) << std::endl;;
     } catch (const index_out_of_range& e) {
