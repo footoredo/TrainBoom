@@ -10,13 +10,16 @@ Name|Type|Description
 --|--|--
 `id` | `id_t` |
 `name` | `std::string` | 车次编号
-`running_time` | `util::Datetime::Datetime` | 运行日期 (以发车时的日期为准)
-`route` | `Route` | 运行路线(public)
+`route` | `Route` | 运行路线 (public)
+
+## Friend classes
+- `Route`
 
 ## Member functions
 
 Name|Description
 --|--
 [`(constructor)`](Train/Train.md)|构造函数
-[`(destructor)`](Train/~Train.md)|析构函数
-[`operator=`](Train/operator=.md)|赋值函数
+`getId`|
+`getName`|
+`getRunningTime`|获取运行日期 (以发车时的日期为准)
