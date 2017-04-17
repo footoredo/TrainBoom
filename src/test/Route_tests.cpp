@@ -25,7 +25,13 @@ int main() {
     s1.addTicket(Ticket::Type("人民的名义"), Ticket::Attribute(1522, 15));
     util::stupid_array<Segment> segments(new Segment[2]{s0, s1}, 2);
 
-    Route route(233, 3, stations, distance, arriveTime, leaveTime, segments);
+    util::stupid_array<Information> informations(new Information[3]{
+        Information(stations[0], 0, leaveTime[0], isStart),
+        Information(stations[1], distance[0], arriveTime[0], leaveTime[1]),
+        Information(stations[2], distance[1], arriveTime[1], isEnd)
+    }, 3);
+
+    Route route(233, 3, informations, segments);
     route.display();
 
     route.queryTickets(0, 2).display();
@@ -36,4 +42,6 @@ int main() {
 
     route.modifyTickets(0, 2, order);
     route.display();
+
+    route.information(1).display();
 }

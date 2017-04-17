@@ -3,6 +3,7 @@
 
 #include "util.hpp"
 #include "Segment.hpp"
+#include "Information.hpp"
 #include <iostream>
 
 namespace TrainBoom {
@@ -15,15 +16,14 @@ typedef util::IntervalManip<
     Segment::MergerM
 > SegmentsInvervalManip;
 
+class Information;
+
 class Route {
 private:
     id_t id;
 
     size_t n;
-    util::stupid_array<id_t> stations;
-    util::stupid_array<size_t> distance;
-    util::stupid_array<util::Datetime::Datetime> arriveTime;
-    util::stupid_array<util::Datetime::Datetime> leaveTime;
+    util::stupid_array<Information> informations;
 
     util::stupid_array<Segment> segments;
 
@@ -67,6 +67,13 @@ public:
     		"Your station is not found!!!") {}
     };
 
+    class index_out_of_range : public exception {
+    public:
+    	index_out_of_range() : exception(
+    		"index_out_of_range",
+    		"Your index is out of range!!!") {}
+    };
+
     class interval_invalid : public exception {
     public:
     	interval_invalid() : exception(
@@ -76,7 +83,7 @@ public:
 
     explicit Route(id_t id): id(id) {}
 
-    Route(id_t id, size_t n,
+    /*Route(id_t id, size_t n,
         const util::stupid_array<id_t>& stations,
         const util::stupid_array<size_t>& distance,
         const util::stupid_array<util::Datetime::Datetime>& arriveTime,
@@ -99,9 +106,26 @@ public:
             segmentsIntervalManip = new SegmentsInvervalManip(
                 segments, n - 1
             );
+        }*/
+
+    Route(id_t id, size_t n,
+        const util::stupid_array<Information>& informations,
+        const util::stupid_array<Segment>& segments
+    ): id(id), n(n), informations(informations), segments(segments) {
+            if (n < 2) {
+                throw station_number_too_small();
+            }
+            if (informations.size() != n || segments.size() != n - 1) {
+                    throw station_number_not_consistent();
+                }
+            for (size_t i = 0; i < n; ++ i)
+                stationsMap[informations[i].getStationId()] = i;
+            segmentsIntervalManip = new SegmentsInvervalManip(
+                segments, n - 1
+            );
         }
 
-    void rebuild(size_t _n,
+    /*void rebuild(size_t _n,
         const util::stupid_array<id_t>& _stations,
         const util::stupid_array<size_t>& _distance,
         const util::stupid_array<util::Datetime::Datetime>& _arriveTime,
@@ -130,7 +154,7 @@ public:
             segmentsIntervalManip = new SegmentsInvervalManip(
                 segments, n - 1
             );
-        }
+        }*/
 
     void modifyTickets(id_t startStation, id_t endStation, const TicketDelta& deltas) {
         auto interval = getInterval(startStation, endStation);
@@ -142,17 +166,28 @@ public:
         return segmentsIntervalManip->query(interval.first, interval.second);
     }
 
+    Information& information(size_t pos) {
+        if (pos >= n) {
+            throw index_out_of_range();
+        }
+        return informations[pos];
+    }
+
+    Information information(size_t pos) const {
+        if (pos >= n) {
+            throw index_out_of_range();
+        }
+        return informations[pos];
+    }
+
     void display() {
-        segmentsIntervalManip->apply();
+        segmentsIntervalManip->forceApply();
         std::cout << "\n----\n" << std::endl;
         std::cout << "id: " << id << std::endl;
         std::cout << "nStation: " << n << std::endl;
         for (size_t i = 0; i < n; ++ i) {
             std::cout << "\nStation #" << i << ": " << std::endl;
-            std::cout << "\tStation id: " << stations[i] << std::endl;
-            if (i) std::cout << "\tDistance: " << distance[i - 1] << " km" << std::endl;
-            if (i) std::cout << "\tArrive time: " << std::string(arriveTime[i - 1]) << std::endl;
-            if (i < n - 1) std::cout << "\tLeave time: " << std::string(leaveTime[i]) << std::endl;
+            informations[i].display();
             if (i < n - 1) {
                 std::cout << "\tTicket information: \n" << std::endl;
                 segments[i].display();
