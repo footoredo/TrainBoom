@@ -8,6 +8,7 @@
 #include "Segment.hpp" 
 #include "Route.hpp" 
 #include "User.hpp" 
+#include "Train.hpp" 
 
 namespace TrainBoom {
 
