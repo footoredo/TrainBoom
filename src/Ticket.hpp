@@ -1,4 +1,3 @@
-//by 巫宇威
 #ifndef TRAINBOOM_TICKET_HPP
 #define TRAINBOOM_TICKET_HPP
 #include <cstring>
