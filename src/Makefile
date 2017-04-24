@@ -35,3 +35,6 @@ test_Route:
 
 test_Train:
 	$(CXX) -o $(BIN)/Train_tests $(CXXFLAGS) $(SOURCE)/Train_tests.cpp
+
+test_Station:
+	$(CXX) -o $(BIN)/Station_tests $(CXXFLAGS) $(SOURCE)/Station_tests.cpp	
