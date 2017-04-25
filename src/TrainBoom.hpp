@@ -5,17 +5,17 @@
 #include "util.hpp"
 #include "exception.hpp"
 #include "Ticket.hpp"
-#include "Segment.hpp" 
-#include "Route.hpp" 
-#include "User.hpp" 
+#include "Segment.hpp"
+#include "Route.hpp"
+#include "User.hpp"
 
 namespace TrainBoom {
 
 class TrainBoom {
 private:
-	util::map <id_t, User> users;
-	util::map <id_t, Train> trains;
-	util::map <id_t, Station> stations;
+	util::map <Id, User> users;
+	util::map <Id, Train> trains;
+	util::map <Id, Station> stations;
 public:
 	class id_not_exist : public exception {
     public:
@@ -23,17 +23,17 @@ public:
     		"id_not_exist",
     		"Your id does not exist!!!") {}
     };
-	User& getUser(id_t id)
+	User& getUser(Id id)
 	{
 		if(users.count(id) == 0) throw id_not_exist;
 		return users[id];
 	}
-	Train& getTrain(id_t id)
+	Train& getTrain(Id id)
 	{
 		if(trains.count(id) == 0) throw id_not_exist;
 		return trains[id];
 	}
-	Station& getStation(id_t id)
+	Station& getStation(Id id)
 	{
 		if(stations.count(id) == 0) throw id_not_exist;
 		return stations[id];

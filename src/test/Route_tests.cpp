@@ -3,7 +3,7 @@
 using namespace TrainBoom;
 
 int main() {
-    util::stupid_array<TrainBoom::id_t> stations(new TrainBoom::id_t[3]{0, 1, 2}, 3);
+    util::stupid_array<TrainBoom::Id> stations(new TrainBoom::Id[3]{"0", "1", "2"}, 3);
     util::stupid_array<size_t> distance(new size_t[2]{10, 20}, 2);
     util::stupid_array<util::Datetime::Datetime> arriveTime(
         new util::Datetime::Datetime[2]{
@@ -31,17 +31,28 @@ int main() {
         Information(stations[2], distance[1], arriveTime[1], isEnd)
     }, 3);
 
-    Route route(233, 3, informations, segments);
+    Route route("233", 3, informations, segments);
     route.display();
 
-    route.queryTickets(0, 2).display();
+    route.queryTickets("0", "2").display();
 
     TicketDelta order;
     order["APTV"] = 5;
     order["人民的名义"] = -1;
 
-    route.modifyTickets(0, 2, order);
+    route.modifyTickets("0", "2", order);
     route.display();
 
-    route.information(1).display();
+    for (int i = 0; i < 3; ++ i) {
+        // route.information(i).display();
+
+        util::Json json = route.information(i).toJson();
+        std::cout << json.toString() << std::endl;
+
+        Information tmp(json);
+        tmp.display();
+    }
+
+    util::Json routeJson = route.toJson();
+    std::cout << routeJson.toString() << std::endl;
 }

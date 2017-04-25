@@ -1,5 +1,6 @@
 #include<iostream>
-#include"Ticket.hpp"
+#include "Ticket.hpp"
+#include "util.hpp"
 using namespace std;
 using namespace TrainBoom;
 using namespace Ticket;
@@ -24,6 +25,13 @@ int main(){
 	} catch (const Attribute::tickets_overbooked& e) {
 		std::cout << "throw test ok!" << std::endl;
 	}
+
+	// auto ticket = util::make_pair(Ticket::Type("火箭舱"), t1);
+	util::Json json = t1.toJson();
+	std::cout << json.toString() << std::endl;
+
+	Ticket::Attribute t6(json);
+	std::cout << t6 << std::endl;
 
 	return 0;
 }

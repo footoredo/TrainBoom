@@ -84,6 +84,20 @@ public:
     constexpr Segment() noexcept: tickets() {}
     Segment(const util::map<Ticket::Type, Ticket::Attribute>& tickets) noexcept: tickets(tickets) {}
     Segment(const Segment& other) noexcept: tickets(other.tickets) {}
+    Segment(const util::Json& json) {
+        assert(json.getName() == "segment");
+        json["tickets"].forEach([this](const std::string& type, util::Json attribute) {
+            tickets[type] = Ticket::Attribute(attribute);
+        });
+    }
+    /*Segment(const Value& jsonValue) {
+        assert(jsonValue.IsObject());
+        assert(std::string(jsonValue["name"].GetString()) == "segment");
+        for (const auto& ticketObject : jsonValue["data"].GetObject()) {
+            tickets[std::string(ticketObject.name.GetString())] =
+                Ticket::Attribute(ticketObject.value);
+        }
+    }*/
 
     void addTicket(const Ticket::Type& type, const Ticket::Attribute& attr) {
         auto retValue = tickets.insert(util::make_pair(type, attr));
@@ -97,6 +111,17 @@ public:
             std::cout << item.first << "\n" << item.second << std::endl;
         }
         std::cout << "#####################" << std::endl;
+    }
+
+    util::Json toJson() const {
+        util::Json json("segment");
+        json["tickets"].SetObject();
+
+        for (const auto& ticket: tickets) {
+            json["tickets"][ticket.first] = ticket.second.toJson();
+        }
+
+        return json;
     }
 };
 

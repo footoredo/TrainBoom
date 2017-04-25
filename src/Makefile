@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -g -I.
+CXXFLAGS = -std=c++11 -Wall -g -I. -I../include
 SOURCE = test
 BIN = test_bin
 
@@ -35,3 +35,6 @@ test_Route:
 
 test_Train:
 	$(CXX) -o $(BIN)/Train_tests $(CXXFLAGS) $(SOURCE)/Train_tests.cpp
+
+test_Json:
+	$(CXX) -o $(BIN)/Json_tests $(CXXFLAGS) $(SOURCE)/Json_tests.cpp

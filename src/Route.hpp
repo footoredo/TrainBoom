@@ -20,7 +20,7 @@ class Information;
 
 class Route {
 private:
-    id_t id;
+    Id id;
 
     size_t n;
     util::stupid_array<Information> informations;
@@ -28,9 +28,9 @@ private:
     util::stupid_array<Segment> segments;
 
     util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip;
-    util::map<id_t, size_t> stationsMap;
+    util::map<Id, size_t> stationsMap;
 
-    util::pair<size_t, size_t> getInterval(id_t startStation, id_t endStation) {
+    util::pair<size_t, size_t> getInterval(Id startStation, Id endStation) {
         const auto& iterStart = stationsMap.find(startStation),
             iterEnd = stationsMap.find(endStation);
         if (iterStart == stationsMap.end() ||
@@ -81,10 +81,10 @@ public:
     		"Your requested interval is not valid!!!") {}
     };
 
-    explicit Route(id_t id): id(id) {}
+    explicit Route(Id id): id(id) {}
 
-    /*Route(id_t id, size_t n,
-        const util::stupid_array<id_t>& stations,
+    /*Route(Id id, size_t n,
+        const util::stupid_array<Id>& stations,
         const util::stupid_array<size_t>& distance,
         const util::stupid_array<util::Datetime::Datetime>& arriveTime,
         const util::stupid_array<util::Datetime::Datetime>& leaveTime,
@@ -108,7 +108,7 @@ public:
             );
         }*/
 
-    Route(id_t id, size_t n,
+    Route(Id id, size_t n,
         const util::stupid_array<Information>& informations,
         const util::stupid_array<Segment>& segments
     ): id(id), n(n), informations(informations), segments(segments) {
@@ -126,7 +126,7 @@ public:
         }
 
     /*void rebuild(size_t _n,
-        const util::stupid_array<id_t>& _stations,
+        const util::stupid_array<Id>& _stations,
         const util::stupid_array<size_t>& _distance,
         const util::stupid_array<util::Datetime::Datetime>& _arriveTime,
         const util::stupid_array<util::Datetime::Datetime>& _leaveTime,
@@ -156,12 +156,12 @@ public:
             );
         }*/
 
-    void modifyTickets(id_t startStation, id_t endStation, const TicketDelta& deltas) {
+    void modifyTickets(Id startStation, Id endStation, const TicketDelta& deltas) {
         auto interval = getInterval(startStation, endStation);
         segmentsIntervalManip->modify(interval.first, interval.second, deltas);
     }
 
-    Segment queryTickets(id_t startStation, id_t endStation) {
+    Segment queryTickets(Id startStation, Id endStation) {
         auto interval = getInterval(startStation, endStation);
         return segmentsIntervalManip->query(interval.first, interval.second);
     }
@@ -199,6 +199,32 @@ public:
             }
         }
         std::cout << "\n---\n" << std::endl;
+    }
+
+    util::Json toJson() const {
+        segmentsIntervalManip->forceApply();
+
+        util::Json json("route");
+
+        json["id"] = id;
+        json["n"] = n;
+        json["informations"].SetArray();
+        json["segments"].SetArray();
+        json["stationsMap"].SetObject();
+
+        for (unsigned int i = 0; i < n; ++ i) {
+            json["informations"].PushBack(informations[i].toJson());
+            // std::cout << "!!asdasd!" << std::endl;
+            if (i + 1 < n)
+                json["segments"].PushBack(segments[i].toJson());
+            std::cout << "!!asdasd!" << i << std::endl;
+        }
+
+        for (const auto& item: stationsMap) {
+            json["stationsMap"][item.first] = item.second;
+        }
+
+        return json;
     }
 };
 

@@ -2,6 +2,7 @@
 #define TRAINBOOM_UTIL_DATETIME_HPP
 
 #include "exception.hpp"
+#include "util.hpp"
 #include <string>
 #include <iomanip>
 #include <sstream>

@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include "exception.hpp"
+#include "util.hpp"
 
 namespace TrainBoom {
 
@@ -15,12 +16,10 @@ using std :: ostream;
 typedef std::string Type;
 
 class Attribute {
-	private:
-		// std::string type; // 车票种类（二等/一等/商务）
+	public:
 		double price; // 车票单价
 		size_t number;  // 车票余量
 
-	public:
 		Attribute(): price(), number() { // 无参构造，类型为空
 		}
 
@@ -30,6 +29,11 @@ class Attribute {
 			// price = t.price;
 			// number = t.number;
 			// type = t.type;
+		}
+
+		Attribute(const util::Json& json): price(json["price"]),
+		 	number(json["number"]) {
+				assert(json.getName() == "attribute");
 		}
 
 		~Attribute(){}
@@ -59,6 +63,17 @@ class Attribute {
 
 		friend Attribute Ticket::mergeAttribute(const Attribute& attr0, const Attribute& attr1);
 
+		double getPrice() const {
+			return price;
+		}
+
+		util::Json toJson() const {
+			util::Json json("attribute");
+			json["price"] = price;
+			json["number"] = number;
+			return json;
+		}
+
 		// bool operator< (const Ticket& other) {
 		// 	return type < other.type;
 		// }
@@ -74,6 +89,31 @@ Attribute mergeAttribute(const Attribute& attr0, const Attribute& attr1) {
 	return Attribute(attr0.price + attr1.price,
 		attr0.number < attr1.number ? attr0.number : attr1.number);
 }
+
+/*
+Document convertToJson(const util::pair<Type, Attribute>& ticket) {
+	Document document;
+	Document::AllocatorType& allocator = document.GetAllocator();
+	Value& data = initiateDocument(document, "ticket");
+	{
+		data.AddMember("type", Value(ticket.first.c_str(), allocator), allocator);
+		data.AddMember("price", ticket.second.price, allocator);
+		data.AddMember("number", (unsigned int)ticket.second.number, allocator);
+		data["type"] = ticket.first;
+		data["price"] = ticket.second.price;
+		data["number"] = ticket.second.number;
+	}
+
+	return document;
+}
+
+util::pair<Type, Attribute> parseFromJson(const Document& document) {
+	assert(std::string(document["name"].GetString()) == "ticket");
+	return util::make_pair(Type(document["data"]["type"].GetString()),
+		Attribute(double(document["data"]["price"].GetDouble()),
+				size_t(document["data"]["number"].GetUint64())));
+}
+*/
 
 }	// Ticket
 

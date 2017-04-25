@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Segment.hpp"
+#include "util.hpp"
 using namespace TrainBoom;
 
 int main() {
@@ -24,8 +25,17 @@ int main() {
     }
 
     s1.addTicket(Ticket::Type("人民的名义"), Ticket::Attribute(1522, 15));
+    s1.display();
 
     Segment::MergerT()(s0, s1).display();
 
-    Segment::Modifier()(s1, util::make_pair(Ticket::Type("人民的名义"), -6)).display();
+    TicketDelta ticketDelta;
+    ticketDelta["人民的名义"] = -6;
+    Segment::Modifier()(s1, ticketDelta, 0, 0).display();
+
+    util::Json json = s1.toJson();
+    std::cout << json.toString() << std::endl;
+
+    Segment s2(json);
+    s2.display();
 }

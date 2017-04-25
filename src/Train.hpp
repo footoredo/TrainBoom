@@ -11,16 +11,16 @@ class Train {
     friend class Route;
 
 private:
-    id_t id;
+    Id id;
     std::string name;
 
 public:
     Route route;
 
-    Train(id_t id, const std::string& name, const Route& route):
+    Train(Id id, const std::string& name, const Route& route):
         id(id), name(name), route(route) {}
 
-    id_t getId() const noexcept {
+    Id getId() const noexcept {
         return id;
     }
 
