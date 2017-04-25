@@ -38,3 +38,6 @@ test_Train:
 
 test_Json:
 	$(CXX) -o $(BIN)/Json_tests $(CXXFLAGS) $(SOURCE)/Json_tests.cpp
+
+test_Station:
+	$(CXX) -o $(BIN)/Station_tests $(CXXFLAGS) $(SOURCE)/Station_tests.cpp	
