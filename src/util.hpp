@@ -8,6 +8,7 @@ namespace TrainBoom {
 
 typedef std::string Id;
 using TrainBoom::Id;
+#define TESTTESTTEST
 // using namespace rapidjson;
 
 /*
