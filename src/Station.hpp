@@ -9,7 +9,7 @@ namespace TrainBoom {
 	class Station {
 		private:
 			std::string name;
-			util::map<Id, std::set<Id>> toStation;
+			util::map<Id, util::set<Id>> toStation;
 			Id id;
 
 		public:
@@ -44,7 +44,12 @@ namespace TrainBoom {
 			}
 
 			void del(Id stationId, Id routeId){
-				if (toStation[stationId].erase(routeId)<1) throw delete_routeId_failed(); // assuming return value is size_t(number of elements erased)
+				try {
+					toStation[stationId].erase(routeId);
+				}
+				catch (const invalid_iterator& e) {
+					throw delete_routeId_failed();
+				}
 			}
 
 			/*void add(Id stationId, Id trainId){
@@ -55,7 +60,7 @@ namespace TrainBoom {
 				if (map[stationId].erase(trainId)<1) throw delete_trainId_failed();
 			}*/
 
-			const std::set<Id>& query(Id stationId){
+			const util::set<Id>& query(Id stationId){
 				return toStation[stationId];
 			}
 

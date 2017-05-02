@@ -16,7 +16,7 @@ int main() {
 	}
 	cout << "add test ok" << endl;
 
-	for(int i = 0; i < 100; ++i) {
+	for(int i = 50; i < 100; ++i) {
 		st.del(*stationId[i], *routeId[i]);
 		delete stationId[i];
 		delete routeId[i];
@@ -27,15 +27,14 @@ int main() {
 		st.add(1, -10000);
 	} catch (const Station::add_routeId_failed& e) {
 		std::cout << "throw test for add ok!" << std::endl;
-	}
+	}*/
 
 
 	try {
-		st.del();
+		st.del(*stationId[0], Id("Route"));
 	} catch (const Station::delete_routeId_failed& e) {
 		std::cout << "throw test for del ok!" << std::endl;
 	}
-	*/
 
 	return 0;
 }

@@ -116,6 +116,7 @@ Value& initiateDocument(Document& document, std::string name) {
 #include "util/Datetime.hpp"
 #include "util/IntervalManip.hpp"
 #include "util/map.hpp"
+#include "util/set.hpp"
 #include "util/pair.hpp"
 #include "util/stupid_ptr.hpp"
 #include "util/Json.hpp"
