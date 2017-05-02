@@ -26,20 +26,20 @@ private:
 public:
 	User():gender(Other),isRoot(0), id("User") {}
 	// User operator=(const User &t):id(t.id),username(t.username),password(t.password),avatar(t.avatar),realname(t.realname),phone(t.phone),email(t.email),motto(t.motto),gender(t.gender),root(t.root),order(t.order) {}
-	Id getId() {return id;}
-	std::string getUsername() {return username;}
+	Id getId() const {return id;}
+	std::string getUsername() const {return username;}
 	// Password getPassword() {return password;}//eererewre
-    bool verifyPassword(const std::string& _password) {
+    bool verifyPassword(const std::string& _password) const {
         return true;
     }
-	std::string getAvatar() {return avatar;}
-	std::string getRealname() {return realname;}
-	std::string getPhone() {return phone;}
-	std::string getEmail() {return email;}
-	std::string getMotto() {return motto;}
-	Gender getGender() {return gender;}
-	bool getIsRoot() {return isRoot;}
-	std::vector<Id> getOrder() {return order;}
+	std::string getAvatar() const {return avatar;}
+	std::string getRealname() const {return realname;}
+	std::string getPhone() const {return phone;}
+	std::string getEmail() const {return email;}
+	std::string getMotto() const {return motto;}
+	Gender getGender() const {return gender;}
+	bool getIsRoot() const {return isRoot;}
+	std::vector<Id> getOrder() const {return order;}
 	void modifyPassword(Password t) {password=t;}
 	void modifyUsername(std::string t) {username=t;}
 	void modifyAvatar(std::string t) {avatar=t;}

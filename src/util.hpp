@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <ctime>
+#include <vector>
 #include "sha1.hpp"
 
 namespace TrainBoom {
@@ -109,6 +110,10 @@ Value& initiateDocument(Document& document, std::string name) {
     return document["data"];
 }
 */
+
+namespace util {
+    using std::vector;
+}
 
 }
 

@@ -1,5 +1,5 @@
-#ifndef TRAINBOOM_TRAIN_HPP
-#define TRAINBOOM_TRAIN_HPP
+#ifndef TRAINBOOM_STATION_HPP
+#define TRAINBOOM_STATION_HPP
 #include <cstring>
 #include <string>
 #include <set>

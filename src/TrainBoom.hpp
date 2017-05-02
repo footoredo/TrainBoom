@@ -2,13 +2,14 @@
 #define TRAINBOOM_HPP
 
 #include <iostream>
-#include "util.hpp"
 #include "exception.hpp"
 #include "Ticket.hpp"
-#include "Segment.hpp" 
-#include "Route.hpp" 
-#include "User.hpp" 
-#include "Train.hpp" 
+#include "Segment.hpp"
+#include "Route.hpp"
+#include "User.hpp"
+#include "Train.hpp"
+#include "Station.hpp"
+#include "util.hpp"
 
 namespace TrainBoom {
 
@@ -17,6 +18,8 @@ private:
 	util::map <Id, User> users;
 	util::map <Id, Train> trains;
 	util::map <Id, Station> stations;
+	Id id;
+
 public:
 	class id_not_exist : public exception {
     public:
@@ -24,20 +27,51 @@ public:
     		"id_not_exist",
     		"Your id does not exist!!!") {}
     };
-	User& getUser(Id id)
+	TrainBoom(): id("TrainBoom") {}
+
+	User& user(Id id)
 	{
-		if(users.count(id) == 0) throw id_not_exist;
-		return users[id];
+		if(users.count(id) == 0) throw id_not_exist();
+		return users.at(id);
 	}
-	Train& getTrain(Id id)
+	Train& train(Id id)
 	{
-		if(trains.count(id) == 0) throw id_not_exist;
-		return trains[id];
+		if(trains.count(id) == 0) throw id_not_exist();
+		return trains.at(id);
 	}
-	Station& getStation(Id id)
+	Station& station(Id id)
 	{
-		if(stations.count(id) == 0) throw id_not_exist;
-		return stations[id];
+		if(stations.count(id) == 0) throw id_not_exist();
+		return stations.at(id);
+	}
+	void addUser(const User& user) {
+		users.insert(util::make_pair(user.getId(), user));
+		// users[user.getId()] = user;
+	}
+	void addTrain(const Train& train) {
+		trains.insert(util::make_pair(train.getId(), train));
+		// trains[train.getId()] = train;
+	}
+	void addStation(const Station& station) {
+		stations.insert(util::make_pair(station.getId(), station));
+		// stations[station.getId()] = station;
+	}
+
+	std::string toString() {
+		std::stringstream ss;
+		ss << "users " << users.size() << '\n';
+		for (const auto& user: users) {
+			ss << "user " << user.first << '\n';
+		}
+		ss << "trains " << trains.size() << '\n';
+		for (const auto& train: trains) {
+			ss << "train " << train.first << '\n';
+		}
+		ss << "stations " << stations.size() << '\n';
+		for (const auto& station: stations) {
+			ss << "station " << station.first << '\n';
+		}
+		return ss.str();
 	}
 };
 

@@ -134,7 +134,7 @@ public:
     std::string toString() const {
         std::stringstream ss;
         // ss << "createTime " << createTime << '\n';
-        ss << "n " << tickets.size() << '\n';
+        ss << "tickets " << tickets.size() << '\n';
         for (const auto& ticket: tickets)
             ss << "ticket " << ticket.first << " " << ticket.second.price << " " << ticket.second.number << '\n';
         return ss.str();

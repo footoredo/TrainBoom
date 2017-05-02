@@ -45,3 +45,6 @@ test_Station:
 
 test_User:
 	$(CXX) -o $(BIN)/User_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/User_tests.cpp
+
+test_TrainBoom:
+	$(CXX) -o $(BIN)/TrainBoom_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/TrainBoom_tests.cpp
