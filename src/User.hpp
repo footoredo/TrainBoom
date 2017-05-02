@@ -46,20 +46,20 @@ public:
 	void refundTicket(Train train, Station from, Station to, size_t lowPrice, size_t highPrice, int num) {}
 	void queryTicket(Station from, Station to, Datetime::Datetime date) {}
 	void addRoute(Route route) {}//ROOT
-	void delRoute(size_t routeID) {}//ROOT
+	void delRoute(Id routeID) {}//ROOT
 	void startRoutes(Train train, Datetime::Datetime date) {}//ROOT
 	void stopRoutes(Train train, Datetime::Datetime date) {} //ROOT
-	std::string getUsername(size_t userID) {}
-	Password getPassword(size_t userID) {}//ROOT
-	std::string getAvatar(size_t userID) {}
-	std::string getRealname(size_t userID) {}//ROOT
-	std::string getPhone(size_t userID) {}
-	std::string getEmail(size_t userID) {}
-	Gender getGender(size_t userID) {}
-	std::string getMotto(size_t userID) {}
-	bool getRoot(size_t userID) {}
-	util::vector<Order> getOrder(size_t userID) {}
-	void getLog(size_t userID) {}//ROOT
+	std::string getUsername(Id userID) {}
+	Password getPassword(Id userID) {}//ROOT
+	std::string getAvatar(Id userID) {}
+	std::string getRealname(Id userID) {}//ROOT
+	std::string getPhone(Id userID) {}
+	std::string getEmail(Id userID) {}
+	Gender getGender(Id userID) {}
+	std::string getMotto(Id userID) {}
+	bool getRoot(Id userID) {}
+	util::vector<Order> getOrder(Id userID) {}
+	void getLog(Id userID) {}//ROOT
 };
 
 }
