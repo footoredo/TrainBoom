@@ -5,14 +5,14 @@
 #include <string>
 
 namespace TrainBoom {
-	
+
 enum Gender{Man=0, Woman=1, Other=2};
 
 class User {
     friend class Password;//TODO
 
 private:
-    id_t id;
+    Id id;
     Password password;
     std::string username,avatar,realname,phone,email,motto;
     Gender gender;//Man, Woman, Other
@@ -20,11 +20,11 @@ private:
     util::vector<Order> order;//TODO
 
 public:
-	User():gender(Other),root(0) {}
-	User operator=(const User &t):id(t.id),username(t.username),password(t.password),avatar(t.avatar),realname(t.realname),phone(t.phone),email(t.email),motto(t.motto),gender(t.gender),root(t.root),order(t.order) {}
-	id_t getId() {return id;}
+	User():gender(Other),root(0), id("User") {}
+	// User operator=(const User &t):id(t.id),username(t.username),password(t.password),avatar(t.avatar),realname(t.realname),phone(t.phone),email(t.email),motto(t.motto),gender(t.gender),root(t.root),order(t.order) {}
+	Id getId() {return id;}
 	std::string getUsername() {return username;}
-	Password getPassword() {return password;}//eererewre 
+	Password getPassword() {return password;}//eererewre
 	std::string getAvatar() {return avatar;}
 	std::string getRealname() {return realname;}
 	std::string getPhone() {return phone;}
