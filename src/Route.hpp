@@ -205,7 +205,7 @@ public:
     util::Json toJson() {
         segmentsIntervalManip->forceApply();
 
-        util::Json json("route");
+        util::Json json("route", id);
 
         json["id"] = id;
         json["n"] = n;

@@ -32,7 +32,7 @@ class Attribute {
 
 		Attribute(const util::Json& json): price(json["price"]),
 		 	number(json["number"]) {
-				assert(json.getName() == "attribute");
+				assert(json.getType() == "attribute");
 		}
 
 		~Attribute(){}

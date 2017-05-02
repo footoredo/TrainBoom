@@ -42,3 +42,6 @@ test_Json:
 
 test_Station:
 	$(CXX) -o $(BIN)/Station_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/Station_tests.cpp
+
+test_User:
+	$(CXX) -o $(BIN)/User_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/User_tests.cpp

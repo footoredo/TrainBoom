@@ -51,6 +51,10 @@ public:
             return value->GetDouble();
         }
 
+        operator bool() const {
+            return value->GetBool();
+        }
+
         JsonValue& operator=(const size_t& x) {
             value->SetUint64(x);
             return *this;
@@ -78,6 +82,11 @@ public:
 
         JsonValue& operator=(const double& x) {
             value->SetDouble(x);
+            return *this;
+        }
+
+        JsonValue& operator=(const bool& x) {
+            value->SetBool(x);
             return *this;
         }
 
@@ -118,6 +127,11 @@ public:
 
         JsonValue& PushBack(const double& x) {
             value->PushBack(Value().SetDouble(x), *allocator);
+            return *this;
+        }
+
+        JsonValue& PushBack(const bool& x) {
+            value->PushBack(Value().SetBool(x), *allocator);
             return *this;
         }
 
@@ -162,13 +176,26 @@ private:
     Document document;
     Document::AllocatorType* allocator;
     JsonValue data;
-    std::string name;
+    std::string type;
+    std::string id;
 
 public:
-    Json(std::string name): name(name) {
+    Json(std::string type): type(type) {
         allocator = &(document.GetAllocator());
         document.SetObject();
-        document.AddMember("name", name, *allocator);
+        document.AddMember("type", type, *allocator);
+        document.AddMember("data", Value(kObjectType), *allocator);
+        data = JsonValue(
+            allocator,
+            &(document["data"])
+        );
+    }
+
+    Json(std::string type, std::string id): type(type), id(id) {
+        allocator = &(document.GetAllocator());
+        document.SetObject();
+        document.AddMember("type", type, *allocator);
+        document.AddMember("id", id, *allocator);
         document.AddMember("data", Value(kObjectType), *allocator);
         data = JsonValue(
             allocator,
@@ -179,12 +206,14 @@ public:
     Json(const JsonValue& jv) {
         allocator = &(document.GetAllocator());
         document.CopyFrom(*jv.value, *allocator);
-        name = document["name"].GetString();
+        type = document["type"].GetString();
+        if (document.HasMember("id"))
+            id = document["id"].GetString();
         data = JsonValue(allocator, &document["data"]);
     }
 
-    const std::string& getName() const {
-        return name;
+    const std::string& getType() const {
+        return type;
     }
 
     JsonValue operator[](const std::string& key) {

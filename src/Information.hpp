@@ -162,7 +162,7 @@ public:
     }*/
 
     util::Json toJson() const {
-        util::Json json("information");
+        util::Json json("information", id);
         json["stationId"] = stationId;
         json["distance"] = distance;
         if (!isStartStation()) json["arriveTime"] = arriveTime.format();
