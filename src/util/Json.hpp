@@ -31,6 +31,10 @@ public:
             return value->GetUint64();
         }
 
+        operator unsigned() const {
+            return value->GetUint64();
+        }
+
         /*operator Id() const {
             return value->GetString();
         }*/
@@ -48,6 +52,11 @@ public:
         }
 
         JsonValue& operator=(const size_t& x) {
+            value->SetUint64(x);
+            return *this;
+        }
+
+        JsonValue& operator=(const unsigned& x) {
             value->SetUint64(x);
             return *this;
         }

@@ -5,6 +5,7 @@
 #include "Segment.hpp"
 #include "Information.hpp"
 #include <iostream>
+#include <sstream>
 
 namespace TrainBoom {
 
@@ -20,24 +21,24 @@ class Information;
 
 class Route {
 private:
-    Id id;
-
-    size_t n;
+    unsigned n;
     util::stupid_array<Information> informations;
 
     util::stupid_array<Segment> segments;
 
     util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip;
-    util::map<Id, size_t> stationsMap;
+    util::map<Id, unsigned> stationsMap;
 
-    util::pair<size_t, size_t> getInterval(Id startStation, Id endStation) {
+    Id id;
+
+    util::pair<unsigned, unsigned> getInterval(Id startStation, Id endStation) {
         const auto& iterStart = stationsMap.find(startStation),
             iterEnd = stationsMap.find(endStation);
         if (iterStart == stationsMap.end() ||
             iterEnd == stationsMap.end()) {
                 throw station_not_found();
             }
-        size_t start = iterStart->second, end = iterEnd->second;
+        unsigned start = iterStart->second, end = iterEnd->second;
         if (end <= start) {
             throw interval_invalid();
         }
@@ -81,11 +82,11 @@ public:
     		"Your requested interval is not valid!!!") {}
     };
 
-    explicit Route(Id id): id(id) {}
+    explicit Route(): id("Route") {}
 
-    /*Route(Id id, size_t n,
+    /*Route(Id id, unsigned n,
         const util::stupid_array<Id>& stations,
-        const util::stupid_array<size_t>& distance,
+        const util::stupid_array<unsigned>& distance,
         const util::stupid_array<util::Datetime::Datetime>& arriveTime,
         const util::stupid_array<util::Datetime::Datetime>& leaveTime,
         const util::stupid_array<Segment>& segments
@@ -100,7 +101,7 @@ public:
                     throw station_number_not_consistent();
                 }
 
-            for (size_t i = 0; i < n; ++ i)
+            for (unsigned i = 0; i < n; ++ i)
                 stationsMap[stations[i]] = i;
 
             segmentsIntervalManip = new SegmentsInvervalManip(
@@ -108,26 +109,26 @@ public:
             );
         }*/
 
-    Route(Id id, size_t n,
+    Route(unsigned n,
         const util::stupid_array<Information>& informations,
         const util::stupid_array<Segment>& segments
-    ): id(id), n(n), informations(informations), segments(segments) {
+    ): n(n), informations(informations), segments(segments), id("Route") {
             if (n < 2) {
                 throw station_number_too_small();
             }
             if (informations.size() != n || segments.size() != n - 1) {
                     throw station_number_not_consistent();
                 }
-            for (size_t i = 0; i < n; ++ i)
+            for (unsigned i = 0; i < n; ++ i)
                 stationsMap[informations[i].getStationId()] = i;
             segmentsIntervalManip = new SegmentsInvervalManip(
                 segments, n - 1
             );
         }
 
-    /*void rebuild(size_t _n,
+    /*void rebuild(unsigned _n,
         const util::stupid_array<Id>& _stations,
-        const util::stupid_array<size_t>& _distance,
+        const util::stupid_array<unsigned>& _distance,
         const util::stupid_array<util::Datetime::Datetime>& _arriveTime,
         const util::stupid_array<util::Datetime::Datetime>& _leaveTime,
         const util::stupid_array<Segment>& _segments) {
@@ -148,7 +149,7 @@ public:
             segments = _segments;
 
             stationsMap.clear();
-            for (size_t i = 0; i < n; ++ i)
+            for (unsigned i = 0; i < n; ++ i)
                 stationsMap[stations[i]] = i;
 
             segmentsIntervalManip = new SegmentsInvervalManip(
@@ -166,14 +167,14 @@ public:
         return segmentsIntervalManip->query(interval.first, interval.second);
     }
 
-    Information& information(size_t pos) {
+    Information& information(unsigned pos) {
         if (pos >= n) {
             throw index_out_of_range();
         }
         return informations[pos];
     }
 
-    Information information(size_t pos) const {
+    Information information(unsigned pos) const {
         if (pos >= n) {
             throw index_out_of_range();
         }
@@ -189,7 +190,7 @@ public:
         std::cout << "\n----\n" << std::endl;
         std::cout << "id: " << id << std::endl;
         std::cout << "nStation: " << n << std::endl;
-        for (size_t i = 0; i < n; ++ i) {
+        for (unsigned i = 0; i < n; ++ i) {
             std::cout << "\nStation #" << i << ": " << std::endl;
             informations[i].display();
             if (i < n - 1) {
@@ -201,7 +202,7 @@ public:
         std::cout << "\n---\n" << std::endl;
     }
 
-    util::Json toJson() const {
+    util::Json toJson() {
         segmentsIntervalManip->forceApply();
 
         util::Json json("route");
@@ -210,21 +211,32 @@ public:
         json["n"] = n;
         json["informations"].SetArray();
         json["segments"].SetArray();
-        json["stationsMap"].SetObject();
+        // json["stationsMap"].SetObject();
 
         for (unsigned int i = 0; i < n; ++ i) {
             json["informations"].PushBack(informations[i].toJson());
             // std::cout << "!!asdasd!" << std::endl;
             if (i + 1 < n)
                 json["segments"].PushBack(segments[i].toJson());
-            std::cout << "!!asdasd!" << i << std::endl;
+            // std::cout << "!!asdasd!" << i << std::endl;
         }
 
-        for (const auto& item: stationsMap) {
+        /* for (const auto& item: stationsMap) {
             json["stationsMap"][item.first] = item.second;
-        }
+        } */
 
         return json;
+    }
+
+    std::string toString() {
+        segmentsIntervalManip->forceApply();
+        std::stringstream ss;
+        ss << "n " << n << '\n';
+        for (unsigned i = 0; i < n; ++ i)
+            ss << "information " << informations[i].getId() << '\n';
+        for (unsigned i = 0; i < n - 1; ++ i)
+            ss << "segment " << segments[i].getId() << '\n';
+        return ss.str();
     }
 };
 

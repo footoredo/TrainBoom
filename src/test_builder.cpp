@@ -10,5 +10,5 @@ int main(int argc, char **argv) {
 
     Makefile << std::endl
         << "test_" + object_name + ":" << std::endl
-        << "\t$(CXX) -o $(BIN)/" + object_name + "_tests $(CXXFLAGS) $(SOURCE)/" + object_name + "_tests.cpp" << std::endl;
+        << "\t$(CXX) -o $(BIN)/" + object_name + "_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/" + object_name + "_tests.cpp" << std::endl;
 }

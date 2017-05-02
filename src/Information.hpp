@@ -1,6 +1,8 @@
 #ifndef TRAINBOOM_ROUTE_INFORMATION_HPP
 #define TRAINBOOM_ROUTE_INFORMATION_HPP
 
+#include <sstream>
+#include <ctime>
 #include "util.hpp"
 
 namespace TrainBoom {
@@ -11,9 +13,10 @@ namespace TrainBoom {
 class Information {
 private:
     Id stationId;
-    size_t distance;
+    unsigned distance;
     util::Datetime::Datetime arriveTime, leaveTime;
-    size_t flags;
+    unsigned flags;
+    Id id;
 
 public:
     class wrong_information : public exception {
@@ -30,20 +33,21 @@ public:
     		"Your access is not permitted ( Did you access arriveTime of a start station or such ? ) !!!") {}
     };
 
-    Information(Id stationId, size_t distance,
+    Information(Id stationId, unsigned distance,
         const util::Datetime::Datetime& arriveTime,
         const util::Datetime::Datetime& leaveTime,
-        size_t flags = 0
+        unsigned flags = 0
     ) : stationId(stationId), distance(distance),
-        arriveTime(arriveTime), leaveTime(leaveTime), flags(flags) {
+        arriveTime(arriveTime), leaveTime(leaveTime), flags(flags),
+        id("Information") {
             if (flags != 0)
                  throw wrong_information();
     }
 
-    Information(Id stationId, size_t distance,
+    Information(Id stationId, unsigned distance,
         const util::Datetime::Datetime& tmpTime,
-        size_t flags = 0
-    ) : stationId(stationId), distance(distance), flags(flags) {
+        unsigned flags = 0
+    ) : stationId(stationId), distance(distance), flags(flags), id("Information") {
             if (flags == 0)
                 throw wrong_information();
             else if ((flags & isStart) && (flags & isEnd))
@@ -75,10 +79,16 @@ public:
     Information(const util::Json& json)
         : stationId(json["stationId"]),
             distance(json["distance"]),
-            flags(json["flags"]) {
+            flags(json["flags"]), id("Information") {
                 if (!(flags & isStart)) arriveTime = util::Datetime::Datetime::parse(json["arriveTime"]);
                 if (!(flags & isEnd)) leaveTime = util::Datetime::Datetime::parse(json["leaveTime"]);
+                // createTime = std::time(nullptr);
+                // id = generateId("Information", createTime);
             }
+
+    Id getId() const {
+        return id;
+    }
 
     Id getStationId() const {
         return stationId;
@@ -88,11 +98,11 @@ public:
         stationId = _stationId;
     }
 
-    size_t getDistance() const {
+    unsigned getDistance() const {
         return distance;
     }
 
-    void setDistance(size_t _distance) {
+    void setDistance(unsigned _distance) {
         if (flags == isStart)
             throw access_not_permitted();
         distance = _distance;
@@ -159,6 +169,16 @@ public:
         if (!isEndStation()) json["leaveTime"] = leaveTime.format();
         json["flags"] = flags;
         return json;
+    }
+
+    std::string toString() const {
+        std::stringstream ss;
+        ss << "stationId " << stationId << '\n'
+            << "distance " << distance << '\n';
+        if (!isStartStation()) ss << "arriveTime " << arriveTime.format() << '\n';
+        if (!isEndStation()) ss << "leaveTime " << leaveTime.format() << '\n';
+        ss << "flags " << flags << '\n';
+        return ss.str();
     }
 };
 

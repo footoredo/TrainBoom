@@ -13,6 +13,7 @@ typedef util::map<Ticket::Type, int> TicketDelta;
 class Segment {
 private:
     util::map<Ticket::Type, Ticket::Attribute> tickets;
+    Id id;
 
 public:
     class ticket_not_found : public exception {
@@ -81,15 +82,21 @@ public:
         }
     };
 
-    constexpr Segment() noexcept: tickets() {}
-    Segment(const util::map<Ticket::Type, Ticket::Attribute>& tickets) noexcept: tickets(tickets) {}
-    Segment(const Segment& other) noexcept: tickets(other.tickets) {}
-    Segment(const util::Json& json) {
+    Segment() noexcept: tickets(), id("Segment") {}
+    Segment(const util::map<Ticket::Type, Ticket::Attribute>& tickets) noexcept
+        : tickets(tickets), id("Segment") {}
+    Segment(const Segment& other) noexcept: tickets(other.tickets), id("Segment") {}
+    Segment(const util::Json& json): id("Segment") {
         assert(json.getName() == "segment");
         json["tickets"].forEach([this](const std::string& type, util::Json attribute) {
             tickets[type] = Ticket::Attribute(attribute);
         });
     }
+
+    const util::map<Ticket::Type, Ticket::Attribute>& getTickets() const {
+        return tickets;
+    }
+
     /*Segment(const Value& jsonValue) {
         assert(jsonValue.IsObject());
         assert(std::string(jsonValue["name"].GetString()) == "segment");
@@ -122,6 +129,19 @@ public:
         }
 
         return json;
+    }
+
+    std::string toString() const {
+        std::stringstream ss;
+        // ss << "createTime " << createTime << '\n';
+        ss << "n " << tickets.size() << '\n';
+        for (const auto& ticket: tickets)
+            ss << "ticket " << ticket.first << " " << ticket.second.price << " " << ticket.second.number << '\n';
+        return ss.str();
+    }
+
+    Id getId() const {
+        return id;
     }
 };
 

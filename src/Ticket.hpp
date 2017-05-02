@@ -17,12 +17,12 @@ typedef std::string Type;
 class Attribute {
 	public:
 		double price; // 车票单价
-		size_t number;  // 车票余量
+		unsigned number;  // 车票余量
 
 		Attribute(): price(), number() { // 无参构造，类型为空
 		}
 
-		Attribute(double p, size_t n): price(p), number(n) {}
+		Attribute(double p, unsigned n): price(p), number(n) {}
 
 		Attribute(const Attribute &t): price(t.price), number(t.number) {
 			// price = t.price;
@@ -110,7 +110,7 @@ util::pair<Type, Attribute> parseFromJson(const Document& document) {
 	assert(std::string(document["name"].GetString()) == "ticket");
 	return util::make_pair(Type(document["data"]["type"].GetString()),
 		Attribute(double(document["data"]["price"].GetDouble()),
-				size_t(document["data"]["number"].GetUint64())));
+				unsigned(document["data"]["number"].GetUint64())));
 }
 */
 
