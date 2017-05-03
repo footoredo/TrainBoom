@@ -21,7 +21,10 @@ class Information;
 
 class Route {
 private:
+    std::string name;
+
     unsigned n;
+
     util::stupid_array<Information> informations;
 
     util::stupid_array<Segment> segments;
@@ -109,10 +112,10 @@ public:
             );
         }*/
 
-    Route(unsigned n,
+    Route(std::string name, unsigned n,
         const util::stupid_array<Information>& informations,
         const util::stupid_array<Segment>& segments
-    ): n(n), informations(informations), segments(segments), id("Route") {
+    ): name(name), n(n), informations(informations), segments(segments), id("Route") {
             if (n < 2) {
                 throw station_number_too_small();
             }
@@ -208,6 +211,7 @@ public:
         util::Json json("route", id);
 
         json["id"] = id;
+        json["name"] = name;
         json["n"] = n;
         json["informations"].SetArray();
         json["segments"].SetArray();
@@ -231,9 +235,12 @@ public:
     std::string toString() {
         segmentsIntervalManip->forceApply();
         std::stringstream ss;
+        ss << "name " << name << '\n';
         ss << "n " << n << '\n';
+        ss << "informations " << n << '\n';
         for (unsigned i = 0; i < n; ++ i)
             ss << "information " << informations[i].getId() << '\n';
+        ss << "segments " << n - 1 << '\n';
         for (unsigned i = 0; i < n - 1; ++ i)
             ss << "segment " << segments[i].getId() << '\n';
         return ss.str();

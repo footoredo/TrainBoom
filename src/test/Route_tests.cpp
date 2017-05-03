@@ -33,7 +33,7 @@ int main() {
         Information(stations[2], distance[1], arriveTime[1], isEnd)
     }, 3);
 
-    Route route(3, informations, segments);
+    Route route("CRH", 3, informations, segments);
     route.display();
 
     auto q = route.queryTickets(stations[0], stations[2]);
@@ -68,4 +68,6 @@ int main() {
 
     util::Json routeJson = route.toJson();
     std::cout << routeJson.toString() << std::endl;
+
+    std::cout << route.toString() << std::endl;
 }

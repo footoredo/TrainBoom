@@ -16,7 +16,7 @@ namespace TrainBoom {
 class TrainBoom {
 private:
 	util::map <Id, User> users;
-	util::map <Id, Train> trains;
+	util::map <Id, Route> routes;
 	util::map <Id, Station> stations;
 	Id id;
 
@@ -34,10 +34,10 @@ public:
 		if(users.count(id) == 0) throw id_not_exist();
 		return users.at(id);
 	}
-	Train& train(Id id)
+	Route& route(Id id)
 	{
-		if(trains.count(id) == 0) throw id_not_exist();
-		return trains.at(id);
+		if(routes.count(id) == 0) throw id_not_exist();
+		return routes.at(id);
 	}
 	Station& station(Id id)
 	{
@@ -73,6 +73,7 @@ public:
 		}
 		return ss.str();
 	}
+
 };
 
 }   // TrainBoom
