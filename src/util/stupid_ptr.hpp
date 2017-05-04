@@ -251,6 +251,16 @@ private:
 	}
 };
 
+template <class T, class... Args>
+stupid_ptr<T> make_stupid(Args&&... args) {
+    return stupid_ptr<T>(new T(args...));
+}
+
+template <class T>
+stupid_ptr<T> make_stupid() {
+    return stupid_ptr<T>(new T());
+}
+
 }	// util
 
 }	// TrainBoom

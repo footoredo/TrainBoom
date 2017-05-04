@@ -55,6 +55,11 @@ public:
             return value->GetBool();
         }
 
+        template <typename T>
+            T as() const {
+                return T(*this);
+            }
+
         JsonValue& operator=(const size_t& x) {
             value->SetUint64(x);
             return *this;
@@ -71,6 +76,11 @@ public:
         }*/
 
         JsonValue& operator=(const std::string& x) {
+            value->SetString(x, *allocator);
+            return *this;
+        }
+
+        JsonValue& operator=(const char* x) {
             value->SetString(x, *allocator);
             return *this;
         }
@@ -149,6 +159,10 @@ public:
         JsonValue& SetObject() {
             value->SetObject();
             return *this;
+        }
+
+        bool HasMember(const std::string& key) const {
+            return value->HasMember(key);
         }
 
         void forEach(std::function< void (const std::string&, JsonValue) > func) {
@@ -232,6 +246,10 @@ public:
         return data[pos];
     }
 
+    bool HasMember(const std::string& key) const {
+        return data.HasMember(key);
+    }
+
     std::string toString() {
         StringBuffer sb;
         Writer<StringBuffer> writer(sb);
@@ -245,6 +263,7 @@ public:
 using json::Json;
 
 } // util
+
 
 } // TrainBoom
 

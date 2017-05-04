@@ -160,6 +160,10 @@ public:
             );
         }*/
 
+    Id getId() const {
+        return id;
+    }
+
     void modifyTickets(Id startStation, Id endStation, const TicketDelta& deltas) {
         auto interval = getInterval(startStation, endStation);
         segmentsIntervalManip->modify(interval.first, interval.second, deltas);

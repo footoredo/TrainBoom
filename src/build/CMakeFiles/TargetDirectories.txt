@@ -1,0 +1,3 @@
+/home/footoredo/playground/TrainBoom/src/build/CMakeFiles/rebuild_cache.dir
+/home/footoredo/playground/TrainBoom/src/build/CMakeFiles/edit_cache.dir
+/home/footoredo/playground/TrainBoom/src/build/CMakeFiles/API_tests.dir

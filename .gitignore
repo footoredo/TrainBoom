@@ -10,3 +10,5 @@ src/test_bin/*
 
 src/test_builder
 src/test_runner
+
+*.swp

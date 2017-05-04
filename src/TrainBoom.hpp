@@ -48,8 +48,8 @@ public:
 		users.insert(util::make_pair(user.getId(), user));
 		// users[user.getId()] = user;
 	}
-	void addTrain(const Train& train) {
-		trains.insert(util::make_pair(train.getId(), train));
+	void addTrain(const Route& route) {
+		routes.insert(util::make_pair(route.getId(), route));
 		// trains[train.getId()] = train;
 	}
 	void addStation(const Station& station) {
@@ -63,9 +63,9 @@ public:
 		for (const auto& user: users) {
 			ss << "user " << user.first << '\n';
 		}
-		ss << "trains " << trains.size() << '\n';
-		for (const auto& train: trains) {
-			ss << "train " << train.first << '\n';
+		ss << "routes " << routes.size() << '\n';
+		for (const auto& route: routes) {
+			ss << "route " << route.first << '\n';
 		}
 		ss << "stations " << stations.size() << '\n';
 		for (const auto& station: stations) {

@@ -4,6 +4,7 @@
 #include "util.hpp"
 #include <string>
 #include <vector>
+#include <cassert>
 
 namespace TrainBoom {
 
@@ -24,7 +25,19 @@ private:
     Id id;
 
 public:
-	User():gender(Other),isRoot(0), id("User") {}
+    User (): id("User") {}
+	User (const Json& json): id("User") {
+        if (json.HasMember("username")) username = json["username"].as<std::string>();
+//        std::cout << "!" << std::endl;
+ //       assert(!json.HasMember("avatar"));
+        if (json.HasMember("avatar")) avatar = json["avatar"].as<std::string>();
+        if (json.HasMember("realname")) realname = json["realname"].as<std::string>();
+        if (json.HasMember("phone")) phone = json["phone"].as<std::string>();
+        if (json.HasMember("email")) email = json["email"].as<std::string>();
+        if (json.HasMember("motto")) motto = json["motto"].as<std::string>();
+        if (json.HasMember("gender")) gender = Gender(json["gender"].as<int>());
+        if (json.HasMember("isRoot")) isRoot = json["isRoot"].as<bool>();
+    }
 	// User operator=(const User &t):id(t.id),username(t.username),password(t.password),avatar(t.avatar),realname(t.realname),phone(t.phone),email(t.email),motto(t.motto),gender(t.gender),root(t.root),order(t.order) {}
 	Id getId() const {return id;}
 	std::string getUsername() const {return username;}
@@ -73,12 +86,12 @@ public:
 
     util::Json toJson() const {
         util::Json json("user", id);
-        json["username"] = username;
-        json["avatar"] = avatar;
-        json["realname"] = realname;
-        json["phone"] = phone;
-        json["email"] = email;
-        json["motto"] = motto;
+        if (username.size()) json["username"] = username;
+        if (avatar.size()) json["avatar"] = avatar;
+        if (realname.size()) json["realname"] = realname;
+        if (phone.size()) json["phone"] = phone;
+        if (email.size()) json["email"] = email;
+        if (motto.size()) json["motto"] = motto;
         json["gender"] = gender;
         json["isRoot"] = isRoot;
         return json;
