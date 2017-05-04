@@ -87,10 +87,15 @@ namespace TrainBoom {
                     if (query.has("gender")) userJson["gender"] = std::stoi(query.get("gender").get());
                     if (query.has("isRoot")) userJson["isRoot"] = !!std::stoi(query.get("isRoot").get());*/
 //                    std::cout << userJson.toString() << std::endl;
-                    User user(Json("user").Parse(request.body()));
-                    trainBoom->insertUser(user);
+                    try {
+                        User user(Json("user").Parse(request.body()));
+                        trainBoom->insertUser(user);
 
-                    Generic::sendJson(response, user.toJson());
+                        Generic::sendJson(response, user.toJson());
+                    }
+                    catch (const User::information_missing& e) {
+                        Generic::sendJson(response, Generic::error(e.what()));
+                    }
                 }
 
                 void listUsers(const Rest::Request& request, Net::Http::ResponseWriter response) {

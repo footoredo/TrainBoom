@@ -13,23 +13,41 @@ enum Gender{Man=0, Woman=1, Other=2};
 class User {
     //friend class Password;//TODO
 
-    typedef std::string Password;
     typedef std::string Order;
 
 private:
-    Password password;
+    std::string password; // SHA-1 checksum (:password|:salt)
+    std::string salt; // 8-bit random string
     std::string username,avatar,realname,phone,email,motto;
     Gender gender;//Man, Woman, Other
     bool isRoot;
-    std::vector<Id> order;//TODO
+    std::vector<std::string> order;//TODO
     Id id;
 
 public:
+    class information_missing : public exception {
+        public:
+            information_missing(const std::string& info): 
+                exception (
+                        "information_missing",
+                        "Your " + info + " is missing!!!") {}
+    };
     User (): id("User") {}
 	User (const Json& json): gender(Other), isRoot(false), id("User") {
 //        std::cout << "!" << std::endl;
 //        std::cout << json.toString() << std::endl;
+        if (json.HasMember("password")) password = json["password"].as<std::string>();
+        else {
+            throw information_missing("password");
+        }
+        if (json.HasMember("salt")) salt = json["salt"].as<std::string>();
+        else {
+            throw information_missing("salt");
+        }
         if (json.HasMember("username")) username = json["username"].as<std::string>();
+        else {
+            throw information_missing("username");
+        }
 //        std::cout << username << std::endl;
 //        assert(!json.HasMember("avatar"));
         if (json.HasMember("avatar")) avatar = json["avatar"].as<std::string>();
@@ -56,7 +74,7 @@ public:
 	std::string getUsername() const {return username;}
 	// Password getPassword() {return password;}//eererewre
     bool verifyPassword(const std::string& _password) const {
-        return true;
+        return _password == password;
     }
 	std::string getAvatar() const {return avatar;}
 	std::string getRealname() const {return realname;}
@@ -65,8 +83,8 @@ public:
 	std::string getMotto() const {return motto;}
 	Gender getGender() const {return gender;}
 	bool getIsRoot() const {return isRoot;}
-	std::vector<Id> getOrder() const {return order;}
-	void modifyPassword(Password t) {password=t;}
+	std::vector<std::string> getOrder() const {return order;}
+/*	void modifyPassword(Password t) {password=t;}
 	void modifyUsername(std::string t) {username=t;}
 	void modifyAvatar(std::string t) {avatar=t;}
 	void modifyRealname(std::string t) {realname=t;}
@@ -74,8 +92,8 @@ public:
 	void modifyEmail(std::string t) {email=t;}
 	void modifyMotto(std::string t) {motto=t;}
 	void modifyGender(Gender t) {gender=t;}
-	void modifyIsRoot(bool t) {isRoot=t;}
-    void addOrder(const Id& orderId) {
+	void modifyIsRoot(bool t) {isRoot=t;}*/
+    void addOrder(const std::string& orderId) {
         order.push_back(orderId);
     }
 	/*void bookTicket(Train train, Station from, Station to, size_t lowPrice, size_t highPrice, int num) {}
@@ -99,7 +117,8 @@ public:
 
     util::Json toJson() const {
         util::Json json("user", id);
-        if (username.size()) json["username"] = username;
+        json["username"] = username;
+        json["salt"] = salt;
         if (avatar.size()) json["avatar"] = avatar;
         if (realname.size()) json["realname"] = realname;
         if (phone.size()) json["phone"] = phone;
