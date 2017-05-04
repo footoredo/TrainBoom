@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++11   CMakeFiles/API_tests.dir/test/API_tests.cpp.o CMakeFiles/API_tests.dir/sha1.cpp.o  -o API_tests -rdynamic /usr/local/lib/libnet.so -Wl,-rpath,/usr/local/lib 

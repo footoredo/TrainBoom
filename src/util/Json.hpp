@@ -226,6 +226,15 @@ public:
         data = JsonValue(allocator, &document["data"]);
     }
 
+    Json& Parse(const std::string& content) {
+//        std::cout << content << std::endl;
+//        document["data"].Swap(Document().Parse(content));
+//        document["data"] = Document().Parse(content);
+        document["data"].CopyFrom(Document().Parse(content), *allocator);
+//        std::cout << this->toString() << std::endl;
+        return *this;
+    }
+
     const std::string& getType() const {
         return type;
     }
@@ -250,7 +259,15 @@ public:
         return data.HasMember(key);
     }
 
-    std::string toString() {
+    void SetArray() {
+        data.SetArray();
+    }
+
+    void SetObject() {
+        data.SetObject();
+    }
+
+    std::string toString() const {
         StringBuffer sb;
         Writer<StringBuffer> writer(sb);
         document.Accept(writer);
@@ -262,8 +279,10 @@ public:
 
 using json::Json;
 
+
 } // util
 
+using util::json::Json;
 
 } // TrainBoom
 

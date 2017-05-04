@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++11   CMakeFiles/stupid_ptr_tests.dir/test/stupid_ptr_tests.cpp.o CMakeFiles/stupid_ptr_tests.dir/sha1.cpp.o  -o stupid_ptr_tests -rdynamic 

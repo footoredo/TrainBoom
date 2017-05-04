@@ -4,7 +4,8 @@ using namespace TrainBoom;
 
 int main() {
     util::Json json("test");
-    std::cout << json.getName() << std::endl;
+    json.Parse("{\"username\":\"footoredo\",\"1\":[1,2,3]}");
+    std::cout << json.getType() << std::endl;
 
     json["eat"] = "fish";
     json["see"] = 5.5;

@@ -16,4 +16,8 @@ int main() {
 
     std::cout << user.toJson().toString() << std::endl;
     std::cout << user.getOrderJson().toString() << std::endl;
+
+    info["isRoot"] = false;
+    user.update(info);
+    std::cout << user.toJson().toString() << std::endl;
 }

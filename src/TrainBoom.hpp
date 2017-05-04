@@ -15,9 +15,9 @@ namespace TrainBoom {
 
 class TrainBoom {
 private:
-	util::map <Id, User> users;
-	util::map <Id, Route> routes;
-	util::map <Id, Station> stations;
+	util::map <std::string, User> users;
+	util::map <std::string, Route> routes;
+	util::map <std::string, Station> stations;
 	Id id;
 
 public:
@@ -29,33 +29,45 @@ public:
     };
 	TrainBoom(): id("TrainBoom") {}
 
-	User& user(Id id)
+    std::string getId() const {
+        return id;
+    }
+
+	User& user(std::string id)
 	{
+//        std::cout << id << " " << users.count(id) << std::endl;
 		if(users.count(id) == 0) throw id_not_exist();
 		return users.at(id);
 	}
-	Route& route(Id id)
+	Route& route(std::string id)
 	{
 		if(routes.count(id) == 0) throw id_not_exist();
 		return routes.at(id);
 	}
-	Station& station(Id id)
+	Station& station(std::string id)
 	{
 		if(stations.count(id) == 0) throw id_not_exist();
 		return stations.at(id);
 	}
-	void addUser(const User& user) {
+	void insertUser(const User& user) {
 		users.insert(util::make_pair(user.getId(), user));
 		// users[user.getId()] = user;
 	}
-	void addTrain(const Route& route) {
+	void insertTrain(const Route& route) {
 		routes.insert(util::make_pair(route.getId(), route));
 		// trains[train.getId()] = train;
 	}
-	void addStation(const Station& station) {
+	void insertStation(const Station& station) {
 		stations.insert(util::make_pair(station.getId(), station));
 		// stations[station.getId()] = station;
 	}
+
+    util::vector<std::string> listUsers() {
+        util::vector<std::string> usersList;
+        for (const auto& item: users)
+            usersList.push_back(item.first);
+        return usersList;
+    }
 
 	std::string toString() {
 		std::stringstream ss;

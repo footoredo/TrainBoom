@@ -26,10 +26,12 @@ private:
 
 public:
     User (): id("User") {}
-	User (const Json& json): id("User") {
-        if (json.HasMember("username")) username = json["username"].as<std::string>();
+	User (const Json& json): gender(Other), isRoot(false), id("User") {
 //        std::cout << "!" << std::endl;
- //       assert(!json.HasMember("avatar"));
+//        std::cout << json.toString() << std::endl;
+        if (json.HasMember("username")) username = json["username"].as<std::string>();
+//        std::cout << username << std::endl;
+//        assert(!json.HasMember("avatar"));
         if (json.HasMember("avatar")) avatar = json["avatar"].as<std::string>();
         if (json.HasMember("realname")) realname = json["realname"].as<std::string>();
         if (json.HasMember("phone")) phone = json["phone"].as<std::string>();
@@ -39,7 +41,18 @@ public:
         if (json.HasMember("isRoot")) isRoot = json["isRoot"].as<bool>();
     }
 	// User operator=(const User &t):id(t.id),username(t.username),password(t.password),avatar(t.avatar),realname(t.realname),phone(t.phone),email(t.email),motto(t.motto),gender(t.gender),root(t.root),order(t.order) {}
-	Id getId() const {return id;}
+    std::string getId() const {return id;}
+	void update(const Json& json) {
+        if (json.HasMember("username")) username = json["username"].as<std::string>();
+        if (json.HasMember("avatar")) avatar = json["avatar"].as<std::string>();
+        if (json.HasMember("realname")) realname = json["realname"].as<std::string>();
+        if (json.HasMember("phone")) phone = json["phone"].as<std::string>();
+        if (json.HasMember("email")) email = json["email"].as<std::string>();
+        if (json.HasMember("motto")) motto = json["motto"].as<std::string>();
+        if (json.HasMember("gender")) gender = Gender(json["gender"].as<int>());
+        if (json.HasMember("isRoot")) isRoot = json["isRoot"].as<bool>();
+    }
+
 	std::string getUsername() const {return username;}
 	// Password getPassword() {return password;}//eererewre
     bool verifyPassword(const std::string& _password) const {

@@ -126,8 +126,4 @@ namespace util {
 #include "util/stupid_ptr.hpp"
 #include "util/Json.hpp"
 
-namespace TrainBoom {
-    using util::Json;
-}
-
 #endif

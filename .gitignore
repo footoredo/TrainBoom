@@ -12,3 +12,5 @@ src/test_builder
 src/test_runner
 
 *.swp
+
+src/build/*
