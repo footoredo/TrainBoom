@@ -25,7 +25,7 @@ template<
     class MergerM
 > class IntervalManip {
 private:
-    stupid_array<T> data;
+    stupid_array<stupid_ptr<T>> data;
     size_t n;
     struct Node {
         T ans;
@@ -73,7 +73,7 @@ private:
             u->update();
         }
         else {
-            u->ans = data[l];
+            u->ans = *(data[l]);
             // std::cout << l << " " << data[l] << " " << u->ans << std::endl;
         }
         return u;
@@ -126,15 +126,15 @@ private:
         }
         else {
             // std::cout << u->l << " " << u->ans << std::endl;
-            data[u->l] = u->ans;
+            *(data[u->l]) = u->ans;
         }
     }
 
 public:
-    IntervalManip(const stupid_array<T>& data, size_t n):
+    IntervalManip(const stupid_array<stupid_ptr<T>>& data, size_t n):
         data(data), n(n), root(build(0, n - 1)) {}
 
-    void rebuild(const stupid_array<T>& _data, size_t _n) {
+    void rebuild(const stupid_array<stupid_ptr<T>>& _data, size_t _n) {
         data = _data;
         n = _n;
         root = build(0, n - 1);

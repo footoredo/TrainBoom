@@ -27,6 +27,10 @@ public:
         JsonValue(Document::AllocatorType* allocator,
             Value *value): allocator(allocator), value(value) {}
 
+        const Value& getValue() const {
+            return *value;
+        }
+
         operator size_t() const {
             return value->GetUint64();
         }
@@ -161,6 +165,10 @@ public:
             return *this;
         }
 
+        size_t Size() const {
+            return value->Size();
+        }
+
         bool HasMember(const std::string& key) const {
             return value->HasMember(key);
         }
@@ -226,13 +234,25 @@ public:
         );
     }
 
-    Json(const JsonValue& jv) {
+    Json(const Json& jv) {
         allocator = &(document.GetAllocator());
-        document.CopyFrom(*jv.value, *allocator);
-        type = document["type"].GetString();
+        document.CopyFrom(jv.getDocument(), *allocator);
+        if (document.HasMember("type"))
+            type = document["type"].GetString();
         if (document.HasMember("id"))
             id = document["id"].GetString();
         data = JsonValue(allocator, &document["data"]);
+    }
+
+    Json(const JsonValue& jv) {
+        allocator = &(document.GetAllocator());
+        document.SetObject();
+        document.AddMember("data", Value(kObjectType), *allocator);
+        data = JsonValue(
+            allocator,
+            &(document["data"])
+        );
+        document["data"].CopyFrom(jv.getValue(), *allocator);
     }
 
     Json& Parse(const std::string& content) {
@@ -246,6 +266,10 @@ public:
 
     const std::string& getType() const {
         return type;
+    }
+
+    const Document& getDocument() const {
+        return document;
     }
 
     JsonValue operator[](const std::string& key) {

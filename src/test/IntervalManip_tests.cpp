@@ -30,36 +30,55 @@ struct MergerM {
 };
 
 int main() {
-    stupid_array<int> a(new int[5], 5);
-    for (int i = 0; i < 5; ++ i) a[i] = i;
+    stupid_array<stupid_ptr<int>> a(new stupid_ptr<int>[5], 5);
+    for (int i = 0; i < 5; ++ i) a[i] = make_stupid<int>(i);
 
     IntervalManip<int, int, ModifierAdd, MergerTAdd, MergerM>
         intervalManipAdd(a, 5);
 
     intervalManipAdd.forceApply();
-    for (int i = 0; i < 5; ++ i)
-        std::cout << a[i] << " ";
-    std::cout << std::endl;
+    for (int i = 0; i < 5; ++ i) {
+        assert(*(a[i]) == i);
+    }
+    std::cout << "Initialization test passed!" << std::endl;
     
     try {
-        std::cout << intervalManipAdd.query(0, 5) << std::endl;;
+        intervalManipAdd.query(0, 5);
+        std::cout << "throw test for query out of range failed!" << std::endl;
+        assert(false);
     } catch (const index_out_of_range& e) {
-        std::cout << "ok!" << std::endl;
+        std::cout << "throw test for query out of range passed!" << std::endl;
     }
 
     try {
         intervalManipAdd.modify(0, 5, 3);
+        std::cout << "throw test for modify out of range failed!" << std::endl;
+        assert(false);
     } catch (const index_out_of_range& e) {
-        std::cout << "ok!" << std::endl;
+        std::cout << "throw test for modify out of range passed!" << std::endl;
     }
 
-    std::cout << "querying [2, 3]: " << intervalManipAdd.query(2, 3) << std::endl;  // Should be 5
-    std::cout << "querying [0, 4]: " << intervalManipAdd.query(0, 4) << std::endl;  // Should be 10
+    // std::cout << "querying [2, 3]: " << intervalManipAdd.query(2, 3) << std::endl;  // Should be 5
+    assert(intervalManipAdd.query(2, 3) == 5);
+    // std::cout << "querying [0, 4]: " << intervalManipAdd.query(0, 4) << std::endl;  // Should be 10
+    assert(intervalManipAdd.query(0, 4) == 10);
+    std::cout << "query test passed!" << std::endl;
 
-    std::cout << "now [0, 2] add -3 -> [-3, -2, -1, 3, 4]" << std::endl;
+    // std::cout << "now [0, 2] add -3 -> [-3, -2, -1, 3, 4]" << std::endl;
     intervalManipAdd.modify(0, 2, -3);
-    std::cout << "querying [2, 3]: " << intervalManipAdd.query(2, 3) << std::endl;  // Should be 2
-    std::cout << "querying [0, 4]: " << intervalManipAdd.query(0, 4) << std::endl;  // Should be 1
+    // std::cout << "querying [2, 3]: " << intervalManipAdd.query(2, 3) << std::endl;  // Should be 2
+    assert(intervalManipAdd.query(2, 3) == 2);
+    // std::cout << "querying [0, 4]: " << intervalManipAdd.query(0, 4) << std::endl;  // Should be 1
+    assert(intervalManipAdd.query(0, 4) == 1);
+    std::cout << "query after modify test passed!" << std::endl;
 
-
+    intervalManipAdd.forceApply();
+    assert(*(a[0]) == -3);
+    assert(*(a[1]) == -2);
+    assert(*(a[2]) == -1);
+    assert(*(a[3]) == 3);
+    assert(*(a[4]) == 4);
+    std::cout << "modify test passed!" << std::endl;
+    
+    std::cout << "all test passed!" << std::endl;
 }

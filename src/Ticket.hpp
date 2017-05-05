@@ -30,9 +30,9 @@ class Attribute {
 			// type = t.type;
 		}
 
-		Attribute(const util::Json& json): price(json["price"]),
-		 	number(json["number"]) {
-				assert(json.getType() == "attribute");
+		Attribute(const util::Json& json): price(json["price"].as<double>()),
+		 	number(json.HasMember("number") ? json["number"].as<unsigned>() : 200) {
+//				assert(json.getType() == "attribute");
 		}
 
 		~Attribute(){}

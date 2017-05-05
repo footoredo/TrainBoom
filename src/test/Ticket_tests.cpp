@@ -32,6 +32,8 @@ int main(){
 
 	Ticket::Attribute t6(json);
 	std::cout << t6 << std::endl;
+    
+    std::cout << Ticket::Attribute(Json("attribute").Parse("{\"price\":123.5}")) << std::endl;
 
 	return 0;
 }

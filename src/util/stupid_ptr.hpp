@@ -263,6 +263,10 @@ stupid_ptr<T> make_stupid() {
 
 }	// util
 
+using util::stupid_ptr;
+using util::stupid_array;
+using util::make_stupid;
+
 }	// TrainBoom
 
 #endif

@@ -87,7 +87,7 @@ public:
         : tickets(tickets), id("Segment") {}
     Segment(const Segment& other) noexcept: tickets(other.tickets), id("Segment") {}
     Segment(const util::Json& json): id("Segment") {
-        assert(json.getType() == "segment");
+//        assert(json.getType() == "segment");
         json["tickets"].forEach([this](const std::string& type, util::Json attribute) {
             tickets[type] = Ticket::Attribute(attribute);
         });

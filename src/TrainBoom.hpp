@@ -53,7 +53,7 @@ public:
 		users.insert(util::make_pair(user.getId(), user));
 		// users[user.getId()] = user;
 	}
-	void insertTrain(const Route& route) {
+	void insertRoute(const Route& route) {
 		routes.insert(util::make_pair(route.getId(), route));
 		// trains[train.getId()] = train;
 	}

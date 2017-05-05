@@ -83,6 +83,8 @@ namespace TrainBoom {
                     Routes::Post(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::addRouteStation, this));
                     Routes::Delete(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::delRouteStation, this));
                     Routes::Get(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::queryRouteStation, this));
+
+                    Routes::Post(router, "/routes", Routes::bind(&StatsEndpoint::insertRoute, this));
                 }
 
                 void _shutdown(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -220,6 +222,18 @@ namespace TrainBoom {
                     }
                     catch (const TrainBoom::TrainBoom::id_not_exist& e) {
                         Generic::sendJson(response, Generic::error("StationId not found!"));
+                    }
+                }
+
+                void insertRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    try {
+                        Route route(Json("route").Parse(request.body()));
+                        trainBoom->insertRoute(route);
+
+                        Generic::sendJson(response, route.toJson());
+                    }
+                    catch (const exception& e) {
+                        Generic::sendJson(response, Generic::error(e.what()));
                     }
                 }
 

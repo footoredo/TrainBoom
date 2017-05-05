@@ -1,0 +1,35 @@
+{
+    "name": "G105",
+    "n":2,
+    "informations": [
+        {
+            "stationId": "Chanzhou Bei",
+            "distance": 1,
+            "flags": 1,
+            "leaveTime": "2017/5/5 12:23"
+        },
+        {
+            "stationId": "Shanghai Hongqiao",
+            "distance": 2,
+            "flags": 2,
+            "arriveTime": "2017/5/5 13:15"
+        }
+    ],
+    "segments": [
+        {
+            "tickets": {
+                "first class": {
+                    "price": 129.5,
+                    "number": 17
+                },
+                "second class": {
+                    "price": 74.5
+                },
+                "bussiness class": {
+                    "price": 239.5,
+                    "number": 5
+                }
+            }
+        }
+    ]
+}

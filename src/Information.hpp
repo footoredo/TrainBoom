@@ -12,7 +12,7 @@ namespace TrainBoom {
 
 class Information {
 private:
-    Id stationId;
+    std::string stationId;
     unsigned distance;
     util::Datetime::Datetime arriveTime, leaveTime;
     unsigned flags;
@@ -86,11 +86,11 @@ public:
                 // id = generateId("Information", createTime);
             }
 
-    Id getId() const {
+    std::string getId() const {
         return id;
     }
 
-    Id getStationId() const {
+    std::string getStationId() const {
         return stationId;
     }
 

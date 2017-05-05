@@ -25,9 +25,9 @@ private:
 
     unsigned n;
 
-    util::stupid_array<Information> informations;
+    util::stupid_array<util::stupid_ptr<Information>> informations;
 
-    util::stupid_array<Segment> segments;
+    util::stupid_array<util::stupid_ptr<Segment>> segments;
 
     util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip;
     util::map<std::string, unsigned> stationsMap;
@@ -55,6 +55,13 @@ public:
     	station_number_too_small() : exception(
     		"station_number_too_small",
     		"Your station number is too small!!!") {}
+    };
+
+    class information_missing : public exception {
+    public:
+    	information_missing(const std::string& info) : exception(
+    		"information_missin",
+    		"Your " + info + " is missing!!!") {}
     };
 
     class station_number_not_consistent : public exception {
@@ -113,8 +120,8 @@ public:
         }*/
 
     Route(std::string name, unsigned n,
-        const util::stupid_array<Information>& informations,
-        const util::stupid_array<Segment>& segments
+        const util::stupid_array<util::stupid_ptr<Information>>& informations,
+        const util::stupid_array<util::stupid_ptr<Segment>>& segments
     ): name(name), n(n), informations(informations), segments(segments), id("Route") {
             if (n < 2) {
                 throw station_number_too_small();
@@ -123,11 +130,40 @@ public:
                     throw station_number_not_consistent();
                 }
             for (unsigned i = 0; i < n; ++ i)
-                stationsMap[informations[i].getStationId()] = i;
+                stationsMap[informations[i]->getStationId()] = i;
             segmentsIntervalManip = new SegmentsInvervalManip(
                 segments, n - 1
             );
         }
+
+    Route(const Json& json): id("Route") {
+        if (!json.HasMember("n")) throw information_missing("n");
+        if (!json.HasMember("name")) throw information_missing("name");
+        if (!json.HasMember("informations")) throw information_missing("informations");
+        if (!json.HasMember("segments")) throw information_missing("segments");
+
+        n = json["n"].as<unsigned>();
+        if (n < 2) {
+            throw station_number_too_small();
+        }
+        name = json["name"].as<std::string>();
+        if (json["informations"].Size() != n || json["segments"].Size() != n - 1) {
+            throw station_number_not_consistent();
+        }
+        informations = stupid_array<stupid_ptr<Information>>(new stupid_ptr<Information>[n], n);
+        segments = stupid_array<stupid_ptr<Segment>>(new stupid_ptr<Segment>[n - 1], n - 1);
+        for (unsigned i = 0; i < n; ++ i) {
+            informations[i] = make_stupid<Information>(json["informations"][i]);
+            if (i < n - 1) {
+                segments[i] = make_stupid<Segment>(json["segments"][i]);
+            }
+        }
+
+        for (unsigned i = 0; i < n; ++ i)
+            stationsMap[informations[i]->getStationId()] = i;
+
+        segmentsIntervalManip = new SegmentsInvervalManip(segments, n - 1);
+    }
 
     /*void rebuild(unsigned _n,
         const util::stupid_array<Id>& _stations,
@@ -178,18 +214,18 @@ public:
         if (pos >= n) {
             throw index_out_of_range();
         }
-        return informations[pos];
+        return *(informations[pos]);
     }
 
     Information information(unsigned pos) const {
         if (pos >= n) {
             throw index_out_of_range();
         }
-        return informations[pos];
+        return *(informations[pos]);
     }
 
     util::Datetime::Datetime getRunningDay() const noexcept {
-        return informations[0].getLeaveTime().clearTime();
+        return informations[0]->getLeaveTime().clearTime();
     }
 
     void display() {
@@ -199,10 +235,10 @@ public:
         std::cout << "nStation: " << n << std::endl;
         for (unsigned i = 0; i < n; ++ i) {
             std::cout << "\nStation #" << i << ": " << std::endl;
-            informations[i].display();
+            informations[i]->display();
             if (i < n - 1) {
                 std::cout << "\tTicket information: \n" << std::endl;
-                segments[i].display();
+                segments[i]->display();
                 // std::cout << "#####################" << std::endl;
             }
         }
@@ -214,7 +250,6 @@ public:
 
         util::Json json("route", id);
 
-        json["id"] = id;
         json["name"] = name;
         json["n"] = n;
         json["informations"].SetArray();
@@ -222,10 +257,10 @@ public:
         // json["stationsMap"].SetObject();
 
         for (unsigned int i = 0; i < n; ++ i) {
-            json["informations"].PushBack(informations[i].toJson());
+            json["informations"].PushBack(informations[i]->toJson());
             // std::cout << "!!asdasd!" << std::endl;
             if (i + 1 < n)
-                json["segments"].PushBack(segments[i].toJson());
+                json["segments"].PushBack(segments[i]->toJson());
             // std::cout << "!!asdasd!" << i << std::endl;
         }
 
@@ -243,10 +278,10 @@ public:
         ss << "n " << n << '\n';
         ss << "informations " << n << '\n';
         for (unsigned i = 0; i < n; ++ i)
-            ss << "information " << informations[i].getId() << '\n';
+            ss << "information " << informations[i]->getId() << '\n';
         ss << "segments " << n - 1 << '\n';
         for (unsigned i = 0; i < n - 1; ++ i)
-            ss << "segment " << segments[i].getId() << '\n';
+            ss << "segment " << segments[i]->getId() << '\n';
         return ss.str();
     }
 };
