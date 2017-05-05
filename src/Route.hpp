@@ -200,6 +200,14 @@ public:
         return id;
     }
 
+    std::string getName() const {
+        return name;
+    }
+
+    unsigned size() const {
+        return n;
+    }
+
     void modifyTickets(const std::string& startStation, const std::string& endStation, const TicketDelta& deltas) {
         auto interval = getInterval(startStation, endStation);
         segmentsIntervalManip->modify(interval.first, interval.second, deltas);

@@ -76,6 +76,35 @@ public:
         return stationsList;
     }
 
+    util::vector<std::string> listRoutes() {
+        util::vector<std::string> routesList;
+        for (const auto& item: routes)
+            routesList.push_back(item.first);
+        return routesList;
+    }
+
+    void startRoute(const Route& route) {
+        unsigned n = route.size();
+        for (unsigned i = 0; i < n; ++ i)
+            for (unsigned j = 0; j < i; ++ j) {
+                station(route.information(j).getStationId()).
+                    add(route.information(i).getStationId(),
+                            route.information(j).getDate(),
+                            route.getId());
+            }
+    }
+
+    void stopRoute(const Route& route) {
+        unsigned n = route.size();
+        for (unsigned i = 0; i < n; ++ i)
+            for (unsigned j = 0; j < i; ++ j) {
+                station(route.information(j).getStationId()).
+                    del(route.information(i).getStationId(),
+                            route.information(j).getDate(),
+                            route.getId());
+            }
+    }
+
 	std::string toString() {
 		std::stringstream ss;
 		ss << "users " << users.size() << '\n';

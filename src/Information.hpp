@@ -161,6 +161,11 @@ public:
         return document;
     }*/
 
+    Datetime getDate() const {
+        if (isStartStation()) return leaveTime.clearTime();
+        else return arriveTime.clearTime();
+    }
+
     util::Json toJson() const {
         util::Json json("information", id);
         json["stationId"] = stationId;

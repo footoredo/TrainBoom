@@ -80,11 +80,16 @@ namespace TrainBoom {
                     Routes::Get(router, "/stations", Routes::bind(&StatsEndpoint::listStations, this));
                     Routes::Get(router, "/stations/:stationId", Routes::bind(&StatsEndpoint::getStation, this));
                     Routes::Put(router, "/stations/:stationId", Routes::bind(&StatsEndpoint::updateStation, this));
-                    Routes::Post(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::addRouteStation, this));
-                    Routes::Delete(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::delRouteStation, this));
+                    // Routes::Post(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::addRouteStation, this));
+                    // Routes::Delete(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::delRouteStation, this));
                     Routes::Get(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::queryRouteStation, this));
 
                     Routes::Post(router, "/routes", Routes::bind(&StatsEndpoint::insertRoute, this));
+                    Routes::Get(router, "/routes", Routes::bind(&StatsEndpoint::listRoutes, this));
+                    Routes::Get(router, "/routes/:routeId", Routes::bind(&StatsEndpoint::getRoute, this));
+//                    Routes::Put(router,)
+                    Routes::Get(router, "/routes/:routeId/start", Routes::bind(&StatsEndpoint::startRoute, this));
+                    Routes::Get(router, "/routes/:routeId/stop", Routes::bind(&StatsEndpoint::stopRoute, this));
                 }
 
                 void _shutdown(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -234,6 +239,55 @@ namespace TrainBoom {
                     }
                     catch (const exception& e) {
                         Generic::sendJson(response, Generic::error(e.what()));
+                    }
+                }
+
+                void listRoutes(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    Generic::sendJson(response, Generic::vec2Json(trainBoom->listRoutes(), "route"));
+                }
+
+                void getRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    std::string routeId = request.param(":routeId").as<std::string>();
+                    try {
+                        Route& route = trainBoom->route(routeId);
+                        Generic::sendJson(response, route.toJson());
+                    }
+                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
+                        Generic::sendJson(response, Generic::error("RouteId not found!"));
+                    }
+                }
+
+                void startRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    std::string routeId = request.param(":routeId").as<std::string>();
+                    try {
+                        const Route& route = trainBoom->route(routeId);
+                        try {
+                            trainBoom->startRoute(route);
+                            Generic::sendJson(response, Generic::success("Start Route succeeded!"));
+                        }
+                        catch (const exception& e) {
+                            Generic::sendJson(response, Generic::error(e.what()));
+                        }
+                    }
+                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
+                        Generic::sendJson(response, Generic::error("RouteId not found!"));
+                    }
+                }
+
+                void stopRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    std::string routeId = request.param(":routeId").as<std::string>();
+                    try {
+                        const Route& route = trainBoom->route(routeId);
+                        try {
+                            trainBoom->stopRoute(route);
+                            Generic::sendJson(response, Generic::success("Start Route succeeded!"));
+                        }
+                        catch (const exception& e) {
+                            Generic::sendJson(response, Generic::error(e.what()));
+                        }
+                    }
+                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
+                        Generic::sendJson(response, Generic::error("RouteId not found!"));
                     }
                 }
 
