@@ -51,3 +51,5 @@ test_TrainBoom:
 
 test_BinaryFile:
 	$(CXX) -o $(BIN)/BinaryFile_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/BinaryFile_tests.cpp
+test_Order:
+	$(CXX) -o $(BIN)/Order_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/Order_tests.cpp

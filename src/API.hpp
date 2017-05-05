@@ -31,12 +31,20 @@ namespace TrainBoom {
                 return succ;
             }
 
+            Json vec2Json(const util::vector<std::string>& vec, const std::string type) {
+                Json json(type + "sList");
+                json[type + "s"].SetArray();
+                for (const std::string& item: vec)
+                    json[type + "s"].PushBack(item);
+                return json;
+            }
+
             template <class T>
             Json vec2Json(const util::vector<T>& vec, const std::string type) {
                 Json json(type + "sList");
                 json[type + "s"].SetArray();
                 for (const T& item: vec)
-                    json[type + "s"].PushBack(item);
+                    json[type + "s"].PushBack(item.toJson());
                 return json;
             }
         }
@@ -90,6 +98,8 @@ namespace TrainBoom {
 //                    Routes::Put(router,)
                     Routes::Get(router, "/routes/:routeId/start", Routes::bind(&StatsEndpoint::startRoute, this));
                     Routes::Get(router, "/routes/:routeId/stop", Routes::bind(&StatsEndpoint::stopRoute, this));
+                    Routes::Get(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
+                    Routes::Put(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
                 }
 
                 void _shutdown(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -288,6 +298,46 @@ namespace TrainBoom {
                     }
                     catch (const TrainBoom::TrainBoom::id_not_exist& e) {
                         Generic::sendJson(response, Generic::error("RouteId not found!"));
+                    }
+                }
+
+                void queryTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    std::string routeId = request.param(":routeId").as<std::string>();
+                    Json json; json.Parse(request.body());
+                    try {
+                        Route& route = trainBoom->route(routeId);
+                        try {
+                            const Segment& segment = route.queryTickets(json["startStation"].as<std::string>(), json["endStation"].as<std::string>());
+                            Generic::sendJson(response, segment.toJson());
+                        }
+                        catch (const exception& e) {
+                            Generic::sendJson(response, Generic::error(e.what()));
+                        }
+                    }
+                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
+                        Generic::sendJson(response, Generic::error("RouteId not found!"));
+                    }
+                }
+
+                void bookTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    try {
+                        Json json; json.Parse(request.body());
+                        std::string routeId = request.param(":routeId").as<std::string>();
+                        Route& route = trainBoom->route(routeId);
+                        std::string userId = json["userId"].as<std::string>();
+                        User& user = trainBoom->user(userId);
+
+                        Order order = route.bookTickets(
+                                json["startStationId"].as<std::string>(),
+                                json["endStationId"].as<std::string>(),
+                                json["ticketType"].as<std::string>(),
+                                json["ticketNumber"].as<unsigned>()
+                                );
+                        user.addOrder(order);
+                        Generic::sendJson(response, order.toJson());
+                    }
+                    catch (const exception& e) {
+                        Generic::sendJson(response, Generic::error(e.what()));
                     }
                 }
 

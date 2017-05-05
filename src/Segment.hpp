@@ -97,6 +97,12 @@ public:
         return tickets;
     }
 
+    Ticket::Attribute ticket(const Ticket::Type& ticketType) const {
+        if (!tickets.count(ticketType))
+            throw ticket_not_found();
+        return tickets.at(ticketType);
+    }
+
     /*Segment(const Value& jsonValue) {
         assert(jsonValue.IsObject());
         assert(std::string(jsonValue["name"].GetString()) == "segment");

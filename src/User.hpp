@@ -13,15 +13,13 @@ enum Gender{Man=0, Woman=1, Other=2};
 class User {
     //friend class Password;//TODO
 
-    typedef std::string Order;
-
 private:
     std::string password; // SHA-1 checksum (:password|:salt)
     std::string salt; // 8-bit random string
     std::string username,avatar,realname,phone,email,motto;
     Gender gender;//Man, Woman, Other
     bool isRoot;
-    std::vector<std::string> order;//TODO
+    std::vector<Order> orders;//TODO
     Id id;
 
 public:
@@ -83,7 +81,7 @@ public:
 	std::string getMotto() const {return motto;}
 	Gender getGender() const {return gender;}
 	bool getIsRoot() const {return isRoot;}
-	std::vector<std::string> getOrder() const {return order;}
+	std::vector<Order> getOrders() const {return orders;}
 /*	void modifyPassword(Password t) {password=t;}
 	void modifyUsername(std::string t) {username=t;}
 	void modifyAvatar(std::string t) {avatar=t;}
@@ -93,8 +91,8 @@ public:
 	void modifyMotto(std::string t) {motto=t;}
 	void modifyGender(Gender t) {gender=t;}
 	void modifyIsRoot(bool t) {isRoot=t;}*/
-    void addOrder(const std::string& orderId) {
-        order.push_back(orderId);
+    void addOrder(Order order) {
+        orders.push_back(order);
     }
 	/*void bookTicket(Train train, Station from, Station to, size_t lowPrice, size_t highPrice, int num) {}
 	void refundTicket(Train train, Station from, Station to, size_t lowPrice, size_t highPrice, int num) {}
@@ -128,7 +126,7 @@ public:
         json["isRoot"] = isRoot;
         return json;
     }
-
+/*
     util::Json getOrderJson() const {
         util::Json json("order");
         json["UserId"] = id;
@@ -138,6 +136,7 @@ public:
         }
         return json;
     }
+    */
 };
 
 }

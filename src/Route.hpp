@@ -2,6 +2,7 @@
 #define TRAINBOOM_ROUTE_HPP
 
 #include "util.hpp"
+#include "Order.hpp"
 #include "Segment.hpp"
 #include "Information.hpp"
 #include <iostream>
@@ -90,6 +91,13 @@ public:
     	interval_invalid() : exception(
     		"interval_invalid",
     		"Your requested interval is not valid!!!") {}
+    };
+
+    class not_enough_tickets_left: public exception {
+    public:
+    	not_enough_tickets_left() : exception(
+    		"not_enough_tickets_left",
+    		"Tickets left are not enough for you to book!!!") {}
     };
 
     explicit Route(): id("Route") {}
@@ -208,14 +216,26 @@ public:
         return n;
     }
 
+    Segment queryTickets(const std::string& startStation, const std::string& endStation) {
+        auto interval = getInterval(startStation, endStation);
+        return segmentsIntervalManip->query(interval.first, interval.second);
+    }
+
     void modifyTickets(const std::string& startStation, const std::string& endStation, const TicketDelta& deltas) {
         auto interval = getInterval(startStation, endStation);
         segmentsIntervalManip->modify(interval.first, interval.second, deltas);
     }
 
-    Segment queryTickets(const std::string& startStation, const std::string& endStation) {
-        auto interval = getInterval(startStation, endStation);
-        return segmentsIntervalManip->query(interval.first, interval.second);
+    Order bookTickets(const std::string& startStationId, const std::string& endStationId, const std::string& ticketType, unsigned ticketNumber) {
+        auto interval = getInterval(startStationId, endStationId);
+        Segment segment = segmentsIntervalManip->query(interval.first, interval.second);
+        if (segment.ticket(ticketType).number < ticketNumber)
+            throw not_enough_tickets_left();
+        Order order(id, startStationId, endStationId, ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
+        TicketDelta ticketDelta;
+        ticketDelta[ticketType] = - (int)ticketNumber;
+        segmentsIntervalManip->modify(interval.first, interval.second, ticketDelta);
+        return order;
     }
 
     Information& information(unsigned pos) {

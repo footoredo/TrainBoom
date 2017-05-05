@@ -23,9 +23,9 @@ private:
 public:
 	class id_not_exist : public exception {
     public:
-    	id_not_exist() : exception(
+    	id_not_exist(std::string type) : exception(
     		"id_not_exist",
-    		"Your id does not exist!!!") {}
+    		"Your " + type + " id does not exist!!!") {}
     };
 	TrainBoom(): id("TrainBoom") {}
 
@@ -36,17 +36,17 @@ public:
 	User& user(std::string id)
 	{
 //        std::cout << id << " " << users.count(id) << std::endl;
-		if(users.count(id) == 0) throw id_not_exist();
+		if(users.count(id) == 0) throw id_not_exist("user");
 		return users.at(id);
 	}
 	Route& route(std::string id)
 	{
-		if(routes.count(id) == 0) throw id_not_exist();
+		if(routes.count(id) == 0) throw id_not_exist("route");
 		return routes.at(id);
 	}
 	Station& station(std::string id)
 	{
-		if(stations.count(id) == 0) throw id_not_exist();
+		if(stations.count(id) == 0) throw id_not_exist("station");
 		return stations.at(id);
 	}
 	void insertUser(const User& user) {

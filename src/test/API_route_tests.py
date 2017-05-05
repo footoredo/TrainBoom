@@ -80,4 +80,41 @@ res = requests.get(url + "/routes/" + routeId0 + "/stop");
 assert res.json()["type"] == "error", "Duplicated stop check failed!"
 print "stop test passed!"
 
+res = requests.get(url + "/routes/" + routeId1 + "/tickets", json = {
+    "startStation": stationId0,
+    "endStation": stationId1
+    })
+assert res.json()["data"]["tickets"]["first class"]["data"]["number"] == 17, "Query tickets check failed!"
+print "Query tickets check passed!"
+
+res = requests.post(url + "/users", json = {"username": "footoredo", "salt": "iamasalt", "password": "."})
+userId = res.json()["id"]
+
+res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
+    "userId": userId,
+    "startStationId": stationId0,
+    "endStationId": stationId1,
+    "ticketType": "first class",
+    "ticketNumber": 1000
+    })
+assert res.json()["type"] == "error"
+print "Overbook ticket test passed!"
+
+res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
+    "userId": userId,
+    "startStationId": stationId0,
+    "endStationId": stationId1,
+    "ticketType": "first class",
+    "ticketNumber": 2
+    })
+assert res.json()["data"]["ticketPrice"] == 259.0
+print "book ticket test passed!"
+
+res = requests.get(url + "/routes/" + routeId1 + "/tickets", json = {
+    "startStation": stationId0,
+    "endStation": stationId1
+    })
+assert res.json()["data"]["tickets"]["first class"]["data"]["number"] == 15, "Query tickets after booking check failed!"
+print "Query tickets after booking check passed!"
+
 print "All tests passed!"
