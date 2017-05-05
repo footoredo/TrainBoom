@@ -30,11 +30,11 @@ private:
     util::stupid_array<Segment> segments;
 
     util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip;
-    util::map<Id, unsigned> stationsMap;
+    util::map<std::string, unsigned> stationsMap;
 
     Id id;
 
-    util::pair<unsigned, unsigned> getInterval(Id startStation, Id endStation) {
+    util::pair<unsigned, unsigned> getInterval(const std::string& startStation, const std::string& endStation) {
         const auto& iterStart = stationsMap.find(startStation),
             iterEnd = stationsMap.find(endStation);
         if (iterStart == stationsMap.end() ||
@@ -160,16 +160,16 @@ public:
             );
         }*/
 
-    Id getId() const {
+    std::string getId() const {
         return id;
     }
 
-    void modifyTickets(Id startStation, Id endStation, const TicketDelta& deltas) {
+    void modifyTickets(const std::string& startStation, const std::string& endStation, const TicketDelta& deltas) {
         auto interval = getInterval(startStation, endStation);
         segmentsIntervalManip->modify(interval.first, interval.second, deltas);
     }
 
-    Segment queryTickets(Id startStation, Id endStation) {
+    Segment queryTickets(const std::string& startStation, const std::string& endStation) {
         auto interval = getInterval(startStation, endStation);
         return segmentsIntervalManip->query(interval.first, interval.second);
     }

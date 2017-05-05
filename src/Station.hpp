@@ -9,7 +9,7 @@ namespace TrainBoom {
 	class Station {
 		private:
 			std::string name;
-			util::map<Id, util::set<Id>> routes;
+			util::map<std::string, util::map<util::Datetime::Datetime, std::set<std::string>>> routesMap;
 			Id id;
 
 		public:
@@ -29,9 +29,12 @@ namespace TrainBoom {
 			public:
 				delete_trainId_failed():exception("delete trainId failed","wtf") {};
 			};
-			Station(const std::string& name): name(name), routes(), id("Station") {}
+			Station(const std::string& name): name(name), id("Station") {}
+            Station(const Json& json): id("Station") {
+                name = json["name"].as<std::string>();
+            }
 
-			Id getId() const noexcept {
+            std::string getId() const noexcept {
 				return id;
 			}
 
@@ -39,13 +42,13 @@ namespace TrainBoom {
 				return name;
 			}
 
-			void add(Id stationId, Id routeId){
-				if (!routes[stationId].insert(routeId).second) throw add_routeId_failed(); // assuming return value is pair<iterator,bool>
+			void add(const std::string& stationId, const util::Datetime::Datetime& date, const std::string& routeId){
+				if (!routesMap[stationId][date].insert(routeId).second) throw add_routeId_failed(); // assuming return value is pair<iterator,bool>
 			}
 
-			void del(Id stationId, Id routeId){
+			void del(const std::string& stationId, const util::Datetime::Datetime& date, const std::string& routeId) {
 				try {
-					routes[stationId].erase(routeId);
+					routesMap[stationId][date].erase(routeId);
 				}
 				catch (const invalid_iterator& e) {
 					throw delete_routeId_failed();
@@ -60,14 +63,18 @@ namespace TrainBoom {
 				if (map[stationId].erase(trainId)<1) throw delete_trainId_failed();
 			}*/
 
-			const util::set<Id>& query(Id stationId){
-				return routes[stationId];
+			util::vector<std::string> query(const std::string& stationId, const util::Datetime::Datetime& date) const {
+                util::vector<std::string> ret;
+                if (!routesMap.count(stationId) ||
+                        !routesMap.at(stationId).count(date))
+                    return ret;
+				for (const std::string& routeId: routesMap.at(stationId).at(date)) {
+                    ret.push_back(routeId);
+                }
+                return ret;
 			}
 
 	};
-
-
-
 
 }
 

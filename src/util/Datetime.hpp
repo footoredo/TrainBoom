@@ -205,20 +205,20 @@ namespace Datetime {
         static Datetime parse(const std::string& fmttime) // YYYY/MM/DD hh:mm
         {
         	int len = fmttime.size();
-        	int _1 = 0, _2 = 0, colon = 0, comma = 0;
+        	int _1 = 0, _2 = 0, colon = 0, space = 0;
 
         	for (int i = 0; i < len; i++)
         	{
 	        	if (fmttime[i] == ':')
 				{
-					if (!_1 || !_2 || !comma) throw time_format_wrong();
+					if (!_1 || !_2 || !space) throw time_format_wrong();
 					else if (!colon) colon = i;
 					else throw time_format_wrong();
 				}
 				else if (fmttime[i] == ' ')
 				{
 					if (!_1 || !_2) throw time_format_wrong();
-					else if (!comma) comma = i;
+					else if (!space) space = i;
 					else throw time_format_wrong();
 				}
 	        	else if (fmttime[i] == '/')
@@ -228,10 +228,16 @@ namespace Datetime {
 	        		// else throw time_format_wrong();
 	        	}
 	        }
-       		if (!_1 || !_2 || !comma || !colon) throw time_format_wrong();
-        	signed_Date_t year = getNum(fmttime, 0, _1 - 1), month = getNum(fmttime, _1 + 1, _2 - 1), day = getNum(fmttime, _2 + 1, comma - 1);
-			signed_Date_t hour = getNum(fmttime, comma + 1, colon - 1), minute = getNum(fmttime, colon + 1, len - 1);
-            return Datetime(year, month, day, hour, minute);
+       		if (!_1 || !_2) throw time_format_wrong();
+            if (!space) space = fmttime.size();
+        	signed_Date_t year = getNum(fmttime, 0, _1 - 1), month = getNum(fmttime, _1 + 1, _2 - 1), day = getNum(fmttime, _2 + 1, space - 1);
+            if (!colon) {
+                return Datetime(year, month, day);
+            }
+            else {
+                signed_Date_t hour = getNum(fmttime, space + 1, colon - 1), minute = getNum(fmttime, colon + 1, len - 1);
+                return Datetime(year, month, day, hour, minute);
+            }
         }
 
         std::string format() const {
