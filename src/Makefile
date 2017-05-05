@@ -48,3 +48,6 @@ test_User:
 
 test_TrainBoom:
 	$(CXX) -o $(BIN)/TrainBoom_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/TrainBoom_tests.cpp
+
+test_BinaryFile:
+	$(CXX) -o $(BIN)/BinaryFile_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/BinaryFile_tests.cpp
