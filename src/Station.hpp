@@ -9,7 +9,7 @@ namespace TrainBoom {
 	class Station {
 		private:
 			std::string name;
-			util::map<std::string, util::map<util::Datetime::Datetime, std::set<std::string>>> routesMap;
+			util::map<std::string, util::map<util::Datetime::Datetime, util::set<std::string>>> routesMap;
 			Id id;
 
 		public:
@@ -32,6 +32,11 @@ namespace TrainBoom {
 			Station(const std::string& name): name(name), id("Station") {}
             Station(const Json& json): id("Station") {
                 name = json["name"].as<std::string>();
+            }
+
+            void update(const Json& json) {
+                if (json.HasMember("name"))
+                    name = json["name"].as<std::string>();
             }
 
             std::string getId() const noexcept {
@@ -73,6 +78,21 @@ namespace TrainBoom {
                 }
                 return ret;
 			}
+
+            Json toJson() const {
+                Json json("station", id);
+                json["name"] = name;
+                return json;
+            }
+
+            Json queryJson(const std::string& stationId, const Datetime& date) const {
+                Json ret("routesList");
+                ret["routes"].SetArray();
+                for (const auto& id: query(stationId, date)) {
+                    ret["routes"].PushBack(id);
+                }
+                return ret;
+            }
 
 	};
 

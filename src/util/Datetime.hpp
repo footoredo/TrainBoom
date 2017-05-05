@@ -362,6 +362,8 @@ namespace Datetime {
 
 }   // util
 
+using util::Datetime::Datetime;
+
 }   // TrainBoom
 
 #endif

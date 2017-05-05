@@ -33,6 +33,7 @@ int main() {
 
 	try {
 		st.del(stationId[0], today, Id("Route"));
+        std::cout << "throw test for del failed!" << std::endl;
 	} catch (const Station::delete_routeId_failed& e) {
 		std::cout << "throw test for del ok!" << std::endl;
 	}
@@ -44,6 +45,8 @@ int main() {
         assert((routes[0] == routeId[i * 2] && routes[1] == routeId[i * 2 + 1]) || (routes[1] == routeId[i * 2] && routes[0] == routeId[i * 2 + 1]));
     }
     std::cout << "query test ok!" << std::endl;
+
+    std::cout << st.queryJson(stationId[0], today).toString() << std::endl;
 
 	return 0;
 }

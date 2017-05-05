@@ -69,6 +69,13 @@ public:
         return usersList;
     }
 
+    util::vector<std::string> listStations() {
+        util::vector<std::string> stationsList;
+        for (const auto& item: stations)
+            stationsList.push_back(item.first);
+        return stationsList;
+    }
+
 	std::string toString() {
 		std::stringstream ss;
 		ss << "users " << users.size() << '\n';

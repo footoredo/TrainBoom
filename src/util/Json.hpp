@@ -194,6 +194,15 @@ private:
     std::string id;
 
 public:
+    Json() {
+        allocator = &(document.GetAllocator());
+        document.SetObject();
+        document.AddMember("data", Value(kObjectType), *allocator);
+        data = JsonValue(
+            allocator,
+            &(document["data"])
+        );
+    }
     Json(std::string type): type(type) {
         allocator = &(document.GetAllocator());
         document.SetObject();
