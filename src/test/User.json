@@ -1,0 +1,13 @@
+{
+    "username": "footoredo",
+    "password": "password",
+    "salt": "iamasalt",
+
+    "avatar": "avatar.png",
+    "realname": "zzh",
+    "phone": "110",
+    "email": "footoredo@gmail.com",
+    "motto": "An apple a day, keep doctors away!",
+    "gender": 0,
+    "isRoot": true
+}

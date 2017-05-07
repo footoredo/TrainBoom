@@ -1,6 +1,6 @@
 #!/bin/sh
 
-url="http://localhost:3000"
+url="http://39.108.7.208:3000"
 method=$1
 path=$2
 
