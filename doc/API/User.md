@@ -104,7 +104,7 @@ GET /users/756b418e1d5b6aaf482f9db33112a20fb0350fe1
 ### HTTP Request
 
 ```
-GET /users/:userId
+PUT /users/:userId
 ```
 
 The rest is same as `insert`, except for all informations are optional.

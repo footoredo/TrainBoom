@@ -1,6 +1,6 @@
 import requests
 
-url = "http://localhost:3000"
+url = "http://39.108.7.208:3000"
 
 route = {
     "name": "G105",
@@ -38,13 +38,20 @@ route = {
     ]
 }
 
-res = requests.post(url + "/stations", json = {"name": "Changzhou Bei"})
+res = requests.post(url + "/stations", json = {"name": "Changzhou North"})
+import json
+print json.dumps(res.json(), indent=4)
 route["informations"][0]["stationId"] = stationId0 = res.json()["id"]
 res = requests.post(url + "/stations", json = {"name": "Shanghai Hong Qiao"})
 route["informations"][1]["stationId"] = stationId1 = res.json()["id"]
 
+print json.dumps(route, indent=4)
+
 res = requests.post(url + "/routes", json = route);
 routeId0 = res.json()["id"]
+
+print json.dumps(res.json(), indent=4)
+
 res = requests.get(url + "/routes/" + routeId0 + "/start");
 assert res.json()["type"] == "success", "Failed to start the route!"
 
