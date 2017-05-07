@@ -1,6 +1,7 @@
 import requests
 
-url = "http://39.108.7.208:3000"
+# url = "http://39.108.7.208:3000"
+url = "http://localhost:3000"
 
 route = {
     "name": "G105",
@@ -40,17 +41,13 @@ route = {
 
 res = requests.post(url + "/stations", json = {"name": "Changzhou North"})
 import json
-print json.dumps(res.json(), indent=4)
 route["informations"][0]["stationId"] = stationId0 = res.json()["id"]
 res = requests.post(url + "/stations", json = {"name": "Shanghai Hong Qiao"})
 route["informations"][1]["stationId"] = stationId1 = res.json()["id"]
 
-print json.dumps(route, indent=4)
 
 res = requests.post(url + "/routes", json = route);
 routeId0 = res.json()["id"]
-
-print json.dumps(res.json(), indent=4)
 
 res = requests.get(url + "/routes/" + routeId0 + "/start");
 assert res.json()["type"] == "success", "Failed to start the route!"
@@ -97,15 +94,25 @@ print "Query tickets check passed!"
 res = requests.post(url + "/users", json = {"username": "footoredo", "salt": "iamasalt", "password": "."})
 userId = res.json()["id"]
 
-res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
+data = {
     "userId": userId,
     "startStationId": stationId0,
     "endStationId": stationId1,
     "ticketType": "first class",
     "ticketNumber": 1000
-    })
+    }
+
+res = requests.put(url + "/routes/" + routeId1 + "/tickets", json=data)
 assert res.json()["type"] == "error"
 print "Overbook ticket test passed!"
+data = {
+    "userId": userId,
+    "startStationId": stationId0,
+    "endStationId": stationId1,
+    "ticketType": "first class",
+    "ticketNumber": 2 
+    }
+print json.dumps(data, indent=4)
 
 res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
     "userId": userId,
@@ -114,6 +121,7 @@ res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
     "ticketType": "first class",
     "ticketNumber": 2
     })
+print json.dumps(res.json(), indent=4)
 assert res.json()["data"]["ticketPrice"] == 259.0
 print "book ticket test passed!"
 

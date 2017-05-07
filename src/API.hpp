@@ -290,7 +290,7 @@ namespace TrainBoom {
                         const Route& route = trainBoom->route(routeId);
                         try {
                             trainBoom->stopRoute(route);
-                            Generic::sendJson(response, Generic::success("Start Route succeeded!"));
+                            Generic::sendJson(response, Generic::success("Stop Route succeeded!"));
                         }
                         catch (const exception& e) {
                             Generic::sendJson(response, Generic::error(e.what()));
