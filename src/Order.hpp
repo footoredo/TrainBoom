@@ -22,8 +22,12 @@ namespace TrainBoom {
             ticketPrice(ticketPrice), ticketNumber(ticketNumber),
             id("Order") {}
 
+        std::string getId() const {
+            return id;
+        }
+
         Json toJson() const {
-            Json json("order");
+            Json json("order", id);
             json["routeId"] = routeId;
             json["startStationId"] = startStationId;
             json["endStationId"] = endStationId;

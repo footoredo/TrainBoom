@@ -112,7 +112,6 @@ data = {
     "ticketType": "first class",
     "ticketNumber": 2 
     }
-print json.dumps(data, indent=4)
 
 res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
     "userId": userId,
@@ -121,9 +120,20 @@ res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
     "ticketType": "first class",
     "ticketNumber": 2
     })
-print json.dumps(res.json(), indent=4)
 assert res.json()["data"]["ticketPrice"] == 259.0
+orderJson = res.json()
+orderId = res.json()["id"]
 print "book ticket test passed!"
+
+res = requests.get(url + "/users/" + userId + "/orders");
+orders = res.json()["data"]["orders"]
+assert len(orders) == 1 and orders[0] == orderId, "Order attaching check failed!"
+
+res = requests.get(url + "/users/" + userId + "/orders/" + orderId)
+print json.dumps(orderJson, indent=4)
+assert res.json() == orderJson, "Order attaching check failed!"
+
+print "Order attaching check passed!"
 
 res = requests.get(url + "/routes/" + routeId1 + "/tickets", json = {
     "startStation": stationId0,
