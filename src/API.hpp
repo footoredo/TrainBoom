@@ -61,7 +61,7 @@ namespace TrainBoom {
             public:
                 bool shutdownFlag;
                 StatsEndpoint(Net::Address addr, const util::stupid_ptr<TrainBoom>& trainBoom)
-                    : httpEndpoint(util::make_stupid<Net::Http::Endpoint>(addr)), trainBoom(trainBoom) 
+                    : httpEndpoint(util::make_stupid<Net::Http::Endpoint>(addr)), trainBoom(trainBoom)
                 { }
 
                 void init(size_t thr = 2) {
@@ -86,7 +86,7 @@ namespace TrainBoom {
                     using namespace Net::Rest;
 
                     Routes::Get(router, "/shutdown", Routes::bind(&StatsEndpoint::_shutdown, this));
-                    
+
                     Routes::Post(router, "/users", Routes::bind(&StatsEndpoint::insertUser, this));
                     Routes::Get(router, "/users", Routes::bind(&StatsEndpoint::listUsers, this));
                     Routes::Get(router, "/users/:userId", Routes::bind(&StatsEndpoint::getUser, this));
@@ -103,7 +103,7 @@ namespace TrainBoom {
                     Routes::Put(router, "/stations/:stationId", Routes::bind(&StatsEndpoint::updateStation, this));
                     // Routes::Post(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::addRouteStation, this));
                     // Routes::Delete(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::delRouteStation, this));
-                    Routes::Get(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::queryRouteStation, this));
+                    Routes::Post(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::queryRouteStation, this));
 
                     Routes::Post(router, "/routes", Routes::bind(&StatsEndpoint::insertRoute, this));
                     Routes::Get(router, "/routes", Routes::bind(&StatsEndpoint::listRoutes, this));
@@ -111,7 +111,7 @@ namespace TrainBoom {
 //                    Routes::Put(router,)
                     Routes::Get(router, "/routes/:routeId/start", Routes::bind(&StatsEndpoint::startRoute, this));
                     Routes::Get(router, "/routes/:routeId/stop", Routes::bind(&StatsEndpoint::stopRoute, this));
-                    Routes::Get(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
+                    Routes::Post(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
                     Routes::Put(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
                 }
 
@@ -173,7 +173,7 @@ namespace TrainBoom {
                     try {
                         User& user = trainBoom->user(userId);
                         SENDVEC(user.getOrders(), "order");
-                    } 
+                    }
                     HANDLEERR;
                 }
 

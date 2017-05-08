@@ -20,7 +20,7 @@ Method|HTTP request|Description
 `list`|`GET /stations`| Get the station list.
 `get`|`GET /stations/:stationId`| Get information of a single station.
 `update`|`PUT /stations/:stationId`| Update information of a single station.
-`queryRoutes`|`GET /stations/:stationId/routes`| Get the routes list of the station.
+`queryRoutes`|`POST /stations/:stationId/routes`| Get the routes list of the station.
 
 ### Route
 
@@ -33,8 +33,8 @@ Method|HTTP request|Description
 `delete`|`DELETE /routes/:routeId`| Delete a single route.
 `startRoute`|`GET /routes/:routeId/start`| Start a route.
 `stopRoute`|`GET /routes/:routeId/stop`| Stop a route.
-`queryTickets`|`GET /routes/:routeId/tickets`| Get ticket information of a route.
-`bookTickets`|`POST /routes/:routeId/tickets`| Book some tickets.
+`queryTickets`|`POST /routes/:routeId/tickets`| Get ticket information of a route.
+`bookTickets`|`PUT /routes/:routeId/tickets`| Book some tickets.
 
 ## Error Response
 

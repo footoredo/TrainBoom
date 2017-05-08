@@ -92,7 +92,7 @@ GET /stations/:stationId/routes
 ### Request body
 
 ```
-GET /stations/45cd9b0bcc316846ddc27ffe18f2a68a32a17ada/routes
+POST /stations/45cd9b0bcc316846ddc27ffe18f2a68a32a17ada/routes
 ```
 
 ```json
