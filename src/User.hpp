@@ -138,6 +138,7 @@ public:
         util::Json json("user", id);
         json["username"] = username;
         json["salt"] = salt;
+	json["password"] = password;
         if (avatar.size()) json["avatar"] = avatar;
         if (realname.size()) json["realname"] = realname;
         if (phone.size()) json["phone"] = phone;
