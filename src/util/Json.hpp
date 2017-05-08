@@ -56,7 +56,7 @@ public:
             Value *value): allocator(allocator), value(value) {}
 
         void write(BinaryFile& bf) const {
-            if (value->IsBool()) {
+/*            if (value->IsBool()) {
                 bool tmp = value->GetBool();
                 bf.Write(BIN_TYPE_BOOL);
                 bf.Write(tmp);
@@ -100,10 +100,10 @@ public:
                 std::cout << tmp << std::endl;
             }
             else throw type_error("writable JsonValue");
-        }
+  */      }
 
         JsonValue& read(BinaryFile& bf) {
-            bin_type_t type; bf.Read(type);
+    /*        bin_type_t type; bf.Read(type);
             std::cout << type << std::endl;
             if (type == BIN_TYPE_BOOL) {
                 bool tmp; bf.Read(tmp);
@@ -140,7 +140,7 @@ public:
                 }
             }
             else throw type_error("readable JsonValue");
-            return *this;
+      */      return *this;
         }
 
         const Value& getValue() const {
@@ -237,12 +237,12 @@ public:
             value->SetBool(x);
             return *this;
         }
-
+/*
         template <class T>
         JsonValue& operator=(const T& x) {
             return this->operator=(x.toJson());
         }
-
+*/
         JsonValue& operator=(Json x) {
             value->SetObject();
             value->CopyFrom(x.document, *allocator);

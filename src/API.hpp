@@ -93,6 +93,7 @@ namespace TrainBoom {
                     Routes::Put(router, "/users/:userId", Routes::bind(&StatsEndpoint::updateUser, this));
                     ROUTING(Get, "/users/:userId/orders", listOrdersUser);
                     ROUTING(Get, "/users/:userId/orders/:orderId", getOrderUser);
+                    ROUTING(Post, "/users/username", getByUsername);
               //      Routes::Get(router, "/users/:userId/orders", Routes::bind(&StatsEndpoint::listOrdersUser, this));
                 //    Routes::Get(router, "/users/:userId/orders/:orderId", Routes::bind(&StatsEndpoint::getOrderUser, this));
 
@@ -184,6 +185,17 @@ namespace TrainBoom {
                         const User& user = trainBoom->user(userId);
                         const Order& order = user.order(orderId);
                         SENDOBJ(order);
+                    }
+                    HANDLEERR;
+                }
+
+                APIHANDLER(getByUsername) {
+                    Json json; json.Parse(request.body());
+                    try {
+                        const std::string userId = trainBoom->idByUsername(json["username"]);
+                        Json json("userId");
+                        json["userId"] = userId;
+                        SENDJSON(json);
                     }
                     HANDLEERR;
                 }
