@@ -23,7 +23,7 @@ POST /stations
     "data": {
         "name": "Changzhou North"
     },
-    "id": "96a13a96e44750b09b85380bfe163d75dd945a11",
+    "id": "45cd9b0bcc316846ddc27ffe18f2a68a32a17ada",
     "type": "station"
 }
 ```
@@ -39,12 +39,13 @@ GET /stations
 ### Response body
 ```json
 {
-   "type":"stationsList",
-   "data":{
-      "stations":[
-         "756b418e1d5b6aaf482f9db33112a20fb0350fe1"
-      ]
-   }
+    "data": {
+        "stations": [
+            "45cd9b0bcc316846ddc27ffe18f2a68a32a17ada",
+            "da81e4553f89751731dea2adb486a4582ba3fa1d"
+        ]
+    },
+    "type": "stationsList"
 }
 ```
 
@@ -58,23 +59,15 @@ GET /stations/:stationId
 
 ### Response body
 ```
-GET /stations/756b418e1d5b6aaf482f9db33112a20fb0350fe1
+GET /stations/45cd9b0bcc316846ddc27ffe18f2a68a32a17ada
 ```
 ```json
 {
-   "type":"station",
-   "id":"756b418e1d5b6aaf482f9db33112a20fb0350fe1",
-   "data":{
-      "stationname":"footoredo",
-      "salt":"iamasalt",
-      "avatar":"avatar.png",
-      "realname":"zzh",
-      "phone":"110",
-      "email":"footoredo@gmail.com",
-      "motto":"An apple a day, keep doctors away!",
-      "gender":0,
-      "isRoot":true
-   }
+    "data": {
+        "name": "Changzhou North"
+    },
+    "id": "45cd9b0bcc316846ddc27ffe18f2a68a32a17ada",
+    "type": "station"
 }
 ```
 
@@ -87,3 +80,38 @@ PUT /stations/:stationId
 ```
 
 The rest is same as `insert`, except for all informations are optional.
+
+## queryRoutes
+
+### HTTP Request
+
+```
+GET /stations/:stationId/routes
+```
+
+### Request body
+
+```
+GET /stations/45cd9b0bcc316846ddc27ffe18f2a68a32a17ada/routes
+```
+
+```json
+{
+    "stationId": "da81e4553f89751731dea2adb486a4582ba3fa1d",
+    "data": "2017/5/5"
+}
+```
+
+### Response body
+
+```json
+{
+    "data": {
+        "routes": [
+            "4bba9447b9f34656760f252e5695c9ae8974060a",
+            "e762d6a5e17f3d696b9598876659428579ac828e"
+        ]
+    },
+    "type": "routesList"
+}
+```
