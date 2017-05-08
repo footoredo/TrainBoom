@@ -129,7 +129,7 @@ namespace TrainBoom {
 
                         Generic::sendJson(response, user.toJson());
                     }
-                    HANDLEERR;
+		    HANDLEERR;
                 }
 
                 void listUsers(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -143,9 +143,7 @@ namespace TrainBoom {
                         const User& user = trainBoom->user(userId);
                         Generic::sendJson(response, user.toJson());
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("UserId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void updateUser(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -161,9 +159,7 @@ namespace TrainBoom {
                             Generic::sendJson(response, Generic::error(e.what()));
                         }
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("UserId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 APIHANDLER(listOrdersUser) {
@@ -216,9 +212,7 @@ namespace TrainBoom {
                         const Station& station = trainBoom->station(stationId);
                         Generic::sendJson(response, station.toJson());
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("StationId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void updateStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -229,9 +223,7 @@ namespace TrainBoom {
                         station.update(Json("station").Parse(request.body()));
                         Generic::sendJson(response, station.toJson());
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("StationId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void addRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -247,9 +239,7 @@ namespace TrainBoom {
                             Generic::sendJson(response, Generic::error("Add Route failed!"));
                         }
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("StationId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void delRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -265,9 +255,7 @@ namespace TrainBoom {
                             Generic::sendJson(response, Generic::error("Delete Route failed!"));
                         }
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("StationId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void queryRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -278,9 +266,7 @@ namespace TrainBoom {
                         const auto& vec = station.query(json["stationId"].as<std::string>(), Datetime::parse(json["date"].as<std::string>()));
                         Generic::sendJson(response, Generic::vec2Json(vec, "route"));
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("StationId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void insertRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -290,9 +276,7 @@ namespace TrainBoom {
 
                         Generic::sendJson(response, route.toJson());
                     }
-                    catch (const exception& e) {
-                        Generic::sendJson(response, Generic::error(e.what()));
-                    }
+		    HANDLEERR;
                 }
 
                 void listRoutes(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -305,9 +289,7 @@ namespace TrainBoom {
                         Route& route = trainBoom->route(routeId);
                         Generic::sendJson(response, route.toJson());
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("RouteId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void startRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -322,9 +304,7 @@ namespace TrainBoom {
                             Generic::sendJson(response, Generic::error(e.what()));
                         }
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("RouteId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void stopRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -339,9 +319,7 @@ namespace TrainBoom {
                             Generic::sendJson(response, Generic::error(e.what()));
                         }
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("RouteId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void queryTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -357,9 +335,7 @@ namespace TrainBoom {
                             Generic::sendJson(response, Generic::error(e.what()));
                         }
                     }
-                    catch (const TrainBoom::TrainBoom::id_not_exist& e) {
-                        Generic::sendJson(response, Generic::error("RouteId not found!"));
-                    }
+		    HANDLEERR;
                 }
 
                 void bookTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {

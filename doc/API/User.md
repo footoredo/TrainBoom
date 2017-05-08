@@ -12,11 +12,12 @@ POST /users
 
 - `username`, `password` and `salt` are required.
 - `gender`: 0 - male, 1 - femail, 2 - other
+- `password` = sha1sum(`":rawpassword`|`:salt"`)
 
 ```json
 {
     "username": "footoredo",
-    "password": "password",
+    "password": "0d0cd0941c15564d313dc1e342d3ebdfa6f6c350",
     "salt": "iamasalt",
 
     "avatar": "avatar.png",
@@ -38,6 +39,7 @@ POST /users
    "data":{
       "username":"footoredo",
       "salt":"iamasalt",
+      "password":"0d0cd0941c15564d313dc1e342d3ebdfa6f6c350",
       "avatar":"avatar.png",
       "realname":"zzh",
       "phone":"110",
@@ -88,6 +90,7 @@ GET /users/756b418e1d5b6aaf482f9db33112a20fb0350fe1
    "data":{
       "username":"footoredo",
       "salt":"iamasalt",
+      "password":"0d0cd0941c15564d313dc1e342d3ebdfa6f6c350",
       "avatar":"avatar.png",
       "realname":"zzh",
       "phone":"110",
