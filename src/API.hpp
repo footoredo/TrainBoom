@@ -61,7 +61,7 @@ namespace TrainBoom {
             public:
                 bool shutdownFlag;
                 StatsEndpoint(Net::Address addr, const util::stupid_ptr<TrainBoom>& trainBoom)
-                    : httpEndpoint(util::make_stupid<Net::Http::Endpoint>(addr)), trainBoom(trainBoom) 
+                    : httpEndpoint(util::make_stupid<Net::Http::Endpoint>(addr)), trainBoom(trainBoom)
                 { }
 
                 void init(size_t thr = 2) {
@@ -86,7 +86,7 @@ namespace TrainBoom {
                     using namespace Net::Rest;
 
                     Routes::Get(router, "/shutdown", Routes::bind(&StatsEndpoint::_shutdown, this));
-                    
+
                     Routes::Post(router, "/users", Routes::bind(&StatsEndpoint::insertUser, this));
                     Routes::Get(router, "/users", Routes::bind(&StatsEndpoint::listUsers, this));
                     Routes::Get(router, "/users/:userId", Routes::bind(&StatsEndpoint::getUser, this));
@@ -167,7 +167,7 @@ namespace TrainBoom {
                     try {
                         User& user = trainBoom->user(userId);
                         SENDVEC(user.getOrders(), "order");
-                    } 
+                    }
                     HANDLEERR;
                 }
 

@@ -251,7 +251,7 @@ GET /routes/d0bda205ca3042fd5398c7e2c8bc163803080888/stop
 
 ### HTTP Request
 ```
-GET /routes/:routeId/tickets
+POST /routes/:routeId/tickets
 ```
 
 ### Request body
