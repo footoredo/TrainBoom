@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <sstream>
 #include <iostream>
+#include <ctime>
 
 namespace TrainBoom {
 
@@ -238,6 +239,13 @@ namespace Datetime {
                 signed_Date_t hour = getNum(fmttime, space + 1, colon - 1), minute = getNum(fmttime, colon + 1, len - 1);
                 return Datetime(year, month, day, hour, minute);
             }
+        }
+
+        static Datetime now() {
+            time_t tn = std::time(nullptr);
+            std::stringstream ss;
+            ss << std::put_time(std::localtime(&tn), "%Y/%m/%d %R");
+            return parse(ss.str());
         }
 
         std::string format() const {

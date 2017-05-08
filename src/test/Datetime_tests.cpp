@@ -39,4 +39,6 @@ int main() {
 
     std::cout << Datetime::parse("1015/12/6 7:33") << std::endl;
 
+    std::cout << Datetime::now() << std::endl;
+
 }
