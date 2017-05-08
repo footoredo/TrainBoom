@@ -35,6 +35,8 @@ private:
 
     Id id;
 
+    bool running;
+
     util::pair<unsigned, unsigned> getInterval(const std::string& startStation, const std::string& endStation) {
         const auto& iterStart = stationsMap.find(startStation),
             iterEnd = stationsMap.find(endStation);
@@ -155,6 +157,8 @@ public:
             throw station_number_too_small();
         }
         name = json["name"].as<std::string>();
+        if (json.HasMember("running"))
+            running = json["running"].as<std::string>();
         if (json["informations"].Size() != n || json["segments"].Size() != n - 1) {
             throw station_number_not_consistent();
         }
@@ -273,6 +277,10 @@ public:
         std::cout << "\n---\n" << std::endl;
     }
 
+    bool getRunning() const {
+        return running;
+    }
+
     util::Json toJson() {
         segmentsIntervalManip->forceApply();
 
@@ -280,6 +288,7 @@ public:
 
         json["name"] = name;
         json["n"] = n;
+        json["running"] = running;
         json["informations"].SetArray();
         json["segments"].SetArray();
         // json["stationsMap"].SetObject();

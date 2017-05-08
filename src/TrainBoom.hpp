@@ -41,6 +41,18 @@ public:
     		"username_not_found",
     		"Your username [" + username + "] already exists!!!") {}
     };
+    class route_already_running: public exception {
+        public:
+            route_already_running(): exception(
+                    "route_already_running",
+                    "The route you tried to start is already running!") {}
+    }
+    class route_no_running: public exception {
+        public:
+            route_not_running(): exception(
+                    "route_not_running",
+                    "The route you tried to stop is not running!") {}
+    }
 	TrainBoom(): id("TrainBoom") {}
 
     std::string getId() const {
@@ -108,6 +120,9 @@ public:
     }
 
     void startRoute(const Route& route) {
+        if (route.getRunning()) {
+            throw route_already_running();
+        }
         unsigned n = route.size();
         for (unsigned i = 0; i < n; ++ i)
             for (unsigned j = 0; j < i; ++ j) {
@@ -119,6 +134,9 @@ public:
     }
 
     void stopRoute(const Route& route) {
+        if (!route.getRunning()) {
+            throw route_not_running();
+        }
         unsigned n = route.size();
         for (unsigned i = 0; i < n; ++ i)
             for (unsigned j = 0; j < i; ++ j) {
