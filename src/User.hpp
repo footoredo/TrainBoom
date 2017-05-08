@@ -19,16 +19,23 @@ private:
     std::string username,avatar,realname,phone,email,motto;
     Gender gender;//Man, Woman, Other
     bool isRoot;
-    std::vector<Order> orders;//TODO
+    util::map<std::string, Order> orders;
     Id id;
 
 public:
-    class information_missing : public exception {
+    class information_missing: public exception {
         public:
             information_missing(const std::string& info): 
                 exception (
                         "information_missing",
                         "Your " + info + " is missing!!!") {}
+    };
+    class id_not_exist: public exception {
+        public:
+            id_not_exist(): 
+                exception (
+                        "id_not_exist",
+                        "Your id does not exist!!!") {}
     };
     User (): id("User") {}
 	User (const Json& json): gender(Other), isRoot(false), id("User") {
@@ -81,7 +88,20 @@ public:
 	std::string getMotto() const {return motto;}
 	Gender getGender() const {return gender;}
 	bool getIsRoot() const {return isRoot;}
-	std::vector<Order> getOrders() const {return orders;}
+    const Order& order(const std::string& id) const {
+        if (!orders.count(id)) {
+            throw id_not_exist();
+        }
+        else {
+            return orders.at(id);
+        }
+    }
+	util::vector<std::string> getOrders() const {
+        util::vector<std::string> ordersVec;
+        for (const auto& item: orders)
+            ordersVec.push_back(item.first);
+        return ordersVec;
+    }
 /*	void modifyPassword(Password t) {password=t;}
 	void modifyUsername(std::string t) {username=t;}
 	void modifyAvatar(std::string t) {avatar=t;}
@@ -91,8 +111,8 @@ public:
 	void modifyMotto(std::string t) {motto=t;}
 	void modifyGender(Gender t) {gender=t;}
 	void modifyIsRoot(bool t) {isRoot=t;}*/
-    void addOrder(Order order) {
-        orders.push_back(order);
+    void addOrder(const Order& order) {
+        orders.insert(util::make_pair(order.getId(), order));
     }
 	/*void bookTicket(Train train, Station from, Station to, size_t lowPrice, size_t highPrice, int num) {}
 	void refundTicket(Train train, Station from, Station to, size_t lowPrice, size_t highPrice, int num) {}

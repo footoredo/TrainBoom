@@ -48,6 +48,14 @@ namespace TrainBoom {
                 return json;
             }
         }
+#define SENDJSON(json) Generic::sendJson(response, json)
+#define SENDOBJ(obj) SENDJSON(obj.toJson())
+#define SENDVEC(vec, type) SENDJSON(Generic::vec2Json(vec, type))
+#define SENDSUCC(succMsg) Generic::sendJson(response, Generic::success(succMsg))
+#define SENDERR(errMsg) Generic::sendJson(response, Generic::error(errMsg))
+#define APIHANDLER(APIName) void APIName(const Rest::Request& request, Net::Http::ResponseWriter response)
+#define ROUTING(method, path, func) Routes::method(router, path, Routes::bind(&StatsEndpoint::func, this))
+#define HANDLEERR catch (const exception& e) { SENDERR(e.what()); }
 
         class StatsEndpoint {
             public:
@@ -83,6 +91,10 @@ namespace TrainBoom {
                     Routes::Get(router, "/users", Routes::bind(&StatsEndpoint::listUsers, this));
                     Routes::Get(router, "/users/:userId", Routes::bind(&StatsEndpoint::getUser, this));
                     Routes::Put(router, "/users/:userId", Routes::bind(&StatsEndpoint::updateUser, this));
+                    ROUTING(Get, "/users/:userId/orders", listOrdersUser);
+                    ROUTING(Get, "/users/:userId/orders/:orderId", getOrderUser);
+              //      Routes::Get(router, "/users/:userId/orders", Routes::bind(&StatsEndpoint::listOrdersUser, this));
+                //    Routes::Get(router, "/users/:userId/orders/:orderId", Routes::bind(&StatsEndpoint::getOrderUser, this));
 
                     Routes::Post(router, "/stations", Routes::bind(&StatsEndpoint::insertStation, this));
                     Routes::Get(router, "/stations", Routes::bind(&StatsEndpoint::listStations, this));
@@ -153,6 +165,27 @@ namespace TrainBoom {
                     catch (const TrainBoom::TrainBoom::id_not_exist& e) {
                         Generic::sendJson(response, Generic::error("UserId not found!"));
                     }
+                }
+
+                APIHANDLER(listOrdersUser) {
+                    std::string userId = request.param(":userId").as<std::string>();
+                    try {
+                        User& user = trainBoom->user(userId);
+                        SENDVEC(user.getOrders(), "order");
+                    } 
+                    HANDLEERR;
+                }
+
+                APIHANDLER(getOrderUser) {
+                    std::string userId = request.param(":userId").as<std::string>(),
+                        orderId = request.param(":orderId").as<std::string>();
+
+                    try {
+                        const User& user = trainBoom->user(userId);
+                        const Order& order = user.order(orderId);
+                        SENDOBJ(order);
+                    }
+                    HANDLEERR;
                 }
 
                 void insertStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
