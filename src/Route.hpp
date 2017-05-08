@@ -102,7 +102,7 @@ public:
     		"Tickets left are not enough for you to book!!!") {}
     };
 
-    explicit Route(): id("Route") {}
+    explicit Route(): id("Route"), running(false) {}
 
     /*Route(Id id, unsigned n,
         const util::stupid_array<Id>& stations,
@@ -132,7 +132,7 @@ public:
     Route(std::string name, unsigned n,
         const util::stupid_array<util::stupid_ptr<Information>>& informations,
         const util::stupid_array<util::stupid_ptr<Segment>>& segments
-    ): name(name), n(n), informations(informations), segments(segments), id("Route") {
+    ): name(name), n(n), informations(informations), segments(segments), id("Route"), running(false) {
             if (n < 2) {
                 throw station_number_too_small();
             }
@@ -157,8 +157,9 @@ public:
             throw station_number_too_small();
         }
         name = json["name"].as<std::string>();
+        running = false;
         if (json.HasMember("running"))
-            running = json["running"].as<std::string>();
+            running = json["running"].as<bool>();
         if (json["informations"].Size() != n || json["segments"].Size() != n - 1) {
             throw station_number_not_consistent();
         }
@@ -279,6 +280,10 @@ public:
 
     bool getRunning() const {
         return running;
+    }
+
+    void setRunning(bool x) {
+        running = x;
     }
 
     util::Json toJson() {

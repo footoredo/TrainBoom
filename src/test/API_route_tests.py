@@ -1,7 +1,7 @@
 import requests
 
-url = "http://39.108.7.208:3000"
-#url = "http://localhost:3000"
+#url = "http://39.108.7.208:3000"
+url = "http://localhost:3000"
 
 route = {
     "name": "G105",
@@ -50,6 +50,7 @@ res = requests.post(url + "/routes", json = route);
 routeId0 = res.json()["id"]
 
 res = requests.get(url + "/routes/" + routeId0 + "/start");
+#print json.dumps(res.json(), indent=4)
 assert res.json()["type"] == "success", "Failed to start the route!"
 print "Start route check passed!"
 
@@ -82,7 +83,7 @@ result = res.json()["data"]["routes"]
 assert len(result) == 1 and result[0] == routeId1, "Query check after stop 1st route failed!"
 
 res = requests.get(url + "/routes/" + routeId0 + "/stop");
-print json.dumps(res.json(), indent=4)
+#print json.dumps(res.json(), indent=4)
 assert res.json()["type"] == "error", "Duplicated stop check failed!"
 print "stop test passed!"
 
@@ -132,7 +133,7 @@ orders = res.json()["data"]["orders"]
 assert len(orders) == 1 and orders[0] == orderId, "Order attaching check failed!"
 
 res = requests.get(url + "/users/" + userId + "/orders/" + orderId)
-print json.dumps(orderJson, indent=4)
+#print json.dumps(orderJson, indent=4)
 assert res.json() == orderJson, "Order attaching check failed!"
 
 print "Order attaching check passed!"

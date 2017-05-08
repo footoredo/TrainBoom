@@ -46,13 +46,13 @@ public:
             route_already_running(): exception(
                     "route_already_running",
                     "The route you tried to start is already running!") {}
-    }
-    class route_no_running: public exception {
+    };
+    class route_not_running: public exception {
         public:
             route_not_running(): exception(
                     "route_not_running",
                     "The route you tried to stop is not running!") {}
-    }
+    };
 	TrainBoom(): id("TrainBoom") {}
 
     std::string getId() const {
@@ -119,10 +119,11 @@ public:
         return routesList;
     }
 
-    void startRoute(const Route& route) {
+    void startRoute(Route& route) {
         if (route.getRunning()) {
             throw route_already_running();
         }
+        route.setRunning(true);
         unsigned n = route.size();
         for (unsigned i = 0; i < n; ++ i)
             for (unsigned j = 0; j < i; ++ j) {
@@ -133,10 +134,11 @@ public:
             }
     }
 
-    void stopRoute(const Route& route) {
+    void stopRoute(Route& route) {
         if (!route.getRunning()) {
             throw route_not_running();
         }
+        route.setRunning(false);
         unsigned n = route.size();
         for (unsigned i = 0; i < n; ++ i)
             for (unsigned j = 0; j < i; ++ j) {
