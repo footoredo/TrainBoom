@@ -7,7 +7,7 @@ int main() {
     trainBoom.insertUser(User());
     std::cout << trainBoom.toString() << std::endl;
 
-    const util::vector<Id> usersList = trainBoom.listUsers();
+    const util::vector<std::string> usersList = trainBoom.listUsers();
     for (const auto& userId: usersList)
         std::cout << userId << std::endl;
 }

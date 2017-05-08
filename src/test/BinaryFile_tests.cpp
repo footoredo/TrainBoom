@@ -27,10 +27,16 @@ struct foo{
 };
 int main()
 {
+	BinaryFile asdas("ttt.dat");
+	asdas.Write(std::string("123546611123"));
+	std::string tmpstr; asdas.Read(tmpstr);
+	std::cout << tmpstr << std::endl;
+	assert(tmpstr == "123546611123");
+
 	int w=5;
 	BinaryFile tt("hhh.dat");
-	tt.Write(&w,sizeof(int));
-	tt.Read(&w,sizeof(int));
+	tt.Write(w);
+	tt.Read(w);
 	cout<<w<<endl;
 	srand(time(0));
 	foo a(3,6,4),c(7,9,2);
@@ -71,10 +77,10 @@ int main()
 	r.Read(buf);
 	cout<<str<<endl<<buf<<endl<<buf.size()<<'/'<<str.size()<<endl;
 	assert(!buf.compare(str));
-	
+
 //	s.Write(&str,sizeof(str));		//not ok
 //	s.Read(&buf,sizeof(buf));		//not ok
-	
+
 	string astr[3]={"hello","","world"},abuf[3];
 	s.ChangePath("str1.dat");
 	for (int i=0;i<3;++i)
@@ -85,7 +91,7 @@ int main()
 		cout<<astr[i]<<' '<<abuf[i]<<endl;
 		assert(abuf[i]==astr[i]);
 	}
-	
+
 	char cstr[1100],cbuf[1100];
 	for (int i=0;i<1000;++i)
 	{

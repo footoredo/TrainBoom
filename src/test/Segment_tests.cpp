@@ -37,5 +37,6 @@ int main() {
     std::cout << json.toString() << std::endl;
 
     Segment s2(json);
-    s2.display();
+    std::cout << "!!" << std::endl;
+    std::cout << s2.toJson().toString() << std::endl;
 }

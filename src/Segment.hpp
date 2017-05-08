@@ -89,6 +89,7 @@ public:
     Segment(const util::Json& json): id("Segment") {
 //        assert(json.getType() == "segment");
         json["tickets"].forEach([this](const std::string& type, util::Json attribute) {
+             //   std::cout << attribute.toString() << std::endl;
             tickets[type] = Ticket::Attribute(attribute);
         });
     }

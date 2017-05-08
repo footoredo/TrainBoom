@@ -6,6 +6,7 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <functional>
+#include "BinaryFile.hpp"
 #include "util.hpp"
 
 namespace TrainBoom {
@@ -16,27 +17,152 @@ namespace json {
 
 using namespace rapidjson;
 
+typedef enum {
+    BIN_TYPE_CLOSURE                = 0x01,
+    BIN_TYPE_LIST                   = 0x02,
+    BIN_TYPE_DICT                   = 0x03,
+    BIN_TYPE_BOOL                   = 0x04,     /* 0000 0100 T */
+    BIN_TYPE_BOOL_FALSE             = 0x05,     /* 0000 0101 F */
+
+    BIN_TYPE_FLOAT_DOUBLE           = 0x06,     /* 0010 0110   */
+    BIN_TYPE_FLOAT_SINGLE           = 0x07,     /* 0000 0111   */
+
+    BIN_TYPE_NULL                   = 0x0f,
+
+    BIN_TYPE_BLOB                   = 0x10,     /* 0001 xxxx   */
+    BIN_TYPE_STRING                 = 0x20,     /* 0010 xxxx   */
+
+    BIN_TYPE_INTEGER                = 0x40,     /* 010x xxxx + */
+    BIN_TYPE_INTEGER_NEGATIVE       = 0x60,     /* 011x xxxx - */
+} bin_type_t;
+
 class Json {
 public:
+    class type_error : public exception {
+    public:
+    	type_error(const std::string& type) : exception(
+    		"type_error",
+    		"It is not a " + type + "!!!") {}
+    };
+
     class JsonValue {
         friend class Json;
         Document::AllocatorType* allocator;
         Value *value;
     public:
         JsonValue(): allocator(nullptr), value(nullptr) {}
+        JsonValue(Document::AllocatorType* allocator): allocator(allocator) {}
         JsonValue(Document::AllocatorType* allocator,
             Value *value): allocator(allocator), value(value) {}
+
+        void write(BinaryFile& bf) const {
+            if (value->IsBool()) {
+                bool tmp = value->GetBool();
+                bf.Write(BIN_TYPE_BOOL);
+                bf.Write(tmp);
+            }
+            else if (value->IsInt()) {
+                int tmp = value->GetInt();
+                bf.Write(BIN_TYPE_INTEGER);
+                bf.Write(tmp);
+            }
+            else if (value->IsString()) {
+                std::string tmp = value->GetString();
+                bf.Write(BIN_TYPE_STRING);
+                bf.Write(tmp);
+            }
+            else if (value->IsDouble()) {
+                double tmp = value->GetDouble();
+                bf.Write(BIN_TYPE_FLOAT_DOUBLE);
+                bf.Write(tmp);
+            }
+            else if (value->IsArray()) {
+                bf.Write(BIN_TYPE_LIST);
+                int size = value->Size();
+                bf.Write(size);
+                forEach([&bf](JsonValue jv) {
+                    jv.write(bf);
+                });
+            }
+            else if (value->IsObject()) {
+                bf.Write(BIN_TYPE_DICT);
+                std::cout << BIN_TYPE_DICT << std::endl;
+                bin_type_t tmp;
+
+                int size = value->MemberCount();
+                bf.Write(size);
+                forEach([&bf](const std::string& key, JsonValue jv) {
+                    bf.Write(key);
+                    jv.write(bf);
+                });
+                bf.Close();
+                bf.Read(tmp);
+                std::cout << tmp << std::endl;
+            }
+            else throw type_error("writable JsonValue");
+        }
+
+        JsonValue& read(BinaryFile& bf) {
+            bin_type_t type; bf.Read(type);
+            std::cout << type << std::endl;
+            if (type == BIN_TYPE_BOOL) {
+                bool tmp; bf.Read(tmp);
+                value->SetBool(tmp);
+            }
+            else if (type == BIN_TYPE_INTEGER) {
+                int tmp; bf.Read(tmp);
+                value->SetInt(tmp);
+            }
+            else if (type == BIN_TYPE_STRING) {
+                std::string tmp; bf.Read(tmp);
+                value->SetString(tmp, *allocator);
+            }
+            else if (type == BIN_TYPE_FLOAT_DOUBLE) {
+                double tmp; bf.Read(tmp);
+                value->SetDouble(tmp);
+            }
+            else if (type == BIN_TYPE_LIST) {
+                int size; bf.Read(size);
+                value->SetArray();
+                for (int i = 0; i < size; ++ i) {
+                    Value tmp;
+                    value->PushBack(JsonValue(allocator, &tmp).read(bf).getValue(), *allocator);
+                }
+            }
+            else if (type == BIN_TYPE_DICT) {
+                int size; bf.Read(size);
+                value->SetObject();
+                for (int i = 0; i < size; ++ i) {
+                    Value tmp;
+                    std::string key;
+                    bf.Read(key);
+                    value->AddMember(Value(key, *allocator), JsonValue(allocator, &tmp).read(bf).getValue(), *allocator);
+                }
+            }
+            else throw type_error("readable JsonValue");
+            return *this;
+        }
 
         const Value& getValue() const {
             return *value;
         }
 
+        Value& getValue() {
+            return *value;
+        }
+
         operator size_t() const {
-            return value->GetUint64();
+            /*if (!value->IsUint64())
+                throw type_error("size_t");
+            return value->GetUint64();*/
+            return int(*this);
         }
 
         operator unsigned() const {
-            return value->GetUint64();
+            /*if (!value->IsUint64())
+                throw type_error("unsigned");
+            return value->GetUint64();*/
+            return int(*this);
         }
 
         /*operator Id() const {
@@ -44,18 +170,26 @@ public:
         }*/
 
         operator std::string() const {
+            if (!value->IsString())
+                throw type_error("string");
             return value->GetString();
         }
 
         operator int() const {
+            if (!value->IsInt())
+                throw type_error("int");
             return value->GetInt();
         }
 
         operator double() const {
+            if (!value->IsDouble())
+                throw type_error("double");
             return value->GetDouble();
         }
 
         operator bool() const {
+            if (!value->IsBool())
+                throw type_error("bool");
             return value->GetBool();
         }
 
@@ -65,12 +199,12 @@ public:
             }
 
         JsonValue& operator=(const size_t& x) {
-            value->SetUint64(x);
+            value->SetInt(x);
             return *this;
         }
 
         JsonValue& operator=(const unsigned& x) {
-            value->SetUint64(x);
+            value->SetInt(x);
             return *this;
         }
 
@@ -104,13 +238,20 @@ public:
             return *this;
         }
 
-        JsonValue& operator=(const Json& x) {
+        template <class T>
+        JsonValue& operator=(const T& x) {
+            return this->operator=(x.toJson());
+        }
+
+        JsonValue& operator=(Json x) {
             value->SetObject();
             value->CopyFrom(x.document, *allocator);
             return *this;
         }
 
-        JsonValue operator[](const std::string& key) {
+        JsonValue operator[](std::string key) {
+            if (!value->IsObject())
+                throw type_error("object");
             if (!value->HasMember(key)) {
                 value->AddMember(Value(key, *allocator), Value(), *allocator);
             }
@@ -118,38 +259,54 @@ public:
         }
 
         JsonValue operator[](unsigned int pos) {
+            if (!value->IsArray())
+                throw type_error("array");
             return JsonValue(allocator, &((*value)[pos]));
         }
 
-        JsonValue operator[](const std::string& key) const {
+        JsonValue operator[](std::string key) const {
+            if (!value->IsObject())
+                throw type_error("object");
             return JsonValue(allocator, &((*value)[key]));
         }
 
         JsonValue operator[](unsigned int pos) const {
+            if (!value->IsArray())
+                throw type_error("array");
             return JsonValue(allocator, &((*value)[pos]));
         }
 
         JsonValue& PushBack(const std::string& x) {
+            if (!value->IsArray())
+                throw type_error("array");
             value->PushBack(Value().SetString(x, *allocator), *allocator);
             return *this;
         }
 
         JsonValue& PushBack(const int& x) {
+            if (!value->IsArray())
+                throw type_error("array");
             value->PushBack(Value().SetInt(x), *allocator);
             return *this;
         }
 
         JsonValue& PushBack(const double& x) {
+            if (!value->IsArray())
+                throw type_error("array");
             value->PushBack(Value().SetDouble(x), *allocator);
             return *this;
         }
 
         JsonValue& PushBack(const bool& x) {
+            if (!value->IsArray())
+                throw type_error("array");
             value->PushBack(Value().SetBool(x), *allocator);
             return *this;
         }
 
         JsonValue& PushBack(const Json& x) {
+            if (!value->IsArray())
+                throw type_error("array");
             value->PushBack(Value().SetObject().CopyFrom(x.document, *allocator), *allocator);
             return *this;
         }
@@ -166,14 +323,20 @@ public:
         }
 
         size_t Size() const {
+            if (!value->IsArray())
+                throw type_error("array");
             return value->Size();
         }
 
         bool HasMember(const std::string& key) const {
+            if (!value->IsObject())
+                throw type_error("object");
             return value->HasMember(key);
         }
 
-        void forEach(std::function< void (const std::string&, JsonValue) > func) {
+        void forEach(std::function< void (const std::string&, JsonValue) > func) const {
+            if (!value->IsObject())
+                throw type_error("object");
             for (auto& item: value->GetObject()) {
                 func(item.name.GetString(),
                     JsonValue(allocator, &item.value));
@@ -187,7 +350,9 @@ public:
             }
         }*/
 
-        void forEach(std::function< void (JsonValue) > func) {
+        void forEach(std::function< void (JsonValue) > func) const {
+            if (!value->IsArray())
+                throw type_error("array");
             for (auto& item: value->GetArray()) {
                 func(JsonValue(allocator, &item));
             }
@@ -246,13 +411,31 @@ public:
 
     Json(const JsonValue& jv) {
         allocator = &(document.GetAllocator());
-        document.SetObject();
-        document.AddMember("data", Value(kObjectType), *allocator);
-        data = JsonValue(
-            allocator,
-            &(document["data"])
-        );
-        document["data"].CopyFrom(jv.getValue(), *allocator);
+        if (jv.HasMember("data")) {
+            document.CopyFrom(jv.getValue(), *allocator);
+            if (document.HasMember("type"))
+                type = document["type"].GetString();
+            if (document.HasMember("id"))
+                id = document["id"].GetString();
+            data = JsonValue(allocator, &document["data"]);
+        }
+        else {
+            document.SetObject();
+            document.AddMember("data", Value(kObjectType), *allocator);
+            data = JsonValue(
+                    allocator,
+                    &(document["data"])
+                    );
+            document["data"].CopyFrom(jv.getValue(), *allocator);
+        }
+    }
+
+    void write(BinaryFile& bf) const {
+        data.write(bf);
+    }
+
+    void read(BinaryFile& bf) {
+        data.read(bf);
     }
 
     Json& Parse(const std::string& content) {
@@ -272,7 +455,7 @@ public:
         return document;
     }
 
-    JsonValue operator[](const std::string& key) {
+    JsonValue operator[](std::string key) {
         return data[key];
     }
 
@@ -280,7 +463,7 @@ public:
         return data[pos];
     }
 
-    JsonValue operator[](const std::string& key) const {
+    JsonValue operator[](std::string key) const {
         return data[key];
     }
 

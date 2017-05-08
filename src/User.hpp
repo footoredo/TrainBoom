@@ -2,6 +2,7 @@
 #define TRAINBOOM_USER_HPP
 
 #include "util.hpp"
+#include "Order.hpp"
 #include <string>
 #include <vector>
 #include <cassert>

@@ -4,6 +4,7 @@
 #include "stupid_ptr.hpp"
 #include "pair.hpp"
 #include "exception.hpp"
+#include "Json.hpp"
 
 namespace TrainBoom {
 
@@ -408,6 +409,12 @@ public:
 		return _countsize(root);
 	}
 
+	Json toJson() const {
+		Json json("map");
+		json["root"] = root->id;
+		return json;
+	}
+
 private:
 	static const bool BLACK = 0, RED = 1;
 	struct Node {
@@ -415,22 +422,36 @@ private:
 		stupid_ptr<Node> child[2];
 		stupid_ptr<Node> parent;
 		stupid_ptr<Node> prev_p, next_p;
-		// map *who;
 		bool color;
+		std::string id;
+		// map *who;
 		Node (const value_type& value)
 			: value(new value_type(value)),
 				child({nullptr, nullptr}),
 				parent(nullptr),
 				prev_p(nullptr), next_p(nullptr),
 				// who(who),
-				color(RED) {}
+				color(RED), id(Id("Node")) {}
 		Node (const stupid_ptr<Node>& other)
 			: value(new value_type(*other->value)),
 				child({nullptr, nullptr}),
 				parent(nullptr),
 				prev_p(nullptr), next_p(nullptr),
 				// who(who),
-				color(other->color) {}
+				color(other->color), id(other->id) {}
+
+		Json toJson() const {
+			Json json("node", id);
+			json["content"] = value;
+			if (child[0]) {
+				json["child0"] = child[0]->id;
+			}
+			if (child[0]) {
+				json["child1"] = child[1]->id;
+			}
+			return json;
+		}
+
 		friend stupid_ptr<Node> grandparent(const stupid_ptr<Node>& u) {
 			if (u->parent) return u->parent->parent;
 			else return nullptr;
