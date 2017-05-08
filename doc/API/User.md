@@ -108,3 +108,45 @@ PUT /users/:userId
 ```
 
 The rest is same as `insert`, except for all informations are optional.
+
+## listOrders
+
+### HTTP Request
+```
+GET /users/:userId/orders
+```
+
+### Response body
+```json
+{
+    "data": {
+        "orders": [
+            "c10fd1d8e080c6f1022fa589f1d65c1a7ed556bc"
+        ]
+    },
+    "type": "ordersList"
+}
+```
+
+## getOrder
+
+### HTTP Request
+```
+GET /users/:userId/orders/:orderId
+```
+
+### Response body
+```json
+{
+    "data": {
+        "ticketPrice": 259.0,
+        "startStationId": "c4d36e6e39c1bee38644761c8d562fd5c5ede28b",
+        "ticketNumber": 2,
+        "routeId": "f5f2225f7758cc97253c658c42320f40b1db282a",
+        "endStationId": "089c3301cde7f387d4d53c0a0be7bfe51ad32229",
+        "ticketType": "first class"
+    },
+    "type": "order",
+    "id": "c5e32ab22f6227e9f177612148f044c72624fa1f"
+}
+```

@@ -322,12 +322,13 @@ PUT /routes/:routeId/tickets
 {
     "data": {
         "ticketPrice": 259.0,
-        "startStationId": "b8150fef4be4a0f7b8dcffbeeabc68ab48ca616b",
+        "startStationId": "c4d36e6e39c1bee38644761c8d562fd5c5ede28b",
         "ticketNumber": 2,
-        "routeId": "d0bda205ca3042fd5398c7e2c8bc163803080888",
-        "endStationId": "5e77d71fabefb3f965739abb9b962c2d1e0d048f",
+        "routeId": "f5f2225f7758cc97253c658c42320f40b1db282a",
+        "endStationId": "089c3301cde7f387d4d53c0a0be7bfe51ad32229",
         "ticketType": "first class"
     },
-    "type": "order"
+    "type": "order",
+    "id": "c5e32ab22f6227e9f177612148f044c72624fa1f"
 }
 ```
