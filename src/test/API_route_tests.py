@@ -1,7 +1,7 @@
 import requests
 
-# url = "http://39.108.7.208:3000"
-url = "http://localhost:3000"
+url = "http://39.108.7.208:3000"
+#url = "http://localhost:3000"
 
 route = {
     "name": "G105",
@@ -51,8 +51,9 @@ routeId0 = res.json()["id"]
 
 res = requests.get(url + "/routes/" + routeId0 + "/start");
 assert res.json()["type"] == "success", "Failed to start the route!"
+print "Start route check passed!"
 
-res = requests.get(url + "/stations/" + stationId0 + "/routes", json = {
+res = requests.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationId": stationId1,
     "date": "2017/5/5"
     })
@@ -63,7 +64,7 @@ print "1st route test passed!"
 res = requests.post(url + "/routes", json = route);
 routeId1 = res.json()["id"]
 res = requests.get(url + "/routes/" + routeId1 + "/start");
-res = requests.get(url + "/stations/" + stationId0 + "/routes", json = {
+res = requests.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationId": stationId1,
     "date": "2017/5/5"
     })
@@ -73,7 +74,7 @@ print "2nd route test passed!"
 
 res = requests.get(url + "/routes/" + routeId0 + "/stop");
 assert res.json()["type"] == "success", "Failed to stop the 1st route!"
-res = requests.get(url + "/stations/" + stationId0 + "/routes", json = {
+res = requests.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationId": stationId1,
     "date": "2017/5/5"
     })
@@ -81,10 +82,11 @@ result = res.json()["data"]["routes"]
 assert len(result) == 1 and result[0] == routeId1, "Query check after stop 1st route failed!"
 
 res = requests.get(url + "/routes/" + routeId0 + "/stop");
+print json.dumps(res.json(), indent=4)
 assert res.json()["type"] == "error", "Duplicated stop check failed!"
 print "stop test passed!"
 
-res = requests.get(url + "/routes/" + routeId1 + "/tickets", json = {
+res = requests.post(url + "/routes/" + routeId1 + "/tickets", json = {
     "startStation": stationId0,
     "endStation": stationId1
     })
@@ -110,7 +112,7 @@ data = {
     "startStationId": stationId0,
     "endStationId": stationId1,
     "ticketType": "first class",
-    "ticketNumber": 2 
+    "ticketNumber": 2
     }
 
 res = requests.put(url + "/routes/" + routeId1 + "/tickets", json = {
@@ -135,7 +137,7 @@ assert res.json() == orderJson, "Order attaching check failed!"
 
 print "Order attaching check passed!"
 
-res = requests.get(url + "/routes/" + routeId1 + "/tickets", json = {
+res = requests.post(url + "/routes/" + routeId1 + "/tickets", json = {
     "startStation": stationId0,
     "endStation": stationId1
     })
