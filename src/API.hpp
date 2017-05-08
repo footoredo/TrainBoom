@@ -295,7 +295,7 @@ namespace TrainBoom {
                 void startRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string routeId = request.param(":routeId").as<std::string>();
                     try {
-                        const Route& route = trainBoom->route(routeId);
+                        Route& route = trainBoom->route(routeId);
                         try {
                             trainBoom->startRoute(route);
                             Generic::sendJson(response, Generic::success("Start Route succeeded!"));
@@ -310,7 +310,7 @@ namespace TrainBoom {
                 void stopRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string routeId = request.param(":routeId").as<std::string>();
                     try {
-                        const Route& route = trainBoom->route(routeId);
+                        Route& route = trainBoom->route(routeId);
                         try {
                             trainBoom->stopRoute(route);
                             Generic::sendJson(response, Generic::success("Stop Route succeeded!"));
