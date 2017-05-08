@@ -150,3 +150,27 @@ GET /users/:userId/orders/:orderId
     "id": "c5e32ab22f6227e9f177612148f044c72624fa1f"
 }
 ```
+
+## username
+
+### HTTP Reqeust
+```
+POST /users/username
+```
+
+### Request body
+```json
+{
+    "username": "footoredo"
+}
+```
+
+### Response body
+```json
+{
+   "type": "userId",
+   "data": {
+      "userId": "f3a6e5276e18609a6845321ab858708bdf75c2db"
+   }
+}
+```

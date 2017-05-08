@@ -10,6 +10,7 @@ Method|HTTP request|Description
 `list`|`GET /users`| Get the user list.
 `get`|`GET /users/:userId`| Get information of a single user.
 `update`|`PUT /users/:userId`| Update information of a single user.
+`username`|`POST /users/username`| Get userId by username.
 
 ### Station
 
