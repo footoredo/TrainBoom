@@ -159,7 +159,9 @@ public:
 
 			route["n"] = cnt;
 			// std::cout << route.toString() << std::endl;
-			insertRoute(Route(route));
+			Route tmp(route);
+			insertRoute(tmp);
+			startRoute(routes[tmp.getId()]);
 
 			// if (i > 150) break;
 		}
