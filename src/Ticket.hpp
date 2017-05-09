@@ -18,20 +18,22 @@ class Attribute {
 	public:
 		double price; // 车票单价
 		unsigned number;  // 车票余量
+		bool nonstop;
 
-		Attribute(): price(), number() { // 无参构造，类型为空
+		Attribute(): price(), number(), nonstop() { // 无参构造，类型为空
 		}
 
-		Attribute(double p, unsigned n): price(p), number(n) {}
+		Attribute(double p, unsigned n, bool nonstop = false): price(p), number(n), nonstop(nonstop) {}
 
-		Attribute(const Attribute &t): price(t.price), number(t.number) {
+		Attribute(const Attribute &t): price(t.price), number(t.number), nonstop(t.nonstop) {
 			// price = t.price;
 			// number = t.number;
 			// type = t.type;
 		}
 
 		Attribute(const util::Json& json): price(json["price"].as<double>()),
-		 	number(json.HasMember("number") ? json["number"].as<unsigned>() : 200) {
+		 	number(json.HasMember("number") ? json["number"].as<unsigned>() : 200),
+			nonstop(json.HasMember("nonstop") ? json["nonstop"].as<bool>() : false) {
 //				assert(json.getType() == "attribute");
 		}
 
@@ -42,6 +44,7 @@ class Attribute {
 				return *this;
 			price = t.price;
 			number = t.number;
+			nonstop = t.nonstop;
 			// type = t.type;
 			return *this;
 		}
@@ -70,6 +73,7 @@ class Attribute {
 			util::Json json("attribute");
 			json["price"] = price;
 			json["number"] = number;
+			json["nonstop"] = nonstop;
 			return json;
 		}
 

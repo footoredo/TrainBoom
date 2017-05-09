@@ -102,6 +102,14 @@ public:
     		"Tickets left are not enough for you to book!!!") {}
     };
 
+    class nonstop_station: public exception {
+    public:
+        nonstop_station(std::string pos, std::string type): exception (
+            "nontstop_station",
+            "Your " + type + " in " + pos + " is nonstop!!!"
+        ) {}
+    };
+
     explicit Route(): id("Route"), running(false) {}
 
     /*Route(Id id, unsigned n,
@@ -221,6 +229,11 @@ public:
         return n;
     }
 
+    bool isNonstop(unsigned index, std::string ticketType) {
+        if (index == 0) return false;
+        return segments[index]->ticket(ticketType).nonstop;
+    }
+
     Segment queryTickets(const std::string& startStation, const std::string& endStation) {
         auto interval = getInterval(startStation, endStation);
         return segmentsIntervalManip->query(interval.first, interval.second);
@@ -233,6 +246,10 @@ public:
 
     Order bookTickets(const std::string& startStationId, const std::string& endStationId, const std::string& ticketType, unsigned ticketNumber) {
         auto interval = getInterval(startStationId, endStationId);
+        if (isNonstop(interval.first, ticketType))
+            throw nonstop_station("start station", ticketType);
+        if (isNonstop(interval.second + 1, ticketType))
+            throw nonstop_station("end station", ticketType);
         Segment segment = segmentsIntervalManip->query(interval.first, interval.second);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();

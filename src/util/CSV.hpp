@@ -141,6 +141,8 @@ public:
 
 }	// util
 
+using util::CSV::CSV;
+
 }	// TrainBoom
 
 
