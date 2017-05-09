@@ -60,8 +60,9 @@ res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationId": stationId1,
     "date": "2017/5/5"
     })
+#print json.dumps(res.json(), indent=4)
 result = res.json()["data"]["routes"]
-assert len(result) == 1 and result[0] == routeId0, "Query check failed!"
+assert len(result) == 1 and result[0]["data"]["routeId"] == routeId0, "Query check failed!"
 print "1st route test passed!"
 
 res = s.post(url + "/routes", json = route);
@@ -72,7 +73,8 @@ res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "date": "2017/5/5"
     })
 result = res.json()["data"]["routes"]
-assert len(result) == 2 and routeId0 in result and routeId1 in result, "Query check after 2nd route failed!"
+resultRouteId = map(lambda item: item["data"]["routeId"], result)
+assert len(result) == 2 and routeId0 in resultRouteId and routeId1 in resultRouteId, "Query check after 2nd route failed!"
 print "2nd route test passed!"
 
 res = s.get(url + "/routes/" + routeId0 + "/stop");
@@ -82,7 +84,7 @@ res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "date": "2017/5/5"
     })
 result = res.json()["data"]["routes"]
-assert len(result) == 1 and result[0] == routeId1, "Query check after stop 1st route failed!"
+assert len(result) == 1 and result[0]["data"]["routeId"] == routeId1, "Query check after stop 1st route failed!"
 
 res = s.get(url + "/routes/" + routeId0 + "/stop");
 #print json.dumps(res.json(), indent=4)
@@ -90,9 +92,11 @@ assert res.json()["type"] == "error", "Duplicated stop check failed!"
 print "stop test passed!"
 
 res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
-    "startStation": stationId0,
-    "endStation": stationId1
+    "l": 0,
+    "r": 1
     })
+
+print json.dumps(res.json(), indent=4)
 assert res.json()["data"]["tickets"]["first class"]["data"]["number"] == 17, "Query tickets check failed!"
 print "Query tickets check passed!"
 
@@ -101,8 +105,8 @@ userId = res.json()["id"]
 
 data = {
     "userId": userId,
-    "startStationId": stationId0,
-    "endStationId": stationId1,
+    "l": 0,
+    "r": 1,
     "ticketType": "first class",
     "ticketNumber": 1000
     }
@@ -113,16 +117,16 @@ assert res.json()["type"] == "error"
 print "Overbook ticket test passed!"
 data = {
     "userId": userId,
-    "startStationId": stationId0,
-    "endStationId": stationId1,
+    "l": 0,
+    "r": 1,
     "ticketType": "first class",
     "ticketNumber": 2
     }
 
 res = s.put(url + "/routes/" + routeId1 + "/tickets", json = {
     "userId": userId,
-    "startStationId": stationId0,
-    "endStationId": stationId1,
+    "l": 0,
+    "r": 1,
     "ticketType": "first class",
     "ticketNumber": 2
     })
@@ -143,8 +147,8 @@ assert res.json() == orderJson, "Order attaching check failed!"
 print "Order attaching check passed!"
 
 res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
-    "startStation": stationId0,
-    "endStation": stationId1
+    "l": 0,
+    "r": 1 
     })
 assert res.json()["data"]["tickets"]["first class"]["data"]["number"] == 15, "Query tickets after booking check failed!"
 print "Query tickets after booking check passed!"
