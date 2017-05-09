@@ -231,7 +231,7 @@ public:
 
     bool isNonstop(unsigned index, std::string ticketType) {
         if (index == 0) return false;
-        return segments[index]->ticket(ticketType).nonstop;
+        return segments[index - 1]->ticket(ticketType).nonstop;
     }
 
     Segment queryTickets(const std::string& startStation, const std::string& endStation) {

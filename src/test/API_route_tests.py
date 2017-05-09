@@ -1,7 +1,7 @@
 import requests
 
-url = "http://39.108.7.208:3000"
-#url = "http://localhost:3000"
+#url = "http://39.108.7.208:3000"
+url = "http://localhost:3000"
 s = requests.Session()
 s.headers.update({"Cache-Control": "no-cache"})
 
@@ -108,6 +108,7 @@ data = {
     }
 
 res = s.put(url + "/routes/" + routeId1 + "/tickets", json=data)
+#print json.dumps(res.json(), indent=4)
 assert res.json()["type"] == "error"
 print "Overbook ticket test passed!"
 data = {
@@ -125,6 +126,7 @@ res = s.put(url + "/routes/" + routeId1 + "/tickets", json = {
     "ticketType": "first class",
     "ticketNumber": 2
     })
+#print json.dumps(res.json(), indent=4)
 assert res.json()["data"]["ticketPrice"] == 259.0
 orderJson = res.json()
 orderId = res.json()["id"]

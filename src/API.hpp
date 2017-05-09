@@ -101,6 +101,7 @@ namespace TrainBoom {
                     Routes::Get(router, "/stations", Routes::bind(&StatsEndpoint::listStations, this));
                     Routes::Get(router, "/stations/:stationId", Routes::bind(&StatsEndpoint::getStation, this));
                     Routes::Put(router, "/stations/:stationId", Routes::bind(&StatsEndpoint::updateStation, this));
+                    ROUTING(Post, "/stations/name", getByStationName);
                     // Routes::Post(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::addRouteStation, this));
                     // Routes::Delete(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::delRouteStation, this));
                     Routes::Post(router, "/stations/:stationId/routes", Routes::bind(&StatsEndpoint::queryRouteStation, this));
@@ -196,9 +197,12 @@ namespace TrainBoom {
 
                 void insertStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     Station station(Json("station").Parse(request.body()));
+                    try {
                     trainBoom->insertStation(station);
 
                     Generic::sendJson(response, station.toJson());
+                    }
+                    HANDLEERR;
                 }
 
                 void listStations(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -224,6 +228,17 @@ namespace TrainBoom {
                         Generic::sendJson(response, station.toJson());
                     }
 		    HANDLEERR;
+                }
+
+                APIHANDLER(getByStationName) {
+                    try {
+                        std::string stationName = Json().Parse(request.body())["name"];
+                        std::string stationId = trainBoom->idByStationName(stationName);
+                        Json tmp("stationId");
+                        tmp["stationId"] = stationId;
+                        SENDJSON(tmp);
+                    }
+                    HANDLEERR;
                 }
 
                 void addRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
