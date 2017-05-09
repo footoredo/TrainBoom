@@ -6,10 +6,34 @@
 #include "util.hpp"
 
 namespace TrainBoom {
+	// struct RouteInterval;
+	struct RouteInterval {
+	    std::string routeId;
+	    unsigned l, r;
+		RouteInterval(std::string routeId, unsigned l, unsigned r):
+			routeId(routeId), l(l), r(r) {}
+	    bool operator<(const RouteInterval& other) const {
+	        if (routeId == other.routeId)
+	            if (l == other.l)
+	                return r < other.r;
+	            else
+	                return l < other.l;
+	        else
+	            return routeId < other.routeId;
+	    }
+	    Json toJson() const {
+	        Json json("routeInterval");
+	        json["routeId"] = routeId;
+	        json["l"] = l;
+	        json["r"] = r;
+			return json;
+	    }
+	};
+
 	class Station {
 		private:
 			std::string name;
-			util::map<std::string, util::map<util::Datetime::Datetime, util::set<std::string>>> routesMap;
+			util::map<std::string, util::map<util::Datetime::Datetime, util::set<RouteInterval>>> routesMap;
 			Id id;
 
 		public:
@@ -47,13 +71,13 @@ namespace TrainBoom {
 				return name;
 			}
 
-			void add(const std::string& stationId, const util::Datetime::Datetime& date, const std::string& routeId){
-				if (!routesMap[stationId][date].insert(routeId).second) throw add_routeId_failed(); // assuming return value is pair<iterator,bool>
+			void add(const std::string& stationId, const util::Datetime::Datetime& date, const RouteInterval& routeInterval){
+				if (!routesMap[stationId][date].insert(routeInterval).second) throw add_routeId_failed(); // assuming return value is pair<iterator,bool>
 			}
 
-			void del(const std::string& stationId, const util::Datetime::Datetime& date, const std::string& routeId) {
+			void del(const std::string& stationId, const util::Datetime::Datetime& date, const RouteInterval& routeInterval) {
 				try {
-					routesMap[stationId][date].erase(routeId);
+					routesMap[stationId][date].erase(routeInterval);
 				}
 				catch (const invalid_iterator& e) {
 					throw delete_routeId_failed();
@@ -68,13 +92,13 @@ namespace TrainBoom {
 				if (map[stationId].erase(trainId)<1) throw delete_trainId_failed();
 			}*/
 
-			util::vector<std::string> query(const std::string& stationId, const util::Datetime::Datetime& date) const {
-                util::vector<std::string> ret;
+			util::vector<RouteInterval> query(const std::string& stationId, const util::Datetime::Datetime& date) const {
+                util::vector<RouteInterval> ret;
                 if (!routesMap.count(stationId) ||
                         !routesMap.at(stationId).count(date))
                     return ret;
-				for (const std::string& routeId: routesMap.at(stationId).at(date)) {
-                    ret.push_back(routeId);
+				for (const auto& routeInterval: routesMap.at(stationId).at(date)) {
+                    ret.push_back(routeInterval);
                 }
                 return ret;
 			}
@@ -84,7 +108,7 @@ namespace TrainBoom {
                 json["name"] = name;
                 return json;
             }
-
+/*
             Json queryJson(const std::string& stationId, const Datetime& date) const {
                 Json ret("routesList");
                 ret["routes"].SetArray();
@@ -92,7 +116,7 @@ namespace TrainBoom {
                     ret["routes"].PushBack(id);
                 }
                 return ret;
-            }
+            }*/
 
 	};
 

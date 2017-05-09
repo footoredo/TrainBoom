@@ -14,8 +14,8 @@ int main() {
     std::string diaozhou = trainBoom.idByStationName("吊州");
     std::string shanghaihongqiao = trainBoom.idByStationName("上海虹桥");
     const auto& vec = trainBoom.station(diaozhou).query(shanghaihongqiao, Datetime::parse("2017/3/28"));
-    for (const auto routeId: vec) {
-        auto& route = trainBoom.route(routeId);
-        std::cout << route.queryTickets(diaozhou, shanghaihongqiao).toJson().toString() << std::endl;
+    for (const auto routeInterval: vec) {
+        auto& route = trainBoom.route(routeInterval.routeId);
+        std::cout << route.queryTickets(routeInterval.l, routeInterval.r).toJson().toString() << std::endl;
     }
 }

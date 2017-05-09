@@ -31,13 +31,13 @@ private:
     util::stupid_array<util::stupid_ptr<Segment>> segments;
 
     util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip;
-    util::map<std::string, unsigned> stationsMap;
+//    util::map<std::string, unsigned> stationsMap;
 
     Id id;
 
     bool running;
 
-    util::pair<unsigned, unsigned> getInterval(const std::string& startStation, const std::string& endStation) {
+/*    util::pair<unsigned, unsigned> getInterval(const std::string& startStation, const std::string& endStation) {
         const auto& iterStart = stationsMap.find(startStation),
             iterEnd = stationsMap.find(endStation);
         if (iterStart == stationsMap.end() ||
@@ -50,9 +50,10 @@ private:
         }
 
         return util::make_pair(start, end - 1); // Attenion here !!
-    }
+    }*/
 
 public:
+
     class station_number_too_small : public exception {
     public:
     	station_number_too_small() : exception(
@@ -147,8 +148,8 @@ public:
             if (informations.size() != n || segments.size() != n - 1) {
                     throw station_number_not_consistent();
                 }
-            for (unsigned i = 0; i < n; ++ i)
-                stationsMap[informations[i]->getStationId()] = i;
+//            for (unsigned i = 0; i < n; ++ i)
+//                stationsMap[informations[i]->getStationId()] = i;
             segmentsIntervalManip = new SegmentsInvervalManip(
                 segments, n - 1
             );
@@ -180,8 +181,8 @@ public:
             }
         }
 
-        for (unsigned i = 0; i < n; ++ i)
-            stationsMap[informations[i]->getStationId()] = i;
+//        for (unsigned i = 0; i < n; ++ i)
+//            stationsMap[informations[i]->getStationId()] = i;
 
         segmentsIntervalManip = new SegmentsInvervalManip(segments, n - 1);
     }
@@ -234,29 +235,29 @@ public:
         return segments[index - 1]->ticket(ticketType).nonstop;
     }
 
-    Segment queryTickets(const std::string& startStation, const std::string& endStation) {
-        auto interval = getInterval(startStation, endStation);
-        return segmentsIntervalManip->query(interval.first, interval.second);
+    Segment queryTickets(unsigned l, unsigned r) {
+        // auto interval = getInterval(startStation, endStation);
+        return segmentsIntervalManip->query(l, r - 1);
     }
 
-    void modifyTickets(const std::string& startStation, const std::string& endStation, const TicketDelta& deltas) {
-        auto interval = getInterval(startStation, endStation);
-        segmentsIntervalManip->modify(interval.first, interval.second, deltas);
+    void modifyTickets(unsigned l, unsigned r, const TicketDelta& deltas) {
+        // auto interval = getInterval(startStation, endStation);
+        segmentsIntervalManip->modify(l, r - 1, deltas);
     }
 
-    Order bookTickets(const std::string& startStationId, const std::string& endStationId, const std::string& ticketType, unsigned ticketNumber) {
-        auto interval = getInterval(startStationId, endStationId);
-        if (isNonstop(interval.first, ticketType))
+    Order bookTickets(unsigned l, unsigned r, const std::string& ticketType, unsigned ticketNumber) {
+        // auto interval = getInterval(startStationId, endStationId);
+        if (isNonstop(l, ticketType))
             throw nonstop_station("start station", ticketType);
-        if (isNonstop(interval.second + 1, ticketType))
+        if (isNonstop(r, ticketType))
             throw nonstop_station("end station", ticketType);
-        Segment segment = segmentsIntervalManip->query(interval.first, interval.second);
+        Segment segment = segmentsIntervalManip->query(l, r - 1);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();
-        Order order(id, startStationId, endStationId, ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
+        Order order(id, informations[l]->getStationId(), informations[r]->getStationId(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
         TicketDelta ticketDelta;
         ticketDelta[ticketType] = - (int)ticketNumber;
-        segmentsIntervalManip->modify(interval.first, interval.second, ticketDelta);
+        segmentsIntervalManip->modify(l, r - 1, ticketDelta);
         return order;
     }
 

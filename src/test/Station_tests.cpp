@@ -15,12 +15,12 @@ int main() {
 		if (i < 50) stationId[i] = Id("Station");
 		routeId[i] = Id("Route");
  //       if (i < 10) std::cout << i << ": " << routeId[i] << std::endl;
-		st.add(stationId[i / 2], today, routeId[i]);
+		st.add(stationId[i / 2], today, RouteInterval(routeId[i], 0, 1));
 	}
 	cout << "add test ok" << endl;
 
 	for(int i = 50; i < 100; ++i) {
-		st.del(stationId[i / 2], today, routeId[i]);
+		st.del(stationId[i / 2], today, RouteInterval(routeId[i], 0, 1));
 	}
 	cout << "del test ok" << endl;
 
@@ -32,7 +32,7 @@ int main() {
 
 
 	try {
-		st.del(stationId[0], today, Id("Route"));
+		st.del(stationId[0], today, RouteInterval(Id("Route"), 0, 1));
         std::cout << "throw test for del failed!" << std::endl;
 	} catch (const Station::delete_routeId_failed& e) {
 		std::cout << "throw test for del ok!" << std::endl;
@@ -42,11 +42,11 @@ int main() {
         const auto routes = st.query(stationId[i], today);
         assert(routes.size() == 2);
 //        std::cout << routes[0] << " " << routes[1] << std::endl;
-        assert((routes[0] == routeId[i * 2] && routes[1] == routeId[i * 2 + 1]) || (routes[1] == routeId[i * 2] && routes[0] == routeId[i * 2 + 1]));
+        assert((routes[0].routeId == routeId[i * 2] && routes[1].routeId == routeId[i * 2 + 1]) || (routes[1].routeId == routeId[i * 2] && routes[0].routeId == routeId[i * 2 + 1]));
     }
     std::cout << "query test ok!" << std::endl;
 
-    std::cout << st.queryJson(stationId[0], today).toString() << std::endl;
+    // std::cout << st.queryJson(stationId[0], today).toString() << std::endl;
 
 	return 0;
 }

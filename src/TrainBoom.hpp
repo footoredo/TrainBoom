@@ -256,7 +256,7 @@ public:
                 station(route.information(j).getStationId()).
                     add(route.information(i).getStationId(),
                             route.information(j).getDate(),
-                            route.getId());
+                            RouteInterval(route.getId(), j, i));
             }
     }
 
@@ -271,7 +271,7 @@ public:
                 station(route.information(j).getStationId()).
                     del(route.information(i).getStationId(),
                             route.information(j).getDate(),
-                            route.getId());
+                            RouteInterval(route.getId(), j, i));
             }
     }
 

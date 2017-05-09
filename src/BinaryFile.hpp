@@ -113,7 +113,6 @@ namespace TrainBoom
 			{
 				WClose();
 				ROpen();
-				int i=0;
 				while (!in.eof())
 				{
 					char c;

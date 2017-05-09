@@ -37,7 +37,7 @@ int main() {
     Route route("CRH", 3, informations, segments);
     std::cout << "Initialization test passed!" << std::endl;
 //    route.display();
-    auto q = route.queryTickets(stations[0], stations[2]);
+    auto q = route.queryTickets(0, 2);
 //    q.display();
     assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 998 + 15) && q.getTickets()["APTV"].number == 15);
     assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 1);
@@ -47,11 +47,11 @@ int main() {
     order["APTV"] = 5;
     order["人民的名义"] = -1;
 
-    route.modifyTickets(stations[0], stations[2], order);
+    route.modifyTickets(0, 2, order);
 //    route.display();
 
 
-    q = route.queryTickets(stations[0], stations[2]);
+    q = route.queryTickets(0, 2);
 //    q.display();
     assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 998 + 15) && q.getTickets()["APTV"].number == 20);
     assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 0);
