@@ -26,13 +26,23 @@ struct foo{
 	}
 };
 int main()
-{
+{	
+	BinaryFile asd("t.dat");
+	asd.Write(std::string("first"));
+	asd.Write(std::string("second"));
+	asd.Write(std::string("third"));
+	std::string bbuf;
+	asd.Read(bbuf);
+	cout<<bbuf<<endl;
+	asd.Close();
+	
 	BinaryFile asdas("ttt.dat");
 	asdas.Write(std::string("123546611123"));
 	std::string tmpstr; asdas.Read(tmpstr);
 	std::cout << tmpstr << std::endl;
 	assert(tmpstr == "123546611123");
-
+	asdas.Close();
+	
 	int w=5;
 	BinaryFile tt("hhh.dat");
 	tt.Write(w);
@@ -73,6 +83,7 @@ int main()
 	s.Write(str);
 	s.Read(str);
 	s.Write(str);
+	s.Close();
 	BinaryFile r("str.dat");
 	r.Read(buf);
 	cout<<str<<endl<<buf<<endl<<buf.size()<<'/'<<str.size()<<endl;
@@ -86,8 +97,8 @@ int main()
 	for (int i=0;i<3;++i)
 	{
 		s.Write(astr[i]);
+		s.Close();
 		s.Read(abuf[i]);
-		s.Write(astr[i]);
 		cout<<astr[i]<<' '<<abuf[i]<<endl;
 		assert(abuf[i]==astr[i]);
 	}

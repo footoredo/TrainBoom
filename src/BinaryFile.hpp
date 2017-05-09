@@ -11,25 +11,40 @@ namespace TrainBoom
 	class BinaryFile
 	{
 		private:
-			std::fstream file;
+			std::ifstream in;
+			std::ofstream out;
 			std::string path;
+			void WClose()
+			{
+				if (out.is_open()) out.close();
+			}
+			void RClose()
+			{
+				if (in.is_open()) in.close();
+			}
 			void ROpen()
 			{
-				if (file.is_open()) return;
-				file.open(path, std::fstream::in|std::fstream::binary);
-				if (!file.is_open()) throw error_opening_file("file not open");
+				if (in.is_open()) return;
+				in.open(path, std::fstream::in|std::fstream::binary);
+				if (!in.is_open()) throw error_opening_file("file not open");
 			}
 			void WOpen()
 			{
-				if (file.is_open()) return;
-				file.open(path, std::fstream::out|std::fstream::binary|std::fstream::trunc);
-				if (!file.is_open()) throw error_opening_file("file not open");
+				if (out.is_open()) return;
+				out.open(path, std::fstream::out|std::fstream::binary|std::fstream::trunc);
+				if (!out.is_open()) throw error_opening_file("file not open");
+			}
+		public:
+			void Open()
+			{
+				ROpen();
+				WOpen();
 			}
 			void Close()
 			{
-				if (file.is_open()) file.close();
+				WClose();
+				RClose();
 			}
-		public:
 			class error_opening_file : public exception
 			{
 				public:
@@ -61,8 +76,8 @@ namespace TrainBoom
 			}
 			void ChangePath(const std::string &pth)
 			{
-				path=pth;
 				Close();
+				path=pth;
 //				Open();
 			}
 			void Write(const std::string &obj)
@@ -76,44 +91,57 @@ namespace TrainBoom
 			void Write(const void *obj,size_t sz)
 			{
 				WOpen();
-				file.write(reinterpret_cast<const char *>(obj),sz);
-				if (file.rdstate())	Close(),throw error_writing_file("flag set: "+(char)(48+file.rdstate()));
-				Close();
+				out.write(reinterpret_cast<const char *>(obj),sz);
+				if (out.rdstate())	throw error_writing_file("flag set: "+(char)(48+out.rdstate()));
+//				Close();
 			}
 			void Read(std::string &buf)
 			{
+				WClose();
 				ROpen();
-				while (!file.eof())
+				while (!in.eof())
 				{
 				    char c;
-					file.read(reinterpret_cast<char *>(&c),sizeof(char));
-					if (file.eof()) break;
-					if (file.rdstate()) Close(),throw error_reading_file("flag set: "+(char)(48+file.rdstate()));
+					in.read(reinterpret_cast<char *>(&c),sizeof(char));
+					if (in.eof()) break;
+					if (in.rdstate()) throw error_reading_file("flag set: "+(char)(48+in.rdstate()));
 					buf.push_back(c);
 				}
-				Close();
+//				Close();
 			}
 			void Read(char *buf)
 			{
+				WClose();
 				ROpen();
 				int i=0;
-				while (!file.eof())
+				while (!in.eof())
 				{
 					char c;
-					file.read(reinterpret_cast<char *>(&c),sizeof(char));
-					if (file.eof()) break;
-					if (file.rdstate()) Close(),throw error_reading_file("flag set: "+(char)(48+file.rdstate()));
+					in.read(reinterpret_cast<char *>(&c),sizeof(char));
+					if (in.eof()) break;
+					if (in.rdstate()) Close(),throw error_reading_file("flag set: "+(char)(48+in.rdstate()));
 					*(buf++)=c;
 				}
 				*buf='\0';
-				Close();
+//				Close();
 			}
 			void Read(void *buf,size_t sz)
 			{
+				WClose();
 				ROpen();
-				file.read(reinterpret_cast<char *>(buf),sz);
+				in.read(reinterpret_cast<char *>(buf),sz);
 //				if (file.rdstate()) throw error_reading_file("flag set");
-				Close();
+//				Close();
+			}
+			template<typename T>
+			void Write(const T& obj)
+			{
+				Write(&obj,sizeof(obj));
+			}
+			template<typename T>
+			void Read(T& obj)
+			{
+				Read(&obj,sizeof(obj));
 			}
 	};
 }
