@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -g -I. -I../include
+CXXFLAGS = -std=c++11 -Wall -g -O2 -I. -I../include
 SOURCE = test
 BIN = test_bin
 CPPFILES = sha1.cpp
@@ -53,3 +53,6 @@ test_BinaryFile:
 	$(CXX) -o $(BIN)/BinaryFile_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/BinaryFile_tests.cpp
 test_Order:
 	$(CXX) -o $(BIN)/Order_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/Order_tests.cpp
+
+test_DataManager:
+	$(CXX) -o $(BIN)/DataManager_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/DataManager_tests.cpp

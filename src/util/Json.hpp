@@ -6,8 +6,9 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <functional>
-#include "BinaryFile.hpp"
-#include "util.hpp"
+#include "util/BinaryFile.hpp"
+#include "util/stupid_ptr.hpp"
+// #include "util.hpp"
 
 namespace TrainBoom {
 
@@ -55,8 +56,9 @@ public:
         JsonValue(Document::AllocatorType* allocator,
             Value *value): allocator(allocator), value(value) {}
 
-        void write(BinaryFile& bf) const {
-/*            if (value->IsBool()) {
+        void write(util::stupid_ptr<BinaryFile> bfp) const {
+            BinaryFile& bf = *bfp;
+            if (value->IsBool()) {
                 bool tmp = value->GetBool();
                 bf.Write(BIN_TYPE_BOOL);
                 bf.Write(tmp);
@@ -80,31 +82,32 @@ public:
                 bf.Write(BIN_TYPE_LIST);
                 int size = value->Size();
                 bf.Write(size);
-                forEach([&bf](JsonValue jv) {
-                    jv.write(bf);
+                forEach([bfp, &bf](JsonValue jv) {
+                    jv.write(bfp);
                 });
             }
             else if (value->IsObject()) {
                 bf.Write(BIN_TYPE_DICT);
-                std::cout << BIN_TYPE_DICT << std::endl;
+                // std::cout << BIN_TYPE_DICT << std::endl;
                 bin_type_t tmp;
 
                 int size = value->MemberCount();
                 bf.Write(size);
-                forEach([&bf](const std::string& key, JsonValue jv) {
+                forEach([bfp, &bf](const std::string& key, JsonValue jv) {
                     bf.Write(key);
-                    jv.write(bf);
+                    jv.write(bfp);
                 });
                 bf.Close();
                 bf.Read(tmp);
-                std::cout << tmp << std::endl;
+                // std::cout << tmp << std::endl;
             }
             else throw type_error("writable JsonValue");
-  */      }
+        }
 
-        JsonValue& read(BinaryFile& bf) {
-    /*        bin_type_t type; bf.Read(type);
-            std::cout << type << std::endl;
+        JsonValue& read(util::stupid_ptr<BinaryFile> bfp) {
+            BinaryFile& bf = *bfp;
+            bin_type_t type; bf.Read(type);
+            // std::cout << type << std::endl;
             if (type == BIN_TYPE_BOOL) {
                 bool tmp; bf.Read(tmp);
                 value->SetBool(tmp);
@@ -126,7 +129,7 @@ public:
                 value->SetArray();
                 for (int i = 0; i < size; ++ i) {
                     Value tmp;
-                    value->PushBack(JsonValue(allocator, &tmp).read(bf).getValue(), *allocator);
+                    value->PushBack(JsonValue(allocator, &tmp).read(bfp).getValue(), *allocator);
                 }
             }
             else if (type == BIN_TYPE_DICT) {
@@ -136,11 +139,11 @@ public:
                     Value tmp;
                     std::string key;
                     bf.Read(key);
-                    value->AddMember(Value(key, *allocator), JsonValue(allocator, &tmp).read(bf).getValue(), *allocator);
+                    value->AddMember(Value(key, *allocator), JsonValue(allocator, &tmp).read(bfp).getValue(), *allocator);
                 }
             }
             else throw type_error("readable JsonValue");
-      */      return *this;
+            return *this;
         }
 
         const Value& getValue() const {
@@ -430,12 +433,12 @@ public:
         }
     }
 
-    void write(BinaryFile& bf) const {
-        data.write(bf);
+    void write(util::stupid_ptr<BinaryFile> bfp) const {
+        data.write(bfp);
     }
 
-    void read(BinaryFile& bf) {
-        data.read(bf);
+    void read(util::stupid_ptr<BinaryFile> bfp) {
+        data.read(bfp);
     }
 
     Json& Parse(const std::string& content) {

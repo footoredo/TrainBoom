@@ -5,10 +5,17 @@
 #include "pair.hpp"
 #include "exception.hpp"
 #include "Json.hpp"
+#include "Id.hpp"
+#include "BinaryFile.hpp"
 
 namespace TrainBoom {
 
 namespace util {
+
+template <class T>
+std::string getContent(const T& x) {
+	return x.getId();
+}
 
 template<
 	class Key,
@@ -214,9 +221,18 @@ public:
 	/**
 	 * TODO two constructors
 	 */
-	constexpr map(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0) {
+	constexpr map(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0), id(Id("Map")) {
 	}
-	map(const map &other): _size(other._size) {
+	map(std::string id, util::stupid_ptr<BinaryFile> bfp): id(id) {
+		Json tmp; tmp.read(bfp);
+		_size = tmp["size"].as<unsigned>();
+		std::string rootId = tmp["root"].as<std::string>();
+		root = util::make_stupid<Node>(rootId, DataManager::getFile(rootId));
+		root->link_child(root);
+		min_p = find_min(root); max_p = find_max(root);
+		list_link_all();
+	}
+	map(const map &other): _size(other._size), id(Id("Map")) {
 		root = copy_tree(other.root);
 		// std::cout << "incopy " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
 		min_p = find_min(root); max_p = find_max(root);
@@ -336,6 +352,7 @@ public:
 	 */
 	pair<iterator, bool> insert(const value_type &value) {
 		auto tmp = _insert(value);
+		// std::cout << "!" << std::endl;
 		if (tmp.second) {
 			++ _size;
 			if (!min_p || Compare()(value.first, min_p->value->first))
@@ -410,9 +427,19 @@ public:
 	}
 
 	Json toJson() const {
-		Json json("map");
+		Json json("map", id);
+		json["size"] = _size;
 		json["root"] = root->id;
 		return json;
+	}
+
+	std::string getId() const {
+		return id;
+	}
+
+	void save() const {
+		toJson().write(DataManager::getFile(id));
+		root->save();
 	}
 
 private:
@@ -422,6 +449,7 @@ private:
 		stupid_ptr<Node> child[2];
 		stupid_ptr<Node> parent;
 		stupid_ptr<Node> prev_p, next_p;
+		// stupid_ptr<Node> self;
 		bool color;
 		std::string id;
 		// map *who;
@@ -430,6 +458,7 @@ private:
 				child({nullptr, nullptr}),
 				parent(nullptr),
 				prev_p(nullptr), next_p(nullptr),
+				// self(this),
 				// who(who),
 				color(RED), id(Id("Node")) {}
 		Node (const stupid_ptr<Node>& other)
@@ -437,19 +466,65 @@ private:
 				child({nullptr, nullptr}),
 				parent(nullptr),
 				prev_p(nullptr), next_p(nullptr),
+				// self(this),
 				// who(who),
 				color(other->color), id(other->id) {}
 
+		Node (std::string id, util::stupid_ptr<BinaryFile> bfp):
+			child({nullptr, nullptr}),
+			parent(nullptr),
+			prev_p(nullptr), next_p(nullptr), id(id) {
+
+			Json tmp; tmp.read(bfp);
+			std::string valueId = tmp["value"].as<std::string>();
+			value = util::make_stupid<value_type>(tmp["key"].as<Key>(), T(valueId, DataManager::getFile(valueId)));
+			color = tmp["color"].as<bool>();
+			// std::cout << color << std::endl;
+			if (tmp.HasMember("child0")) {
+				std::string childId = tmp["child0"];
+				child[0] = make_stupid<Node>(childId, DataManager::getFile(childId));
+			}
+			if (tmp.HasMember("child1")) {
+				std::string childId = tmp["child1"];
+				child[1] = make_stupid<Node>(childId, DataManager::getFile(childId));
+			}
+		}
+
+		void link_child(const stupid_ptr<Node>& self) {
+			// std::cout << "121" << std::endl;
+			if (child[0]) {
+				child[0]->parent = self;
+				child[0]->link_child(child[0]);
+			}
+			if (child[1]) {
+				child[1]->parent = self;
+				child[1]->link_child(child[1]);
+			}
+		}
+
 		Json toJson() const {
 			Json json("node", id);
-			json["content"] = value;
+			json["key"] = value->first;
+			json["value"] = value->second.getId();
+			json["color"] = color;
 			if (child[0]) {
 				json["child0"] = child[0]->id;
 			}
-			if (child[0]) {
+			if (child[1]) {
 				json["child1"] = child[1]->id;
 			}
 			return json;
+		}
+
+		void save() const {
+			toJson().write(DataManager::getFile(id));
+			value->second.save();
+			if (child[0]) {
+				child[0]->save();
+			}
+			if (child[1]) {
+				child[1]->save();
+			}
 		}
 
 		friend stupid_ptr<Node> grandparent(const stupid_ptr<Node>& u) {
@@ -504,14 +579,16 @@ private:
 
 	stupid_ptr<Node> root, min_p, max_p;
 	size_t _size;
+	std::string id;
 
 	void delete_tree(const stupid_ptr<Node>& u) {
 		if (!u) return;
-		u->prev_p = u->next_p = nullptr;
-		u->parent = nullptr;
 		delete_tree(u->child[0]);
 		delete_tree(u->child[1]);
 		u->child[0] = u->child[1] = nullptr;
+		u->prev_p = u->next_p = nullptr;
+		u->parent = nullptr;
+		// u->self = nullptr;
 	}
 
 	size_t count_size(stupid_ptr<Node> u) {
@@ -648,6 +725,7 @@ private:
 
 	void maintain_insert(stupid_ptr<Node> n) {
 		// return;
+		// std::cout << "~" << std::endl;
 		while (n) {
 			if (!n->parent) {
 				n->color = BLACK;

@@ -72,6 +72,7 @@ namespace TrainBoom
 			}
 			~BinaryFile()
 			{
+				Close();
 //				Close(); automatically closed upon destroying
 			}
 			void ChangePath(const std::string &pth)

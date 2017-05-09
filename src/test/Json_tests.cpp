@@ -1,10 +1,10 @@
 #include "util/Json.hpp"
-#include "BinaryFile.hpp"
+#include "util/BinaryFile.hpp"
 #include <iostream>
 using namespace TrainBoom;
 
 int main() {
-    util::Json json("test");/*
+    util::Json json("test");
     json.Parse("{\"username\":\"footoredo\",\"1\":[1,2,3]}");
     std::cout << json.getType() << std::endl;
 
@@ -16,10 +16,11 @@ int main() {
     json["hhh"][std::string("ttt")] = 0.15;
 
     std::cout << json.toString() << std::endl;
-*/
-    BinaryFile bf("json.dat");
+
+    auto bfp = util::make_stupid<BinaryFile>("json.dat");
     try {
-        json.write(bf);
+        json.write(bfp);
+        bfp->Close();
     }
     catch (const exception& e) {
         std::cout << e.what();
@@ -27,7 +28,7 @@ int main() {
 
     util::Json newjson("test");
     try {
-        newjson.read(bf);
+        newjson.read(bfp);
     }
     catch (const exception& e) {
         std::cout << e.what();

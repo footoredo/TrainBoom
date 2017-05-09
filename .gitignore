@@ -16,3 +16,5 @@ src/test_runner
 src/build/*
 
 *.dat
+
+src/.TrainBoom

@@ -21,7 +21,7 @@ private:
 	util::map <std::string, Station> stations;
 	Id id;
 
-    util::map <std::string, std::string> usernameMap, stationNameMap;
+    util::map <std::string, Blob> usernameMap, stationNameMap;
 
 	static double readPrice(std::string buffer) {
 		if (buffer == "-") return 0;
