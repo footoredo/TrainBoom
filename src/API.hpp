@@ -115,7 +115,9 @@ namespace TrainBoom {
                     Routes::Post(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
                     Routes::Put(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
                     
-                    ROUTING(Post, "/queryRoute", queryRoute);
+                    ROUTING(Post, "/routeInterval/get", getRouteInterval);
+//                    ROUTING(Post, "/routeInterval/query", queryRouteInterval);
+  //                  ROUTING(Post, "/routeInterval/book", bookRouteInterval);
                 }
 
                 void _shutdown(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -242,7 +244,7 @@ namespace TrainBoom {
                     }
                     HANDLEERR;
                 }
-
+/*
                 void addRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string stationId = request.param(":stationId").as<std::string>();
                     Json json; json.Parse(request.body());
@@ -274,7 +276,7 @@ namespace TrainBoom {
                     }
 		    HANDLEERR;
                 }
-
+*/
                 void queryRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string stationId = request.param(":stationId").as<std::string>();
                     Json json; json.Parse(request.body());
@@ -283,7 +285,7 @@ namespace TrainBoom {
                         const auto& vec = station.query(json["stationId"].as<std::string>(), Datetime::parse(json["date"].as<std::string>()));
                         Generic::sendJson(response, Generic::vec2Json(vec, "route"));
                     }
-		    HANDLEERR;
+                    HANDLEERR;
                 }
 
                 void insertRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -345,8 +347,12 @@ namespace TrainBoom {
                     try {
                         Route& route = trainBoom->route(routeId);
                         try {
-                            const Segment& segment = route.queryTickets(json["startStation"].as<std::string>(), json["endStation"].as<std::string>());
-                            Generic::sendJson(response, segment.toJson());
+                            unsigned l = json["l"].as<unsigned>(), r = json["r"].as<unsigned>();
+                            const Segment& segment = route.queryTickets(l, r);
+                            Json ret = segment.toJson();
+                            ret["startStation"] = route.information(l).toJson();
+                            ret["endStation"] = route.information(r).toJson();
+                            Generic::sendJson(response, ret);
                         }
                         catch (const exception& e) {
                             Generic::sendJson(response, Generic::error(e.what()));
@@ -364,8 +370,8 @@ namespace TrainBoom {
                         User& user = trainBoom->user(userId);
 
                         Order order = route.bookTickets(
-                                json["startStationId"].as<std::string>(),
-                                json["endStationId"].as<std::string>(),
+                                json["l"].as<unsigned>(),
+                                json["r"].as<unsigned>(),
                                 json["ticketType"].as<std::string>(),
                                 json["ticketNumber"].as<unsigned>()
                                 );
@@ -377,25 +383,46 @@ namespace TrainBoom {
                     }
                 }
 
-                APIHANDLER(queryRoute) {
+                APIHANDLER(getRouteInterval) {
                     try {
                         Json json; json.Parse(request.body());
                         std::string startStationId = trainBoom->idByStationName(json["startStation"]);
                         std::string endStationId = trainBoom->idByStationName(json["endStation"]);
                         const Station& station = trainBoom->station(startStationId);
                         const auto& routes = station.query(endStationId, Datetime::parse(json["date"]));
-                        Json ret("queryResult");
-                        ret["list"].SetArray();
-                        for (const auto& routeId: routes) {
-                            Json item;
-                            item["routeId"] = routeId;
-                            item["tickets"] = trainBoom->route(routeId).queryTickets(startStationId, endStationId).toJson();
-                            ret["list"].PushBack(item);
-                        }
+                        SENDVEC(routes, "routeInterval");
+                    }
+                    HANDLEERR;
+                }
+/*
+                APIHANDLER(queryRouteInterval) {
+                    try {
+                        Json json; json.Parse(request.body());
+                        Route& route = trainBoom->route(json["routeId"].as<std::string>());
+                        unsigned l = json["l"].as<unsigned>(), r = json["r"].as<unsigned>();
+                        Json ret("routeIntervalInformation");
+                        ret["startStation"] = route.information(l);
+                        ret["endStation"] = route.information(r);
+                        ret["tickets"] = route.queryTickets(l, r);
                         SENDJSON(ret);
                     }
                     HANDLEERR;
                 }
+
+                APIHANDLER(queryRouteInterval) {
+                    try {
+                        Json json; json.Parse(request.body());
+                        Route& route = trainBoom->route(json["routeId"].as<std::string>());
+                        unsigned l = json["l"].as<unsigned>(), r = json["r"].as<unsigned>();
+                        Json ret("routeIntervalInformation");
+                        ret["startStation"] = route.information(l);
+                        ret["endStation"] = route.information(r);
+                        ret["tickets"] = route.queryTickets(l, r);
+                        SENDJSON(ret);
+                    }
+                    HANDLEERR;
+                }
+                */
 
                 typedef std::mutex Lock;
                 typedef std::lock_guard<Lock> Guard;
