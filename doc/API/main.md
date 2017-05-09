@@ -36,6 +36,12 @@ Method|HTTP request|Description
 `queryTickets`|`POST /routes/:routeId/tickets`| Get ticket information of a route.
 `bookTickets`|`PUT /routes/:routeId/tickets`| Book some tickets.
 
+### Query
+
+Method|HTTP request|Description
+--|--|--
+`queryRoute`|`POST /queryRoute`| Query via station name.
+
 ## Error Response
 
 ```json
