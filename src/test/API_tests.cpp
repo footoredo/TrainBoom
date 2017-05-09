@@ -5,6 +5,7 @@
 using namespace TrainBoom;
 
 int main() {
+//    API::APIServer apiServer(util::make_stupid<TrainBoom::TrainBoom>(), 3000, "test/test.csv");
     API::APIServer apiServer(util::make_stupid<TrainBoom::TrainBoom>(), 3000);
     apiServer.run(1);
 //    apiServer.shutdown();

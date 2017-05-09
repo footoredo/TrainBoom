@@ -411,10 +411,15 @@ namespace TrainBoom {
             util::stupid_ptr<StatsEndpoint> stats;
             util::stupid_ptr<TrainBoom> trainBoom;
             Net::Port port;
+	    std::string csvFile;
 
         public:
-            APIServer(util::stupid_ptr<TrainBoom> trainBoom, unsigned portNum):
-                trainBoom(trainBoom), port(portNum) {}
+            APIServer(util::stupid_ptr<TrainBoom> trainBoom, unsigned portNum, std::string csvFile = ""):
+                trainBoom(trainBoom), port(portNum), csvFile(csvFile) {
+			if (csvFile != "") {
+				trainBoom->loadFromCSV(csvFile);
+			}
+		}
 
             void run(int thr = 1) {
                 Net::Address addr(Net::Ipv4::any(), port);
