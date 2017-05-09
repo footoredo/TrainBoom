@@ -82,11 +82,14 @@ namespace TrainBoom
 			}
 			void Write(const std::string &obj)
 			{
+//				std::cout<<"strw\n";
 				Write(obj.c_str(),sizeof(char)*obj.size());
+				out.write("\0",sizeof(char));
 			}
-			void Write(const char *obj)
+			void Write(char *obj)
 			{
-				Write(obj,strlen(obj));
+//				std::cout<<"charw\n";
+				Write((const char*)obj,strlen(obj)+1);
 			}
 			void Write(const void *obj,size_t sz)
 			{
@@ -97,31 +100,34 @@ namespace TrainBoom
 			}
 			void Read(std::string &buf)
 			{
+//				std::cout<<"strr\n";
 				WClose();
 				ROpen();
 				while (!in.eof())
 				{
 				    char c;
 					in.read(reinterpret_cast<char *>(&c),sizeof(char));
-					if (in.eof()) break;
-					if (in.rdstate()) throw error_reading_file("flag set: "+(char)(48+in.rdstate()));
+					if (!c) break;
 					buf.push_back(c);
+					if (in.rdstate()) throw error_reading_file("flag set: "+(char)(48+in.rdstate()));
 				}
 //				Close();
 			}
 			void Read(char *buf)
 			{
+//				std::cout<<"charr\n";
 				WClose();
 				ROpen();
+				int i=0;
 				while (!in.eof())
 				{
 					char c;
 					in.read(reinterpret_cast<char *>(&c),sizeof(char));
-					if (in.eof()) break;
-					if (in.rdstate()) Close(),throw error_reading_file("flag set: "+(char)(48+in.rdstate()));
+//					std::cout<<'#'<<c<<' '<<(int)c<<std::endl;
 					*(buf++)=c;
+					if (!c) break;
+					if (in.rdstate()) throw error_reading_file("flag set: "+(char)(48+in.rdstate()));
 				}
-				*buf='\0';
 //				Close();
 			}
 			void Read(void *buf,size_t sz)
@@ -135,11 +141,13 @@ namespace TrainBoom
 			template<typename T>
 			void Write(const T& obj)
 			{
+//				std::cout<<"tempw\n";
 				Write(&obj,sizeof(obj));
 			}
 			template<typename T>
 			void Read(T& obj)
 			{
+//				std::cout<<"tempr\n";
 				Read(&obj,sizeof(obj));
 			}
 	};

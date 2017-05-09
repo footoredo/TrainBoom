@@ -9,31 +9,34 @@ using namespace TrainBoom;
 struct foo{
 	int a,b,c;
 	char t[100];
-//	string s; //not ok
-	foo(){
-	}
+	string s;
+	foo():a(0),b(0),c(0){}
 	foo(int _a,int _b,int _c):a(_a),b(_b),c(_c){
 		int i,tp=rand()%40;
 		for (i=0;i<tp;++i)
 		{
 			t[i]=(char)(rand()%26+65);
+			s.push_back((char)(rand()%26+65));
 		}
 		t[tp]='\0';
 	}
 	void print()
 	{
-		cout<<a<<' '<<b<<' '<<c<<' '<<t<<' '<<endl;
+		cout<<a<<' '<<b<<' '<<c<<' '<<t<<' '<<s<<endl;
 	}
 };
 int main()
-{	
+{
 	BinaryFile asd("t.dat");
 	asd.Write(std::string("first"));
 	asd.Write(std::string("second"));
 	asd.Write(std::string("third"));
-	std::string bbuf;
-	asd.Read(bbuf);
-	cout<<bbuf<<endl;
+	std::string bbuf[3];
+	for (int i=0;i<3;++i)
+	{
+		asd.Read(bbuf[i]);
+		cout<<bbuf[i]<<endl;
+	}
 	asd.Close();
 	
 	BinaryFile asdas("ttt.dat");
@@ -44,64 +47,32 @@ int main()
 	asdas.Close();
 	
 	int w=5;
-	BinaryFile tt("hhh.dat");
+	BinaryFile tt("hhg.dat");
 	tt.Write(w);
 	tt.Read(w);
 	cout<<w<<endl;
+	
 	srand(time(0));
-	foo a(3,6,4),c(7,9,2);
-	foo b,d;
+	foo a(3,6,4),b;
 	BinaryFile tmp("hhh.dat");
 	a.print();
-	tmp.Write(&a,sizeof(a));
+	tmp.Write(a.a);
+	tmp.Write(a.b);
+	tmp.Write(a.t);
+	tmp.Write(a.s);
+	tmp.Write(a.c);
+	tmp.Close();	
+	
 	BinaryFile rd("hhh.dat");
-	rd.Read(&b,sizeof(b));
+	rd.Read(b.a);
+	rd.Read(b.b);
+	rd.Read(b.t);
+	rd.Read(b.s);
+	rd.Read(b.c);
 	b.print();
-	c.print();
-	tmp.Write(&c,sizeof(c));
-	rd.Read(&d,sizeof(d));
-	d.print();
-	foo arr[3],arrr[3];
-	for (int i=0;i<3;++i)
-	{
-		arr[i]=foo(rand()%30,rand()%30,rand()%30);
-		arr[i].print();
-	}
-	BinaryFile test("hhh.dat");
-	test.Write(arr,sizeof(arr));
-	BinaryFile testr("hhh.dat");
-	test.Read(arrr,sizeof(arrr));
-	for (int i=0;i<3;++i)
-	{
-		arrr[i].print();
-	}
-	string str="test",buf;
-	str+='\0';
-	str+="apple";
-	str+='\0';
-	BinaryFile s("str.dat");
-	s.Write(str);
-	s.Read(str);
-	s.Write(str);
-	s.Close();
-	BinaryFile r("str.dat");
-	r.Read(buf);
-	cout<<str<<endl<<buf<<endl<<buf.size()<<'/'<<str.size()<<endl;
-	assert(!buf.compare(str));
 
 //	s.Write(&str,sizeof(str));		//not ok
 //	s.Read(&buf,sizeof(buf));		//not ok
-
-	string astr[3]={"hello","","world"},abuf[3];
-	s.ChangePath("str1.dat");
-	for (int i=0;i<3;++i)
-	{
-		s.Write(astr[i]);
-		s.Close();
-		s.Read(abuf[i]);
-		cout<<astr[i]<<' '<<abuf[i]<<endl;
-		assert(abuf[i]==astr[i]);
-	}
 
 	char cstr[1100],cbuf[1100];
 	for (int i=0;i<1000;++i)
@@ -112,6 +83,7 @@ int main()
 	cout<<cstr<<endl<<endl;
 	BinaryFile cw("str.dat");
 	cw.Write(cstr);
+	cw.Close();
 	BinaryFile cr("str.dat");
 	cr.Read(cbuf);
 	cout<<cbuf<<endl<<strlen(cstr)<<'/'<<strlen(cbuf)<<endl;
