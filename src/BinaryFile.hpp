@@ -118,7 +118,6 @@ namespace TrainBoom
 //				std::cout<<"charr\n";
 				WClose();
 				ROpen();
-				int i=0;
 				while (!in.eof())
 				{
 					char c;
