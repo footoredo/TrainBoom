@@ -114,6 +114,8 @@ namespace TrainBoom {
                     Routes::Get(router, "/routes/:routeId/stop", Routes::bind(&StatsEndpoint::stopRoute, this));
                     Routes::Post(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
                     Routes::Put(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
+                    
+                    ROUTING(Post, "/queryRoute", queryRoute);
                 }
 
                 void _shutdown(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -375,6 +377,26 @@ namespace TrainBoom {
                     }
                 }
 
+                APIHANDLER(queryRoute) {
+                    try {
+                        Json json; json.Parse(request.body());
+                        std::string startStationId = trainBoom->idByStationName(json["startStation"]);
+                        std::string endStationId = trainBoom->idByStationName(json["endStation"]);
+                        const Station& station = trainBoom->station(startStationId);
+                        const auto& routes = station.query(endStationId, Datetime::parse(json["date"]));
+                        Json ret("queryResult");
+                        ret["list"].SetArray();
+                        for (const auto& routeId: routes) {
+                            Json item;
+                            item["routeId"] = routeId;
+                            item["tickets"] = trainBoom->route(routeId).queryTickets(startStationId, endStationId).toJson();
+                            ret["list"].PushBack(item);
+                        }
+                        SENDJSON(ret);
+                    }
+                    HANDLEERR;
+                }
+
                 typedef std::mutex Lock;
                 typedef std::lock_guard<Lock> Guard;
                 Lock metricsLock;
@@ -410,7 +432,7 @@ namespace TrainBoom {
                 stats->start();
 
                 while (!stats->shutdownFlag) {
-                    sleep(1);
+//                    sleep(1);
                 }
 
                 stats->shutdown();
