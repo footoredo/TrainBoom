@@ -1,11 +1,11 @@
-# Query
+# routeInterval
 
-## queryRoute
+## get
 
 ### HTTP Request
 
 ```
-POST /queryRoute
+POST /routeInterval/get
 ```
 
 ### Request body
@@ -23,46 +23,17 @@ POST /queryRoute
 ```json
 {
     "data": {
-        "list": [
+        "routeIntervals": [
             {
                 "data": {
-                    "routeId": "fa2ff3f5e8a8f139b435f91926dd616b3f3172e5",
-                    "tickets": {
-                        "data": {
-                            "tickets": {
-                                "bussiness class": {
-                                    "data": {
-                                        "nonstop": false,
-                                        "number": 5,
-                                        "price": 239.5
-                                    },
-                                    "type": "attribute"
-                                },
-                                "first class": {
-                                    "data": {
-                                        "nonstop": false,
-                                        "number": 15,
-                                        "price": 129.5
-                                    },
-                                    "type": "attribute"
-                                },
-                                "second class": {
-                                    "data": {
-                                        "nonstop": false,
-                                        "number": 200,
-                                        "price": 74.5
-                                    },
-                                    "type": "attribute"
-                                }
-                            }
-                        },
-                        "id": "5d92c2c70ddab309e6c21a8fc582f35efd831e86",
-                        "type": "segment"
-                    }
-                }
+                    "l": 0,
+                    "r": 1,
+                    "routeId": "65eef8b3eda80c29b72a86420fab5de8d20c1388"
+                },
+                "type": "routeInterval"
             }
         ]
     },
-    "type": "queryResult"
+    "type": "routeIntervalsList"
 }
 ```

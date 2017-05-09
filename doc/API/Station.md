@@ -108,8 +108,14 @@ POST /stations/45cd9b0bcc316846ddc27ffe18f2a68a32a17ada/routes
 {
     "data": {
         "routes": [
-            "4bba9447b9f34656760f252e5695c9ae8974060a",
-            "e762d6a5e17f3d696b9598876659428579ac828e"
+            {
+                "data": {
+                    "r": 1,
+                    "l": 0,
+                    "routeId": "e0a410fb61c71e3b08532f5e017ab91f3c3dc727"
+                },
+                "type": "routeInterval"
+            }
         ]
     },
     "type": "routesList"

@@ -257,8 +257,8 @@ POST /routes/:routeId/tickets
 ### Request body
 ```json
 {
-    "startStation": "b8150fef4be4a0f7b8dcffbeeabc68ab48ca616b",
-    "endStation": "5e77d71fabefb3f965739abb9b962c2d1e0d048f"
+    "l": 0,
+    "r": 1
 }
 ```
 
@@ -270,28 +270,51 @@ POST /routes/:routeId/tickets
             "bussiness class": {
                 "data": {
                     "price": 239.5,
-                    "number": 5
+                    "number": 5,
+                    "nonstop": false
                 },
                 "type": "attribute"
             },
             "second class": {
                 "data": {
                     "price": 74.5,
-                    "number": 200
+                    "number": 200,
+                    "nonstop": false
                 },
                 "type": "attribute"
             },
             "first class": {
                 "data": {
                     "price": 129.5,
-                    "number": 17
+                    "number": 17,
+                    "nonstop": false
                 },
                 "type": "attribute"
             }
+        },
+        "endStation": {
+            "data": {
+                "arriveTime": "2017/5/5 13:15",
+                "distance": 2,
+                "stationId": "332bf44f4467e5c8eb81038f5916758671b5608d",
+                "flags": 2
+            },
+            "type": "information",
+            "id": "ea1284eb98cf45ffb8358ec5d74a11b310420ed4"
+        },
+        "startStation": {
+            "data": {
+                "distance": 1,
+                "stationId": "77401ae99e348ae498a1bd84831044d13e37d8fc",
+                "leaveTime": "2017/5/5 12:23",
+                "flags": 1
+            },
+            "type": "information",
+            "id": "446ad2487cacb77cb33bf4588158549d4d3a5a62"
         }
     },
     "type": "segment",
-    "id": "5d0f1e873f3c2da2e877cb9dbcbbee4d6ce669b5"
+    "id": "ae725fd2e349c4131eb9ffe6ef42c038b5e87694"
 }
 ```
 
@@ -305,11 +328,11 @@ PUT /routes/:routeId/tickets
 ### Request body
 ```json
 {
-    "startStationId": "b8150fef4be4a0f7b8dcffbeeabc68ab48ca616b",
+    "l": 0,
+    "r": 1,
     "ticketNumber": 2,
     "userId": "756b418e1d5b6aaf482f9db33112a20fb0350fe1",
-    "ticketType": "first class",
-    "endStationId": "5e77d71fabefb3f965739abb9b962c2d1e0d048f"
+    "ticketType": "first class"
 }
 ```
 
