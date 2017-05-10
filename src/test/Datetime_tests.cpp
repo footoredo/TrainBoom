@@ -41,4 +41,6 @@ int main() {
 
     std::cout << Datetime::now() << std::endl;
 
+    std::cout << Datetime("1015/12/6 7:33") << std::endl;
+
 }

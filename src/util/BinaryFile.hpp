@@ -68,10 +68,13 @@ namespace TrainBoom
 			};
 			BinaryFile(const std::string &_p):path(_p)
 			{
-//				Open();
+				// std::cout << "BinaryFile " << _p  << "{" << std::endl;
+				// Open();
+				// std::cout << ""
 			}
 			~BinaryFile()
 			{
+				// std::cout << "~BinaryFile" << std::endl;
 				Close();
 //				Close(); automatically closed upon destroying
 			}

@@ -2,7 +2,7 @@
 #define TRAINBOOM_UTIL_DATETIME_HPP
 
 #include "exception.hpp"
-#include "util.hpp"
+// #include "util.hpp"
 #include <string>
 #include <iomanip>
 #include <sstream>
@@ -239,6 +239,17 @@ namespace Datetime {
                 signed_Date_t hour = getNum(fmttime, space + 1, colon - 1), minute = getNum(fmttime, colon + 1, len - 1);
                 return Datetime(year, month, day, hour, minute);
             }
+        }
+
+        Datetime(std::string fmt) {
+            Datetime tmp = parse(fmt);
+            year = tmp.year;
+            month = tmp.month;
+            day = tmp.day;
+            hour = tmp.hour;
+            minute = tmp.minute;
+            initiated = tmp.initiated;
+            dayOnly = tmp.dayOnly;
         }
 
         static Datetime now() {

@@ -7,6 +7,7 @@
 #include "Json.hpp"
 #include "Id.hpp"
 #include "BinaryFile.hpp"
+#include "DataManager.hpp"
 
 namespace TrainBoom {
 
@@ -226,17 +227,40 @@ public:
 	map(std::string id, util::stupid_ptr<BinaryFile> bfp): id(id) {
 		Json tmp; tmp.read(bfp);
 		_size = tmp["size"].as<unsigned>();
-		std::string rootId = tmp["root"].as<std::string>();
-		root = util::make_stupid<Node>(rootId, DataManager::getFile(rootId));
-		root->link_child(root);
-		min_p = find_min(root); max_p = find_max(root);
-		list_link_all();
+		if (tmp.HasMember("root")) {
+			std::string rootId = tmp["root"].as<std::string>();
+			root = util::make_stupid<Node>(rootId, DataManager::getFile(rootId));
+			root->link_child(root);
+			min_p = find_min(root); max_p = find_max(root);
+			list_link_all();
+		}
+		else {
+			root = nullptr;
+			min_p = nullptr; max_p = nullptr;
+		}
 	}
 	map(const map &other): _size(other._size), id(Id("Map")) {
 		root = copy_tree(other.root);
 		// std::cout << "incopy " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
 		min_p = find_min(root); max_p = find_max(root);
 		list_link_all();
+	}
+	void read(std::string _id, util::stupid_ptr<BinaryFile> bfp) {
+		delete_tree(root);
+		id = _id;
+		Json tmp; tmp.read(bfp);
+		_size = tmp["size"].as<unsigned>();
+		if (tmp.HasMember("root")) {
+			std::string rootId = tmp["root"].as<std::string>();
+			root = util::make_stupid<Node>(rootId, DataManager::getFile(rootId));
+			root->link_child(root);
+			min_p = find_min(root); max_p = find_max(root);
+			list_link_all();
+		}
+		else {
+			root = nullptr;
+			min_p = nullptr; max_p = nullptr;
+		}
 	}
 	/**
 	 * TODO assignment operator
@@ -429,7 +453,7 @@ public:
 	Json toJson() const {
 		Json json("map", id);
 		json["size"] = _size;
-		json["root"] = root->id;
+		if (root) json["root"] = root->id;
 		return json;
 	}
 
@@ -439,7 +463,7 @@ public:
 
 	void save() const {
 		toJson().write(DataManager::getFile(id));
-		root->save();
+		if (root) root->save();
 	}
 
 private:
@@ -477,7 +501,7 @@ private:
 
 			Json tmp; tmp.read(bfp);
 			std::string valueId = tmp["value"].as<std::string>();
-			value = util::make_stupid<value_type>(tmp["key"].as<Key>(), T(valueId, DataManager::getFile(valueId)));
+			value = util::make_stupid<value_type>(Key(tmp["key"].as<std::string>()), T(valueId, DataManager::getFile(valueId)));
 			color = tmp["color"].as<bool>();
 			// std::cout << color << std::endl;
 			if (tmp.HasMember("child0")) {
@@ -504,7 +528,7 @@ private:
 
 		Json toJson() const {
 			Json json("node", id);
-			json["key"] = value->first;
+			json["key"] = std::string(value->first);
 			json["value"] = value->second.getId();
 			json["color"] = color;
 			if (child[0]) {

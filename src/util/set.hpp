@@ -212,13 +212,45 @@ public:
 	/**
 	 * TODO two constructors
 	 */
-	constexpr set(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0) {
+	constexpr set(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0), id(Id("Set")) {
 	}
-	set(const set &other): _size(other._size) {
+	set(const set &other): _size(other._size), id(Id("Set")) {
 		root = copy_tree(other.root);
 		// std::cout << "incopy " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
 		min_p = find_min(root); max_p = find_max(root);
 		list_link_all();
+	}
+	set(std::string id, util::stupid_ptr<BinaryFile> bfp): id(id) {
+		Json tmp; tmp.read(bfp);
+		_size = tmp["size"].as<unsigned>();
+		if (tmp.HasMember("root")) {
+			std::string rootId = tmp["root"].as<std::string>();
+			root = util::make_stupid<Node>(rootId, DataManager::getFile(rootId));
+			root->link_child(root);
+			min_p = find_min(root); max_p = find_max(root);
+			list_link_all();
+		}
+		else {
+			root = nullptr;
+			min_p = nullptr; max_p = nullptr;
+		}
+	}
+	void read(std::string _id, util::stupid_ptr<BinaryFile> bfp) {
+		delete_tree(root);
+		id = _id;
+		Json tmp; tmp.read(bfp);
+		_size = tmp["size"].as<unsigned>();
+		if (tmp.HasMember("root")) {
+			std::string rootId = tmp["root"].as<std::string>();
+			root = util::make_stupid<Node>(rootId, DataManager::getFile(rootId));
+			root->link_child(root);
+			min_p = find_min(root); max_p = find_max(root);
+			list_link_all();
+		}
+		else {
+			root = nullptr;
+			min_p = nullptr; max_p = nullptr;
+		}
 	}
 	/**
 	 * TODO assignment operator
@@ -410,6 +442,28 @@ public:
 		return _countsize(root);
 	}
 
+	Json toJson() const {
+		// std::cout << "toJson {" << std::endl;
+		Json json("set", id);
+		json["size"] = _size;
+		if (root) json["root"] = root->id;
+		// std::cout << "toJson }" << std::endl;
+		return json;
+	}
+
+	std::string getId() const {
+		return id;
+	}
+
+	void save() const {
+		// std::cout << "Set {" << std::endl;
+		// std::cout << id << std::endl;
+		toJson().write(DataManager::getFile(id));
+		// std::cout << "Set -" << std::endl << std::flush;
+		if (root) root->save();
+		// std::cout << "Set }" << std::endl;
+	}
+
 private:
 	static const bool BLACK = 0, RED = 1;
 	struct Node {
@@ -419,20 +473,74 @@ private:
 		stupid_ptr<Node> prev_p, next_p;
 		// set *who;
 		bool color;
+		std::string id;
 		Node (const value_type& value)
 			: value(new value_type(value)),
 				child({nullptr, nullptr}),
 				parent(nullptr),
 				prev_p(nullptr), next_p(nullptr),
 				// who(who),
-				color(RED) {}
+				color(RED), id(Id("Node")) {}
 		Node (const stupid_ptr<Node>& other)
 			: value(new value_type(*other->value)),
 				child({nullptr, nullptr}),
 				parent(nullptr),
 				prev_p(nullptr), next_p(nullptr),
 				// who(who),
-				color(other->color) {}
+				color(other->color), id(Id("Node")) {}
+
+		Node (std::string id, util::stupid_ptr<BinaryFile> bfp):
+			child({nullptr, nullptr}),
+			parent(nullptr),
+			prev_p(nullptr), next_p(nullptr), id(id) {
+			Json tmp; tmp.read(bfp);
+			std::string valueId = tmp["value"].as<std::string>();
+			value = util::make_stupid<value_type>(valueId, DataManager::getFile(valueId));
+			color = tmp["color"].as<bool>();
+			// std::cout << color << std::endl;
+			if (tmp.HasMember("child0")) {
+				std::string childId = tmp["child0"];
+				child[0] = make_stupid<Node>(childId, DataManager::getFile(childId));
+			}
+			if (tmp.HasMember("child1")) {
+				std::string childId = tmp["child1"];
+				child[1] = make_stupid<Node>(childId, DataManager::getFile(childId));
+			}
+		}
+		void link_child(const stupid_ptr<Node>& self) {
+			// std::cout << "121" << std::endl;
+			if (child[0]) {
+				child[0]->parent = self;
+				child[0]->link_child(child[0]);
+			}
+			if (child[1]) {
+				child[1]->parent = self;
+				child[1]->link_child(child[1]);
+			}
+		}
+		Json toJson() const {
+			Json json("node", id);
+			json["value"] = value->getId();
+			json["color"] = color;
+			if (child[0]) {
+				json["child0"] = child[0]->id;
+			}
+			if (child[1]) {
+				json["child1"] = child[1]->id;
+			}
+			return json;
+		}
+		void save() const {
+			toJson().write(DataManager::getFile(id));
+			value->save();
+			if (child[0]) {
+				child[0]->save();
+			}
+			if (child[1]) {
+				child[1]->save();
+			}
+		}
+
 		friend stupid_ptr<Node> grandparent(const stupid_ptr<Node>& u) {
 			if (u->parent) return u->parent->parent;
 			else return nullptr;
@@ -485,14 +593,15 @@ private:
 
 	stupid_ptr<Node> root, min_p, max_p;
 	size_t _size;
+	std::string id;
 
 	void delete_tree(const stupid_ptr<Node>& u) {
 		if (!u) return;
-		u->prev_p = u->next_p = nullptr;
-		u->parent = nullptr;
 		delete_tree(u->child[0]);
 		delete_tree(u->child[1]);
 		u->child[0] = u->child[1] = nullptr;
+		u->prev_p = u->next_p = nullptr;
+		u->parent = nullptr;
 	}
 
 	size_t count_size(stupid_ptr<Node> u) {

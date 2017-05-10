@@ -5,6 +5,7 @@
 #include "util/stupid_ptr.hpp"
 #include "Id.hpp"
 #include "DataManager.hpp"
+#include <iostream>
 
 namespace TrainBoom {
     struct Blob {
@@ -30,6 +31,17 @@ namespace TrainBoom {
         void save() const {
         	toJson().write(DataManager::getFile(id));
         }
+        bool operator<(const Blob& other) const {
+            return content < other.content;
+        }
+        friend std::ostream& operator<<(std::ostream &fout, const Blob& blob) {
+			fout << blob.content;
+			return fout;
+		}
+        friend std::istream& operator>>(std::istream &fin, Blob& blob) {
+			fin >> blob.content;
+			return fin;
+		}
     };
 }
 

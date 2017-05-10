@@ -434,7 +434,9 @@ public:
     }
 
     void write(util::stupid_ptr<BinaryFile> bfp) const {
+        // std::cerr << "Json {" << std::endl;
         data.write(bfp);
+        // std::cout << "Json }" << std::endl;
     }
 
     void read(util::stupid_ptr<BinaryFile> bfp) {

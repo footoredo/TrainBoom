@@ -164,6 +164,7 @@ public:
 
 private:
 	virtual void free_memory() {
+		// std::cout << "free_memory" << std::endl;
 		// std::cout << "!!! ptr" << std::endl;
 		delete this->ptr;
 		this->ptr = nullptr;
@@ -253,6 +254,7 @@ private:
 
 template <class T, class... Args>
 stupid_ptr<T> make_stupid(Args&&... args) {
+	// std::cout << "make_stupid" << std::endl;
     return stupid_ptr<T>(new T(args...));
 }
 

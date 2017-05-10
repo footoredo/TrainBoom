@@ -24,6 +24,7 @@ namespace TrainBoom {
         }
 
         util::stupid_ptr<BinaryFile> getFile(std::string id) {
+            // std::cout << "getFile {" << std::endl;
             char file_path[root_len + 41 + 1];
             strcpy(file_path, root);
             strncpy(file_path + root_len, id.c_str(), 2);
@@ -33,6 +34,7 @@ namespace TrainBoom {
             strcpy(file_path + root_len + 3, id.c_str() + 2);
 //            std::cout << file_path << std::endl;
 
+            // std::cout << "getFile }" << std::endl;
             return util::make_stupid<BinaryFile>(std::string(file_path));
         }
     }
