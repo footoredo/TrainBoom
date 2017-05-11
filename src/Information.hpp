@@ -3,7 +3,11 @@
 
 #include <sstream>
 #include <ctime>
-#include "util.hpp"
+#include "Id.hpp"
+#include "util/Datetime.hpp"
+#include "DataManager.hpp"
+#include "util/Json.hpp"
+#include "util/stupid_ptr.hpp"
 
 namespace TrainBoom {
 
@@ -16,7 +20,7 @@ private:
     unsigned distance;
     util::Datetime::Datetime arriveTime, leaveTime;
     unsigned flags;
-    Id id;
+    // std::string id;
 
 public:
     class wrong_information : public exception {
@@ -38,8 +42,7 @@ public:
         const util::Datetime::Datetime& leaveTime,
         unsigned flags = 0
     ) : stationId(stationId), distance(distance),
-        arriveTime(arriveTime), leaveTime(leaveTime), flags(flags),
-        id("Information") {
+        arriveTime(arriveTime), leaveTime(leaveTime), flags(flags) {
             if (flags != 0)
                  throw wrong_information();
     }
@@ -47,7 +50,7 @@ public:
     Information(Id stationId, unsigned distance,
         const util::Datetime::Datetime& tmpTime,
         unsigned flags = 0
-    ) : stationId(stationId), distance(distance), flags(flags), id("Information") {
+    ) : stationId(stationId), distance(distance), flags(flags) {
             if (flags == 0)
                 throw wrong_information();
             else if ((flags & isStart) && (flags & isEnd))
@@ -77,18 +80,16 @@ public:
             }*/
 
     Information(const util::Json& json)
-        : stationId(json["stationId"]),
-            distance(json["distance"]),
-            flags(json["flags"]), id("Information") {
+        : stationId(json["stationId"].as<std::string>()),
+            distance(json["distance"].as<unsigned>()),
+            flags(json["flags"].as<unsigned>()) {
+                // if (json.getId() != "") id = json.getId();
+                // else id = Id("Information");
                 if (!(flags & isStart)) arriveTime = util::Datetime::Datetime::parse(json["arriveTime"]);
                 if (!(flags & isEnd)) leaveTime = util::Datetime::Datetime::parse(json["leaveTime"]);
                 // createTime = std::time(nullptr);
                 // id = generateId("Information", createTime);
             }
-
-    std::string getId() const {
-        return id;
-    }
 
     std::string getStationId() const {
         return stationId;
@@ -167,7 +168,7 @@ public:
     }
 
     util::Json toJson() const {
-        util::Json json("information", id);
+        util::Json json;
         json["stationId"] = stationId;
         json["distance"] = distance;
         if (!isStartStation()) json["arriveTime"] = arriveTime.format();

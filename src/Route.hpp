@@ -1,7 +1,10 @@
 #ifndef TRAINBOOM_ROUTE_HPP
 #define TRAINBOOM_ROUTE_HPP
 
-#include "util.hpp"
+#include "util/Json.hpp"
+#include "util/stupid_ptr.hpp"
+#include "util/IntervalManip.hpp"
+#include "DataManager.hpp"
 #include "Order.hpp"
 #include "Segment.hpp"
 #include "Information.hpp"
@@ -331,19 +334,23 @@ public:
         return json;
     }
 
-    std::string toString() {
-        segmentsIntervalManip->forceApply();
-        std::stringstream ss;
-        ss << "name " << name << '\n';
-        ss << "n " << n << '\n';
-        ss << "informations " << n << '\n';
-        for (unsigned i = 0; i < n; ++ i)
-            ss << "information " << informations[i]->getId() << '\n';
-        ss << "segments " << n - 1 << '\n';
-        for (unsigned i = 0; i < n - 1; ++ i)
-            ss << "segment " << segments[i]->getId() << '\n';
-        return ss.str();
+    void save() {
+        toJson().write(DataManager::getFile(id));
     }
+
+    // std::string toString() {
+    //     segmentsIntervalManip->forceApply();
+    //     std::stringstream ss;
+    //     ss << "name " << name << '\n';
+    //     ss << "n " << n << '\n';
+    //     ss << "informations " << n << '\n';
+    //     for (unsigned i = 0; i < n; ++ i)
+    //         ss << "information " << informations[i]->getId() << '\n';
+    //     ss << "segments " << n - 1 << '\n';
+    //     for (unsigned i = 0; i < n - 1; ++ i)
+    //         ss << "segment " << segments[i]->getId() << '\n';
+    //     return ss.str();
+    // }
 };
 
 }   // TrainBoom

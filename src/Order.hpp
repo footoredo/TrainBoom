@@ -1,7 +1,9 @@
 #ifndef TRAINBOOM_ORDER_HPP
 #define TRAINBOOM_ORDER_HPP
 
-#include "util.hpp"
+#include <string>
+#include "util/Json.hpp"
+#include "Id.hpp"
 
 namespace TrainBoom {
     struct Order {
@@ -15,7 +17,7 @@ namespace TrainBoom {
 
         Order(std::string routeId,
                 std::string startStationId, std::string endStationId,
-                std::string ticketType, 
+                std::string ticketType,
                 double ticketPrice, unsigned ticketNumber):
             routeId(routeId), startStationId(startStationId),
             endStationId(endStationId), ticketType(ticketType),

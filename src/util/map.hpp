@@ -13,11 +13,6 @@ namespace TrainBoom {
 
 namespace util {
 
-template <class T>
-std::string getContent(const T& x) {
-	return x.getId();
-}
-
 template<
 	class Key,
 	class T,
@@ -31,7 +26,7 @@ public:
 	 * it should have a default constructor, a copy constructor.
 	 * You can use sjtu::map as value_type by typedef.
 	 */
-	typedef pair<const Key, T> value_type;
+	typedef util::pair<const Key, T> value_type;
 	/**
 	 * see BidirectionalIterator at CppReference for help.
 	 *

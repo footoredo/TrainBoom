@@ -2,7 +2,7 @@
 #define TRAINBOOM_SEGMENT_HPP
 
 #include <iostream>
-#include "util.hpp"
+#include "util/map.hpp"
 #include "exception.hpp"
 #include "Ticket.hpp"
 
@@ -13,7 +13,7 @@ typedef util::map<Ticket::Type, int> TicketDelta;
 class Segment {
 private:
     util::map<Ticket::Type, Ticket::Attribute> tickets;
-    Id id;
+    // std::string id;
 
 public:
     class ticket_not_found : public exception {
@@ -82,12 +82,14 @@ public:
         }
     };
 
-    Segment() noexcept: tickets(), id("Segment") {}
+    Segment() noexcept: tickets() {}
     Segment(const util::map<Ticket::Type, Ticket::Attribute>& tickets) noexcept
-        : tickets(tickets), id("Segment") {}
-    Segment(const Segment& other) noexcept: tickets(other.tickets), id("Segment") {}
-    Segment(const util::Json& json): id("Segment") {
+        : tickets(tickets) {}
+    Segment(const Segment& other) noexcept: tickets(other.tickets) {}
+    Segment(const util::Json& json) {
 //        assert(json.getType() == "segment");
+        // if (json.getId() != "") id = json.getId();
+        // else id = Id("Segment");
         json["tickets"].forEach([this](const std::string& type, util::Json attribute) {
              //   std::cout << attribute.toString() << std::endl;
             tickets[type] = Ticket::Attribute(attribute);
@@ -128,7 +130,7 @@ public:
     }
 
     util::Json toJson() const {
-        util::Json json("segment", id);
+        util::Json json;
         json["tickets"].SetObject();
 
         for (const auto& ticket: tickets) {
@@ -145,10 +147,6 @@ public:
         for (const auto& ticket: tickets)
             ss << "ticket " << ticket.first << " " << ticket.second.price << " " << ticket.second.number << '\n';
         return ss.str();
-    }
-
-    Id getId() const {
-        return id;
     }
 };
 

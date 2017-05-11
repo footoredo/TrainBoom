@@ -34,4 +34,8 @@ int main() {
         std::cout << e.what();
     }
     std::cout << newjson.toString() << std::endl;
+
+    util::Json noTypeJson;
+    noTypeJson["123"] = "456";
+    std::cout << noTypeJson.toString() << std::endl;
 }

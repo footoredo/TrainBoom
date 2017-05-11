@@ -373,10 +373,10 @@ public:
     Json() {
         allocator = &(document.GetAllocator());
         document.SetObject();
-        document.AddMember("data", Value(kObjectType), *allocator);
+        // document.AddMember("data", Value(kObjectType), *allocator);
         data = JsonValue(
             allocator,
-            &(document["data"])
+            &(document)
         );
     }
     Json(std::string type): type(type) {

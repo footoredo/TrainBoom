@@ -13,7 +13,7 @@ namespace TrainBoom {
         std::string id;
         Blob(): content(), id(Id("Blob")) {}
         Blob(std::string content): content(content), id(Id("Blob")) {}
-        Blob(std::string id, util::stupid_ptr<BinaryFile> bfp): id(id) {
+        Blob(std::string id, stupid_ptr<BinaryFile> bfp): id(id) {
             Json tmp; tmp.read(bfp);
             content = tmp["content"].as<std::string>();
         }

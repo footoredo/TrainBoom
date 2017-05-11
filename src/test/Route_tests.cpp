@@ -5,7 +5,8 @@ using namespace util;
 const double eps = 1e-8;
 
 int main() {
-    util::stupid_array<TrainBoom::Id> stations(new TrainBoom::Id[3]{Id("Station"), Id("Station"), Id("Station")}, 3);
+    DataManager::init();
+    util::stupid_array<std::string> stations(new std::string[3]{Id("Station"), Id("Station"), Id("Station")}, 3);
     // std::cout << "sads" << std::endl;
     util::stupid_array<size_t> distance(new size_t[2]{10, 20}, 2);
     util::stupid_array<util::Datetime::Datetime> arriveTime(
@@ -65,7 +66,7 @@ int main() {
         util::Json json = route.information(i).toJson();
         std::cout << json.toString() << std::endl;
 
-        std::cout << route.information(i).getId() << std::endl;
+        // std::cout << route.information(i).getId() << std::endl;
 
         Information tmp(json);
         tmp.display();
@@ -74,5 +75,5 @@ int main() {
     util::Json routeJson = route.toJson();
     std::cout << routeJson.toString() << std::endl;
 
-    std::cout << route.toString() << std::endl;
+    // std::cout << route.toString() << std::endl;
 }

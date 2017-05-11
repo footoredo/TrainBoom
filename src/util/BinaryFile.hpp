@@ -8,6 +8,7 @@
 
 namespace TrainBoom
 {
+namespace util {
 	class BinaryFile
 	{
 		private:
@@ -154,5 +155,9 @@ namespace TrainBoom
 				Read(&obj,sizeof(obj));
 			}
 	};
-}
+} // util
+
+using util::BinaryFile;
+
+} // TrainBoom
 #endif
