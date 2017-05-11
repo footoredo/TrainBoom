@@ -32,7 +32,7 @@ namespace trainBoom {
             }
 
             Json vec2Json(const util::vector<std::string>& vec, const std::string type) {
-                Json json(type + "sList");
+                Json json;
                 json[type + "s"].SetArray();
                 for (const std::string& item: vec)
                     json[type + "s"].PushBack(item);
@@ -41,7 +41,7 @@ namespace trainBoom {
 
             template <class T>
             Json vec2Json(const util::vector<T>& vec, const std::string type) {
-                Json json(type + "sList");
+                Json json;
                 json[type + "s"].SetArray();
                 for (const T& item: vec)
                     json[type + "s"].PushBack(item.toJson());
@@ -278,11 +278,14 @@ namespace trainBoom {
                 }
 */
                 void queryRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
+//                    std::cout << "Done Routing." << std::endl;
                     std::string stationId = request.param(":stationId").as<std::string>();
                     Json json; json.Parse(request.body());
+ //                   std::cout << "Done Parse." << std::endl;
                     try {
                         Station& station = trainBoom->station(stationId);
                         const auto& vec = station.query(json["stationId"].as<std::string>(), Datetime::parse(json["date"].as<std::string>()));
+   //                     std::cout << "Done query." << std::endl;
                         Generic::sendJson(response, Generic::vec2Json(vec, "route"));
                     }
                     HANDLEERR;
