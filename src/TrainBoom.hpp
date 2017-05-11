@@ -94,6 +94,21 @@ public:
 		stationNameMap.read(stationNameMapId, DataManager::getFile(stationNameMapId));
 	}
 
+    void load(std::string _id) {
+        id = _id;
+		Json tmp; tmp.read(id, DataManager::getFile(_id));
+		std::string usersId = tmp["usersId"].as<std::string>();
+		users.read(usersId, DataManager::getFile(usersId));
+		std::string routesId = tmp["routesId"].as<std::string>();
+		routes.read(routesId, DataManager::getFile(routesId));
+		std::string stationsId = tmp["stationsId"].as<std::string>();
+		stations.read(stationsId, DataManager::getFile(stationsId));
+		std::string usernameMapId = tmp["usernameMapId"].as<std::string>();
+		usernameMap.read(usernameMapId, DataManager::getFile(usernameMapId));
+		std::string stationNameMapId = tmp["stationNameMapId"].as<std::string>();
+		stationNameMap.read(stationNameMapId, DataManager::getFile(stationNameMapId));
+    }
+
 	void loadFromCSV(std::string csvFile) {
 		CSV csv; csv.load(csvFile);
 		int routeCnt = 0;
@@ -176,7 +191,7 @@ public:
 			insertRoute(tmp);
 			startRoute(routes[tmp.getId()]);
 
-			if (i > 150) break;
+		//	if (i > 150) break;
 		}
 
 		std::cout << "Import done." << std::endl;

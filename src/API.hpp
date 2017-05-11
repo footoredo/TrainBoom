@@ -441,11 +441,8 @@ namespace trainBoom {
 	    std::string csvFile;
 
         public:
-            APIServer(util::stupid_ptr<TrainBoom> trainBoom, unsigned portNum, std::string csvFile = ""):
+            APIServer(util::stupid_ptr<TrainBoom> trainBoom, unsigned portNum):
                 trainBoom(trainBoom), port(portNum), csvFile(csvFile) {
-			if (csvFile != "") {
-				trainBoom->loadFromCSV(csvFile);
-			}
 		}
 
             void run(int thr = 1) {
