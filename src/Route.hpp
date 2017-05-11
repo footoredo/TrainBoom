@@ -36,7 +36,7 @@ private:
     util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip;
 //    util::map<std::string, unsigned> stationsMap;
 
-    Id id;
+    std::string id;
 
     bool running;
 
@@ -114,7 +114,7 @@ public:
         ) {}
     };
 
-    explicit Route(): id("Route"), running(false) {}
+    explicit Route(): id(Id("Route")), running(false) {}
 
     /*Route(Id id, unsigned n,
         const util::stupid_array<Id>& stations,
@@ -144,7 +144,7 @@ public:
     Route(std::string name, unsigned n,
         const util::stupid_array<util::stupid_ptr<Information>>& informations,
         const util::stupid_array<util::stupid_ptr<Segment>>& segments
-    ): name(name), n(n), informations(informations), segments(segments), id("Route"), running(false) {
+    ): name(name), n(n), informations(informations), segments(segments), id(Id("Route")), running(false) {
             if (n < 2) {
                 throw station_number_too_small();
             }
@@ -158,7 +158,15 @@ public:
             );
         }
 
-    Route(const Json& json): id("Route") {
+    Route(const Json& json) {
+        // std::cout << "here!" << std::endl;
+        if (json.getId() == "") {
+            id = Id("Route");
+        }
+        else {
+            id = json.getId();
+        }
+
         if (!json.HasMember("n")) throw information_missing("n");
         if (!json.HasMember("name")) throw information_missing("name");
         if (!json.HasMember("informations")) throw information_missing("informations");
@@ -189,6 +197,8 @@ public:
 
         segmentsIntervalManip = new SegmentsInvervalManip(segments, n - 1);
     }
+
+    Route(std::string id, stupid_ptr<BinaryFile> bfp): Route(Json().read(id, bfp)) {}
 
     /*void rebuild(unsigned _n,
         const util::stupid_array<Id>& _stations,
@@ -335,6 +345,7 @@ public:
     }
 
     void save() {
+        // std::cout << id << std::endl;
         toJson().write(DataManager::getFile(id));
     }
 

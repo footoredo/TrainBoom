@@ -70,7 +70,7 @@ class Attribute {
 		}
 
 		util::Json toJson() const {
-			util::Json json("attribute");
+			util::Json json;
 			json["price"] = price;
 			json["number"] = number;
 			json["nonstop"] = nonstop;

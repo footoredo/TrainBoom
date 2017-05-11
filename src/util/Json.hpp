@@ -89,7 +89,7 @@ public:
             else if (value->IsObject()) {
                 bf.Write(BIN_TYPE_DICT);
                 // std::cout << BIN_TYPE_DICT << std::endl;
-                bin_type_t tmp;
+                // bin_type_t tmp;
 
                 int size = value->MemberCount();
                 bf.Write(size);
@@ -97,14 +97,15 @@ public:
                     bf.Write(key);
                     jv.write(bfp);
                 });
-                bf.Close();
-                bf.Read(tmp);
+                // bf.Close();
+                // bf.Read(tmp);
                 // std::cout << tmp << std::endl;
             }
             else throw type_error("writable JsonValue");
         }
 
         JsonValue& read(util::stupid_ptr<BinaryFile> bfp) {
+            // std::cout << "JsonValue read {" << std::endl;
             BinaryFile& bf = *bfp;
             bin_type_t type; bf.Read(type);
             // std::cout << type << std::endl;
@@ -143,6 +144,7 @@ public:
                 }
             }
             else throw type_error("readable JsonValue");
+            // std::cout << "JsonValue read }" << std::endl;
             return *this;
         }
 
@@ -439,8 +441,21 @@ public:
         // std::cout << "Json }" << std::endl;
     }
 
-    void read(util::stupid_ptr<BinaryFile> bfp) {
+    Json& read(util::stupid_ptr<BinaryFile> bfp) {
+        // std::cerr << "???" << std::endl;
         data.read(bfp);
+        return *this;
+    }
+
+    Json& read(std::string _id, stupid_ptr<BinaryFile> bfp) {
+        // try {
+            id = _id; data.read(bfp);
+            return *this;
+        // }
+        // catch (const exception& e) {
+            // std::cerr << e.what() << std::endl;
+            // throw e;
+        // }
     }
 
     Json& Parse(const std::string& content) {
@@ -452,8 +467,16 @@ public:
         return *this;
     }
 
-    const std::string& getType() const {
+    std::string getType() const {
         return type;
+    }
+
+    std::string getId() const {
+        return id;
+    }
+
+    void setId(std::string _id) {
+        id = _id;
     }
 
     const Document& getDocument() const {

@@ -75,5 +75,13 @@ int main() {
     util::Json routeJson = route.toJson();
     std::cout << routeJson.toString() << std::endl;
 
+    route.save();
+    std::cout << "save done." << std::endl;
+
+    Route newRoute(route.getId(), DataManager::getFile(route.getId()));
+    // std::cout << newRoute.toJson().toString() << std::endl;
+    assert(newRoute.toJson().toString() == route.toJson().toString());
+    std::cout << "save & load test passed!" << std::endl;
+
     // std::cout << route.toString() << std::endl;
 }

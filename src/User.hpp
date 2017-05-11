@@ -1,7 +1,12 @@
 #ifndef TRAINBOOM_USER_HPP
 #define TRAINBOOM_USER_HPP
 
-#include "util.hpp"
+#include "util/map.hpp"
+#include "util/Json.hpp"
+#include "util/stupid_ptr.hpp"
+#include "util/vector.hpp"
+#include "Id.hpp"
+#include "DataManager.hpp"
 #include "Order.hpp"
 #include <string>
 #include <vector>
@@ -21,25 +26,31 @@ private:
     Gender gender;//Man, Woman, Other
     bool isRoot;
     util::map<std::string, Order> orders;
-    Id id;
+    std::string id;
 
 public:
     class information_missing: public exception {
         public:
-            information_missing(const std::string& info): 
+            information_missing(const std::string& info):
                 exception (
                         "information_missing",
                         "Your " + info + " is missing!!!") {}
     };
     class id_not_exist: public exception {
         public:
-            id_not_exist(): 
+            id_not_exist():
                 exception (
                         "id_not_exist",
                         "Your id does not exist!!!") {}
     };
-    User (): id("User") {}
-	User (const Json& json): gender(Other), isRoot(false), id("User") {
+    User (): id(Id("User")) {}
+	User (const Json& json): gender(Other), isRoot(false) {
+        if (json.getId() != "") {
+            id = json.getId();
+        }
+        else {
+            id = Id("User");
+        }
 //        std::cout << "!" << std::endl;
 //        std::cout << json.toString() << std::endl;
         if (json.HasMember("password")) password = json["password"].as<std::string>();
@@ -63,7 +74,13 @@ public:
         if (json.HasMember("motto")) motto = json["motto"].as<std::string>();
         if (json.HasMember("gender")) gender = Gender(json["gender"].as<int>());
         if (json.HasMember("isRoot")) isRoot = json["isRoot"].as<bool>();
+
+        if (json.HasMember("ordersId")) {
+            std::string ordersId = json["ordersId"];
+            orders.read(ordersId, DataManager::getFile(ordersId));
+        }
     }
+    User (std::string id, stupid_ptr<BinaryFile> bfp): User(Json().read(id, bfp)) {}
 	// User operator=(const User &t):id(t.id),username(t.username),password(t.password),avatar(t.avatar),realname(t.realname),phone(t.phone),email(t.email),motto(t.motto),gender(t.gender),root(t.root),order(t.order) {}
     std::string getId() const {return id;}
 	void update(const Json& json) {
@@ -138,7 +155,7 @@ public:
         util::Json json("user", id);
         json["username"] = username;
         json["salt"] = salt;
-	json["password"] = password;
+        json["password"] = password;
         if (avatar.size()) json["avatar"] = avatar;
         if (realname.size()) json["realname"] = realname;
         if (phone.size()) json["phone"] = phone;
@@ -147,6 +164,13 @@ public:
         json["gender"] = gender;
         json["isRoot"] = isRoot;
         return json;
+    }
+
+    void save() const {
+        Json tmp = toJson();
+        tmp["ordersId"] = orders.getId();
+        tmp.write(DataManager::getFile(id));
+        orders.save();
     }
 /*
     util::Json getOrderJson() const {
