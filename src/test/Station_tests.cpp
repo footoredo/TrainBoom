@@ -1,7 +1,7 @@
 #include "Station.hpp"
 #include "util/Datetime.hpp"
 #include <string>
-using namespace TrainBoom;
+using namespace trainBoom;
 using namespace std;
 using util::Datetime::Datetime;
 
@@ -52,6 +52,7 @@ int main() {
     st.save();
     std::cout << "done save." << std::endl;
     Station new_st(st.getId(), DataManager::getFile(st.getId()));
+    // std::cout << st.toJson().toString() << std::endl;
     // std::cout << new_st.toJson().toString() << std::endl;
     assert(new_st.toJson().toString() == st.toJson().toString());
     std::cout << "save & load test passed!" << std::endl;

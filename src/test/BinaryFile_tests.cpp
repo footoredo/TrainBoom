@@ -5,7 +5,7 @@
 #include <cassert>
 #include "../BinaryFile.hpp"
 using namespace std;
-using namespace TrainBoom;
+using namespace trainBoom;
 struct foo{
 	int a,b,c;
 	char t[100];
@@ -38,20 +38,20 @@ int main()
 		cout<<bbuf[i]<<endl;
 	}
 	asd.Close();
-	
+
 	BinaryFile asdas("ttt.dat");
 	asdas.Write(std::string("123546611123"));
 	std::string tmpstr; asdas.Read(tmpstr);
 	std::cout << tmpstr << std::endl;
 	assert(tmpstr == "123546611123");
 	asdas.Close();
-	
+
 	int w=5;
 	BinaryFile tt("hhg.dat");
 	tt.Write(w);
 	tt.Read(w);
 	cout<<w<<endl;
-	
+
 	srand(time(0));
 	foo a(3,6,4),b;
 	BinaryFile tmp("hhh.dat");
@@ -61,8 +61,8 @@ int main()
 	tmp.Write(a.t);
 	tmp.Write(a.s);
 	tmp.Write(a.c);
-	tmp.Close();	
-	
+	tmp.Close();
+
 	BinaryFile rd("hhh.dat");
 	rd.Read(b.a);
 	rd.Read(b.b);

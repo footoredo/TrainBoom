@@ -4,9 +4,10 @@
 #include <string>
 #include <iostream>
 #include "exception.hpp"
-#include "util.hpp"
+#include "util/Json.hpp"
+#include "util/pair.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace Ticket {
 

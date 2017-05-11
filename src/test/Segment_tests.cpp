@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Segment.hpp"
 #include "util.hpp"
-using namespace TrainBoom;
+using namespace trainBoom;
 
 int main() {
     Segment s0;

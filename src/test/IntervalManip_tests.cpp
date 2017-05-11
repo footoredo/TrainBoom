@@ -2,7 +2,7 @@
 #include "util/IntervalManip.hpp"
 #include "util/stupid_ptr.hpp"
 
-using namespace TrainBoom;
+using namespace trainBoom;
 using namespace util;
 
 struct ModifierAdd {
@@ -41,7 +41,7 @@ int main() {
         assert(*(a[i]) == i);
     }
     std::cout << "Initialization test passed!" << std::endl;
-    
+
     try {
         intervalManipAdd.query(0, 5);
         std::cout << "throw test for query out of range failed!" << std::endl;
@@ -79,6 +79,6 @@ int main() {
     assert(*(a[3]) == 3);
     assert(*(a[4]) == 4);
     std::cout << "modify test passed!" << std::endl;
-    
+
     std::cout << "all test passed!" << std::endl;
 }

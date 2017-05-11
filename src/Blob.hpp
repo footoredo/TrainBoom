@@ -7,7 +7,7 @@
 #include "DataManager.hpp"
 #include <iostream>
 
-namespace TrainBoom {
+namespace trainBoom {
     struct Blob {
         std::string content;
         std::string id;

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <ctime>
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 

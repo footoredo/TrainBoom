@@ -6,7 +6,7 @@
 #include "Id.hpp"
 #include "DataManager.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
     struct Order {
         std::string routeId;
         std::string startStationId, endStationId;

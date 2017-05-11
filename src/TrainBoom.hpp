@@ -2,24 +2,24 @@
 #define TRAINBOOM_HPP
 
 #include <iostream>
-#include "exception.hpp"
-#include "Ticket.hpp"
-#include "Segment.hpp"
-#include "Route.hpp"
+#include "util/map.hpp"
+#include "util/stupid_ptr.hpp"
+#include "DataManager.hpp"
 #include "User.hpp"
-#include "Train.hpp"
+#include "Route.hpp"
 #include "Station.hpp"
-#include "util.hpp"
+#include "Blob.hpp"
+#include "util/CSV.hpp"
 #include <sstream>
 
-namespace TrainBoom {
+namespace trainBoom {
 
 class TrainBoom {
 private:
 	util::map <std::string, User> users;
 	util::map <std::string, Route> routes;
 	util::map <std::string, Station> stations;
-	Id id;
+	std::string id;
 
     util::map <std::string, Blob> usernameMap, stationNameMap;
 
@@ -79,7 +79,20 @@ public:
                     "route_not_running",
                     "The route you tried to stop is not running!") {}
     };
-	TrainBoom(): id("TrainBoom") {}
+	TrainBoom(): id(Id("TrainBoom")) {}
+	TrainBoom(std::string id, stupid_ptr<BinaryFile> bfp): id(id) {
+		Json tmp; tmp.read(id, bfp);
+		std::string usersId = tmp["usersId"].as<std::string>();
+		users.read(usersId, DataManager::getFile(usersId));
+		std::string routesId = tmp["routesId"].as<std::string>();
+		routes.read(routesId, DataManager::getFile(routesId));
+		std::string stationsId = tmp["stationsId"].as<std::string>();
+		stations.read(stationsId, DataManager::getFile(stationsId));
+		std::string usernameMapId = tmp["usernameMapId"].as<std::string>();
+		usernameMap.read(usernameMapId, DataManager::getFile(usernameMapId));
+		std::string stationNameMapId = tmp["stationNameMapId"].as<std::string>();
+		stationNameMap.read(stationNameMapId, DataManager::getFile(stationNameMapId));
+	}
 
 	void loadFromCSV(std::string csvFile) {
 		CSV csv; csv.load(csvFile);
@@ -163,7 +176,7 @@ public:
 			insertRoute(tmp);
 			startRoute(routes[tmp.getId()]);
 
-			// if (i > 150) break;
+			if (i > 150) break;
 		}
 
 		std::cout << "Import done." << std::endl;
@@ -292,8 +305,23 @@ public:
 		return ss.str();
 	}
 
+	void save() const {
+		Json tmp("TrainBoom", id);
+		tmp["usersId"] = users.getId();
+		users.save();
+		tmp["routesId"] = routes.getId();
+		routes.save();
+		tmp["stationsId"] = stations.getId();
+		stations.save();
+		tmp["usernameMapId"] = usernameMap.getId();
+		usernameMap.save();
+		tmp["stationNameMapId"] = stationNameMap.getId();
+		stationNameMap.save();
+		tmp.write(DataManager::getFile(id));
+	}
+
 };
 
-}   // TrainBoom
+}   // trainBoom
 
 #endif

@@ -5,7 +5,7 @@
 #include "Route.hpp"
 #include <string>
 
-namespace TrainBoom {
+namespace trainBoom {
 
 class Train {
     friend class Route;

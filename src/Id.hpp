@@ -6,7 +6,7 @@
 #include "sha1.hpp"
 #include <sstream>
 
-namespace TrainBoom {
+namespace trainBoom {
     namespace IdNamespace {
         std::string getSalt(unsigned length) {
             std::string salt;

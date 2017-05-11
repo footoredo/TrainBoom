@@ -9,7 +9,7 @@
 #include "util/Json.hpp"
 #include "util/stupid_ptr.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 #define isStart 1
 #define isEnd 2

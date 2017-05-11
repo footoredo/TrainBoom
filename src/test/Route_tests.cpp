@@ -1,6 +1,6 @@
 #include "Route.hpp"
 #include <string>
-using namespace TrainBoom;
+using namespace trainBoom;
 using namespace util;
 const double eps = 1e-8;
 

@@ -1,7 +1,7 @@
 #include "User.hpp"
 #include "DataManager.hpp"
 
-using namespace TrainBoom;
+using namespace trainBoom;
 
 int main() {
     DataManager::init();

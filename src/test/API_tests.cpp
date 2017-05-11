@@ -2,7 +2,7 @@
 #include "TrainBoom.hpp"
 #include "util.hpp"
 
-using namespace TrainBoom;
+using namespace trainBoom;
 
 int main() {
     API::APIServer apiServer(util::make_stupid<TrainBoom::TrainBoom>(), 3000, "test/test.csv");

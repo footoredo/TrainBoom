@@ -6,7 +6,7 @@
 #include "exception.hpp"
 #include "stupid_ptr.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 

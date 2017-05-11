@@ -1,7 +1,7 @@
 #include "Train.hpp"
 #include <iostream>
 
-using namespace TrainBoom;
+using namespace trainBoom;
 
 int main() {
     util::stupid_array<TrainBoom::id_t> stations(new TrainBoom::id_t[3]{0, 1, 2}, 3);

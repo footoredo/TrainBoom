@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <cstring>
 
-namespace TrainBoom {
+namespace trainBoom {
     namespace DataManager {
         const char root[] = ".TrainBoom/";
         const int root_len = strlen(root);

@@ -1,7 +1,7 @@
 #include "util/Json.hpp"
 #include "util/BinaryFile.hpp"
 #include <iostream>
-using namespace TrainBoom;
+using namespace trainBoom;
 
 int main() {
     util::Json json("test");

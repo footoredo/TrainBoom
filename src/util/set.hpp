@@ -5,7 +5,7 @@
 #include "pair.hpp"
 #include "exception.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 

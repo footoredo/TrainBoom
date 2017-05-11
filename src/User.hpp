@@ -12,7 +12,7 @@
 #include <vector>
 #include <cassert>
 
-namespace TrainBoom {
+namespace trainBoom {
 
 enum Gender{Man=0, Woman=1, Other=2};
 

@@ -11,7 +11,7 @@
 #include "DataManager.hpp"
 #include "Id.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 	// struct RouteInterval;
 	struct RouteInterval {
 	    std::string routeId;

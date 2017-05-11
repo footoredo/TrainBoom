@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 /*

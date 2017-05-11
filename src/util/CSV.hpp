@@ -6,7 +6,7 @@
 #include <string>
 #include "exception.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 

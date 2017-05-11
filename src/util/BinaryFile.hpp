@@ -6,7 +6,7 @@
 #include <fstream>
 #include <string>
 
-namespace TrainBoom
+namespace trainBoom
 {
 namespace util {
 	class BinaryFile

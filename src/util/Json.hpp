@@ -10,7 +10,7 @@
 #include "util/stupid_ptr.hpp"
 // #include "util.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 

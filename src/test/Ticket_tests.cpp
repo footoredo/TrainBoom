@@ -1,8 +1,7 @@
 #include<iostream>
 #include "Ticket.hpp"
-#include "util.hpp"
 using namespace std;
-using namespace TrainBoom;
+using namespace trainBoom;
 using namespace Ticket;
 
 int main(){
@@ -32,7 +31,7 @@ int main(){
 
 	Ticket::Attribute t6(json);
 	std::cout << t6 << std::endl;
-    
+
     std::cout << Ticket::Attribute(Json("attribute").Parse("{\"price\":123.5}")) << std::endl;
 
 	return 0;

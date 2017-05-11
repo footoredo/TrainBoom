@@ -9,7 +9,7 @@
 #include "BinaryFile.hpp"
 #include "DataManager.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 
@@ -234,7 +234,7 @@ public:
 			min_p = nullptr; max_p = nullptr;
 		}
 	}
-	map(const map &other): _size(other._size), id(Id("Map")) {
+	map(const map &other): _size(other._size), id(other.id) {
 		root = copy_tree(other.root);
 		// std::cout << "incopy " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
 		min_p = find_min(root); max_p = find_max(root);

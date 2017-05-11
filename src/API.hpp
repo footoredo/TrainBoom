@@ -5,7 +5,7 @@
 #include "pistache/router.h"
 #include "pistache/endpoint.h"
 
-namespace TrainBoom {
+namespace trainBoom {
 
     namespace API {
 
@@ -114,7 +114,7 @@ namespace TrainBoom {
                     Routes::Get(router, "/routes/:routeId/stop", Routes::bind(&StatsEndpoint::stopRoute, this));
                     Routes::Post(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
                     Routes::Put(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
-                    
+
                     ROUTING(Post, "/routeInterval/get", getRouteInterval);
 //                    ROUTING(Post, "/routeInterval/query", queryRouteInterval);
   //                  ROUTING(Post, "/routeInterval/book", bookRouteInterval);

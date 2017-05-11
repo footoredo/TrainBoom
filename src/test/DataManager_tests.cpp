@@ -2,7 +2,7 @@
 #include "Blob.hpp"
 #include "util/map.hpp"
 #include "util/set.hpp"
-using namespace TrainBoom;
+using namespace trainBoom;
 
 int main() {
     DataManager::init();

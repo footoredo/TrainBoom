@@ -1,12 +1,12 @@
 #include "util/stupid_ptr.hpp"
 #include <iostream>
 #include <cassert>
-using namespace TrainBoom;
+using namespace trainBoom;
 
 int main() {
     using util::stupid_ptr;
     using util::stupid_array;
-    
+
     auto tmp = util::make_stupid<std::pair<int, int>>(5, 6);
     assert(tmp->first == 5 && tmp->second == 6);
 

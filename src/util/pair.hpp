@@ -1,7 +1,7 @@
 #ifndef TRAINBOOM_UTIL_PAIR_HPP
 #define TRAINBOOM_UTIL_PAIR_HPP
 
-namespace TrainBoom {
+namespace trainBoom {
 
 namespace util {
 

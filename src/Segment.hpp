@@ -6,7 +6,7 @@
 #include "exception.hpp"
 #include "Ticket.hpp"
 
-namespace TrainBoom {
+namespace trainBoom {
 
 typedef util::map<Ticket::Type, int> TicketDelta;
 

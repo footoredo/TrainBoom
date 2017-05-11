@@ -11,7 +11,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace TrainBoom {
+namespace trainBoom {
 
 typedef util::IntervalManip<
     Segment,

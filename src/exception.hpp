@@ -5,7 +5,7 @@
 #include <cstring>
 #include <string>
 
-namespace TrainBoom {
+namespace trainBoom {
 
 class exception {
 protected:
