@@ -19,6 +19,7 @@ Method|HTTP request|Description
 `insert`|`POST /stations`| Insert a single station.
 `list`|`GET /stations`| Get the station list.
 `get`|`GET /stations/:stationId`| Get information of a single station.
+`name`|`POST /stations/name`| Get stationId by its name.
 `update`|`PUT /stations/:stationId`| Update information of a single station.
 `queryRoutes`|`POST /stations/:stationId/routes`| Get the routes list of the station.
 

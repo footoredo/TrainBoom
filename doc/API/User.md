@@ -62,12 +62,9 @@ GET /users
 ### Response body
 ```json
 {
-   "type":"usersList",
-   "data":{
-      "users":[
-         "756b418e1d5b6aaf482f9db33112a20fb0350fe1"
-      ]
-   }
+    "users": [
+        "756b418e1d5b6aaf482f9db33112a20fb0350fe1"
+    ]
 }
 ```
 
@@ -122,12 +119,9 @@ GET /users/:userId/orders
 ### Response body
 ```json
 {
-    "data": {
-        "orders": [
-            "c10fd1d8e080c6f1022fa589f1d65c1a7ed556bc"
-        ]
-    },
-    "type": "ordersList"
+    "orders": [
+        "c10fd1d8e080c6f1022fa589f1d65c1a7ed556bc"
+    ]
 }
 ```
 

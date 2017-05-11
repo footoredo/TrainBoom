@@ -125,13 +125,10 @@ GET /routes
 ### Response body
 ```json
 {
-    "data": {
-        "routes": [
-            "169993781d665438d3a3cf267187cc07a93c75e6",
-            "d0bda205ca3042fd5398c7e2c8bc163803080888"
-        ]
-    },
-    "type": "routesList"
+    "routes": [
+        "169993781d665438d3a3cf267187cc07a93c75e6",
+        "d0bda205ca3042fd5398c7e2c8bc163803080888"
+    ]
 }
 ```
 
@@ -145,68 +142,51 @@ GET /routes/:routeId
 
 ### Response body
 ```
-GET /routes/d0bda205ca3042fd5398c7e2c8bc163803080888
+GET /routes/748b74b9dc7bb96a828b72cdd0b8eb492a608eb6
 ```
 ```json
 {
     "data": {
         "informations": [
             {
-                "data": {
-                    "distance": 1,
-                    "flags": 1,
-                    "leaveTime": "2017/5/5 12:23",
-                    "stationId": "b8150fef4be4a0f7b8dcffbeeabc68ab48ca616b"
-                },
-                "id": "9d56bd74e1aecb696102fe5046bbf02e34eebe2c",
-                "type": "information"
+                "distance": 1,
+                "flags": 1,
+                "leaveTime": "2017/5/5 12:23",
+                "stationId": "18f3b9f27a590702bada96ae323017513ed4bc75"
             },
             {
-                "data": {
-                    "arriveTime": "2017/5/5 13:15",
-                    "distance": 2,
-                    "flags": 2,
-                    "stationId": "5e77d71fabefb3f965739abb9b962c2d1e0d048f"
-                },
-                "id": "f9a121d4a11733ba44b2a5f8d8111ce3b0410bc0",
-                "type": "information"
+                "arriveTime": "2017/5/5 13:15",
+                "distance": 2,
+                "flags": 2,
+                "stationId": "ea73227c2842e2ce637dbc8a313372f70d7374d6"
             }
         ],
         "n": 2,
         "name": "G105",
+        "running": false,
         "segments": [
             {
-                "data": {
-                    "tickets": {
-                        "bussiness class": {
-                            "data": {
-                                "number": 5,
-                                "price": 239.5
-                            },
-                            "type": "attribute"
-                        },
-                        "first class": {
-                            "data": {
-                                "number": 15,
-                                "price": 129.5
-                            },
-                            "type": "attribute"
-                        },
-                        "second class": {
-                            "data": {
-                                "number": 200,
-                                "price": 74.5
-                            },
-                            "type": "attribute"
-                        }
+                "tickets": {
+                    "bussiness class": {
+                        "nonstop": false,
+                        "number": 5,
+                        "price": 239.5
+                    },
+                    "first class": {
+                        "nonstop": false,
+                        "number": 17,
+                        "price": 129.5
+                    },
+                    "second class": {
+                        "nonstop": false,
+                        "number": 200,
+                        "price": 74.5
                     }
-                },
-                "id": "9c8c22b9eaefe55fb675841060eb9dc1ee1d41c1",
-                "type": "segment"
+                }
             }
         ]
     },
-    "id": "d0bda205ca3042fd5398c7e2c8bc163803080888",
+    "id": "748b74b9dc7bb96a828b72cdd0b8eb492a608eb6",
     "type": "route"
 }
 ```
@@ -265,56 +245,35 @@ POST /routes/:routeId/tickets
 ### Response
 ```json
 {
-    "data": {
-        "tickets": {
-            "bussiness class": {
-                "data": {
-                    "price": 239.5,
-                    "number": 5,
-                    "nonstop": false
-                },
-                "type": "attribute"
-            },
-            "second class": {
-                "data": {
-                    "price": 74.5,
-                    "number": 200,
-                    "nonstop": false
-                },
-                "type": "attribute"
-            },
-            "first class": {
-                "data": {
-                    "price": 129.5,
-                    "number": 17,
-                    "nonstop": false
-                },
-                "type": "attribute"
-            }
+    "tickets": {
+        "bussiness class": {
+            "price": 239.5,
+            "number": 5,
+            "nonstop": false
         },
-        "endStation": {
-            "data": {
-                "arriveTime": "2017/5/5 13:15",
-                "distance": 2,
-                "stationId": "332bf44f4467e5c8eb81038f5916758671b5608d",
-                "flags": 2
-            },
-            "type": "information",
-            "id": "ea1284eb98cf45ffb8358ec5d74a11b310420ed4"
+        "second class": {
+            "price": 74.5,
+            "number": 200,
+            "nonstop": false
         },
-        "startStation": {
-            "data": {
-                "distance": 1,
-                "stationId": "77401ae99e348ae498a1bd84831044d13e37d8fc",
-                "leaveTime": "2017/5/5 12:23",
-                "flags": 1
-            },
-            "type": "information",
-            "id": "446ad2487cacb77cb33bf4588158549d4d3a5a62"
+        "first class": {
+            "price": 129.5,
+            "number": 17,
+            "nonstop": false
         }
     },
-    "type": "segment",
-    "id": "ae725fd2e349c4131eb9ffe6ef42c038b5e87694"
+    "endStation": {
+        "arriveTime": "2017/5/5 13:15",
+        "distance": 2,
+        "stationId": "a2ee7702ff88ee1d147e5220bf767d91e3a327fc",
+        "flags": 2
+    },
+    "startStation": {
+        "distance": 1,
+        "stationId": "c82516e6c86b81590b7e397aae8fb8d217402eab",
+        "leaveTime": "2017/5/5 12:23",
+        "flags": 1
+    }
 }
 ```
 
