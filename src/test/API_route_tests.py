@@ -49,6 +49,7 @@ route["informations"][1]["stationId"] = stationId1 = res.json()["id"]
 
 
 res = s.post(url + "/routes", json = route);
+#print json.dumps(res.json(), indent=4)
 routeId0 = res.json()["id"]
 
 res = s.get(url + "/routes/" + routeId0 + "/start");
@@ -61,7 +62,7 @@ res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "date": "2017/5/5"
     })
 #print json.dumps(res.json(), indent=4)
-result = res.json()["data"]["routes"]
+result = res.json()["routes"]
 assert len(result) == 1 and result[0]["data"]["routeId"] == routeId0, "Query check failed!"
 print "1st route test passed!"
 
@@ -72,7 +73,7 @@ res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationId": stationId1,
     "date": "2017/5/5"
     })
-result = res.json()["data"]["routes"]
+result = res.json()["routes"]
 resultRouteId = map(lambda item: item["data"]["routeId"], result)
 assert len(result) == 2 and routeId0 in resultRouteId and routeId1 in resultRouteId, "Query check after 2nd route failed!"
 print "2nd route test passed!"
@@ -83,7 +84,7 @@ res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationId": stationId1,
     "date": "2017/5/5"
     })
-result = res.json()["data"]["routes"]
+result = res.json()["routes"]
 assert len(result) == 1 and result[0]["data"]["routeId"] == routeId1, "Query check after stop 1st route failed!"
 
 res = s.get(url + "/routes/" + routeId0 + "/stop");
@@ -96,8 +97,8 @@ res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
     "r": 1
     })
 
-print json.dumps(res.json(), indent=4)
-assert res.json()["data"]["tickets"]["first class"]["data"]["number"] == 17, "Query tickets check failed!"
+#print json.dumps(res.json(), indent=4)
+assert res.json()["tickets"]["first class"]["number"] == 17, "Query tickets check failed!"
 print "Query tickets check passed!"
 
 res = s.post(url + "/users", json = {"username": "footoredo", "salt": "iamasalt", "password": "."})
@@ -137,7 +138,7 @@ orderId = res.json()["id"]
 print "book ticket test passed!"
 
 res = s.get(url + "/users/" + userId + "/orders");
-orders = res.json()["data"]["orders"]
+orders = res.json()["orders"]
 assert len(orders) == 1 and orders[0] == orderId, "Order attaching check failed!"
 
 res = s.get(url + "/users/" + userId + "/orders/" + orderId)
@@ -150,7 +151,7 @@ res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
     "l": 0,
     "r": 1 
     })
-assert res.json()["data"]["tickets"]["first class"]["data"]["number"] == 15, "Query tickets after booking check failed!"
+assert res.json()["tickets"]["first class"]["number"] == 15, "Query tickets after booking check failed!"
 print "Query tickets after booking check passed!"
 
 print "All tests passed!"

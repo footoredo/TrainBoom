@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     DataManager::init();
     auto trainBoom = make_stupid<trainBoom::TrainBoom>();
     if (argc > 1) trainBoom->load(std::string(argv[1]));
-    else trainBoom->loadFromCSV("test/test.csv");
+//    else trainBoom->loadFromCSV("test/test.csv");
     API::APIServer apiServer(trainBoom, 3000);
 //    API::APIServer apiServer(util::make_stupid<TrainBoom::TrainBoom>(), 3000);
     apiServer.run(1);

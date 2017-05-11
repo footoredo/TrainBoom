@@ -462,7 +462,8 @@ public:
 //        std::cout << content << std::endl;
 //        document["data"].Swap(Document().Parse(content));
 //        document["data"] = Document().Parse(content);
-        document["data"].CopyFrom(Document().Parse(content), *allocator);
+//        data = Document().Parse(content);
+        data.getValue().CopyFrom(Document().Parse(content), *allocator);
 //        std::cout << this->toString() << std::endl;
         return *this;
     }

@@ -38,4 +38,8 @@ int main() {
     util::Json noTypeJson;
     noTypeJson["123"] = "456";
     std::cout << noTypeJson.toString() << std::endl;
+
+    util::Json empty;
+    empty.Parse("{\"123\":\"456\"}");
+    std::cout << empty.toString() << std::endl;
 }
