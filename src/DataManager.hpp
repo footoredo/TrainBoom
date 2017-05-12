@@ -25,7 +25,6 @@ namespace trainBoom {
         };
 
         const std::string root = ".TrainBoom/";
-        const int root_len = root.length();
         std::string data_file_name;
         stupid_ptr<BinaryFile> data_file_p;
 
@@ -37,7 +36,7 @@ namespace trainBoom {
 
         void init();
         void load(std::string last_data_file_name);
-        const util::json::Json& getJson(std::string id);
+        util::json::Json getJson(std::string id);
         std::string finish();
         void save(const util::json::Json& json);
 

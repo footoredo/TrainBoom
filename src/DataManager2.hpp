@@ -25,10 +25,13 @@ void init() {
     json_map.clear();
 }
 
-const Json& getJson(std::string id) {
+Json getJson(std::string id) {
     try {
         // std::cout << json_map.at(id).getId() << std::endl;
-        return json_map.at(id);
+        auto iter = json_map.find(id);
+        Json json = iter->second;
+        json_map.erase(iter);
+        return json;
     }
     catch (const exception& e) {
         throw id_not_found(id);

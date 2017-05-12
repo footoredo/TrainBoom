@@ -1,5 +1,5 @@
 #include "TrainBoom.hpp"
-#include "util.hpp"
+#include "DataManager2.hpp"
 
 #include "pistache/http.h"
 #include "pistache/router.h"
@@ -124,7 +124,9 @@ namespace trainBoom {
                 APIHANDLER(saveTrainBoom) {
                     response.send(Http::Code::Ok, "[" + trainBoom->getId() + "] saving...");
                     trainBoom->save();
-                    std::cout << trainBoom->getId() << std::endl;
+                    std::string key = DataManager::finish();
+                    std::cout << "key: " << key << std::endl;
+                    std::cout << "TrainBoom id: " << trainBoom->getId() << std::endl;
                     std::cout << "save done." << std::endl;
                 }
 
@@ -461,12 +463,11 @@ namespace trainBoom {
             util::stupid_ptr<StatsEndpoint> stats;
             util::stupid_ptr<TrainBoom> trainBoom;
             Net::Port port;
-	    std::string csvFile;
 
         public:
             APIServer(util::stupid_ptr<TrainBoom> trainBoom, unsigned portNum):
-                trainBoom(trainBoom), port(portNum), csvFile(csvFile) {
-		}
+                trainBoom(trainBoom), port(portNum) {
+                }
 
             void run(int thr = 1) {
                 Net::Address addr(Net::Ipv4::any(), port);
@@ -475,7 +476,7 @@ namespace trainBoom {
                 std::cout << "Cores = " << hardware_concurrency() << std::endl;
                 std::cout << "Using " << thr << " threads" <<std::endl;
 
-//                std::cout << trainBoom->getId() << std::endl;
+                //                std::cout << trainBoom->getId() << std::endl;
 
                 stats = util::make_stupid<StatsEndpoint>(addr, trainBoom);
 
@@ -484,9 +485,9 @@ namespace trainBoom {
                 stats->start();
 
                 while (!stats->shutdownFlag) {
-//                    sleep(1);
+                    //                    sleep(1);
                 }
-//                std::cout << "!!" << std::endl;
+                //                std::cout << "!!" << std::endl;
 
                 stats->shutdown();
             }
