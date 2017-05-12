@@ -10,13 +10,13 @@ route = {
     "n":2,
     "informations": [
         {
-            "stationId": "Chanzhou Bei",
+            "stationName": "Changzhou-North",
             "distance": 1,
             "flags": 1,
             "leaveTime": "2017/5/5 12:23"
         },
         {
-            "stationId": "Shanghai Hongqiao",
+            "stationName": "Shanghai-Hong-Qiao",
             "distance": 2,
             "flags": 2,
             "arriveTime": "2017/5/5 13:15"
@@ -41,12 +41,11 @@ route = {
     ]
 }
 
-res = s.post(url + "/stations", json = {"name": "Changzhou North"})
+res = s.post(url + "/stations", json = {"name": "Changzhou-North"})
 import json
-route["informations"][0]["stationId"] = stationId0 = res.json()["id"]
-res = s.post(url + "/stations", json = {"name": "Shanghai Hong Qiao"})
-route["informations"][1]["stationId"] = stationId1 = res.json()["id"]
-
+stationId0 = res.json()["id"]
+res = s.post(url + "/stations", json = {"name": "Shanghai-Hong-Qiao"})
+stationId1 = res.json()["id"]
 
 res = s.post(url + "/routes", json = route);
 #print json.dumps(res.json(), indent=4)
@@ -58,7 +57,7 @@ assert res.json()["type"] == "success", "Failed to start the route!"
 print "Start route check passed!"
 
 res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
-    "stationId": stationId1,
+    "stationName": "Shanghai-Hong-Qiao",
     "date": "2017/5/5"
     })
 #print json.dumps(res.json(), indent=4)
@@ -66,14 +65,16 @@ result = res.json()["routes"]
 assert len(result) == 1 and result[0]["data"]["routeId"] == routeId0, "Query check failed!"
 print "1st route test passed!"
 
+route["name"] = "G106"
 res = s.post(url + "/routes", json = route);
 routeId1 = res.json()["id"]
 res = s.get(url + "/routes/" + routeId1 + "/start");
 res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
-    "stationId": stationId1,
+    "stationName": "Shanghai-Hong-Qiao",
     "date": "2017/5/5"
     })
 result = res.json()["routes"]
+#print json.dumps(result, indent=4)
 resultRouteId = map(lambda item: item["data"]["routeId"], result)
 assert len(result) == 2 and routeId0 in resultRouteId and routeId1 in resultRouteId, "Query check after 2nd route failed!"
 print "2nd route test passed!"
@@ -81,7 +82,7 @@ print "2nd route test passed!"
 res = s.get(url + "/routes/" + routeId0 + "/stop");
 assert res.json()["type"] == "success", "Failed to stop the 1st route!"
 res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
-    "stationId": stationId1,
+    "stationName": "Shanghai-Hong-Qiao",
     "date": "2017/5/5"
     })
 result = res.json()["routes"]

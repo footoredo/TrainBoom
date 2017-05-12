@@ -49,7 +49,7 @@ namespace trainBoom {
 
         Json toJson() const {
             Json json("order", id);
-            json["routeInterval"] = routeInterval.toJson();
+            json["routeInterval"] = routeInterval.toJsonEmpty();
             json["startStationName"] = startStationName;
             json["endStationName"] = endStationName;
             json["ticketType"] = ticketType;

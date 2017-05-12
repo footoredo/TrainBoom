@@ -122,8 +122,10 @@ namespace trainBoom {
                 }
 
                 APIHANDLER(saveTrainBoom) {
-                    response.send(Http:Code::Ok, "[" + trainBoom->getId() + "] saving...");
+                    response.send(Http::Code::Ok, "[" + trainBoom->getId() + "] saving...");
                     trainBoom->save();
+                    std::cout << trainBoom->getId() << std::endl;
+                    std::cout << "save done." << std::endl;
                 }
 
                 void _shutdown(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -198,7 +200,7 @@ namespace trainBoom {
                     Json json; json.Parse(request.body());
                     try {
                         const std::string userId = trainBoom->idByUsername(json["username"]);
-                        Json json("userId");
+                        Json json;
                         json["userId"] = userId;
                         SENDJSON(json);
                     }
@@ -244,7 +246,7 @@ namespace trainBoom {
                     try {
                         std::string stationName = Json().Parse(request.body())["name"];
                         std::string stationId = trainBoom->idByStationName(stationName);
-                        Json tmp("stationId");
+                        Json tmp;
                         tmp["stationId"] = stationId;
                         SENDJSON(tmp);
                     }
@@ -290,9 +292,15 @@ namespace trainBoom {
  //                   std::cout << "Done Parse." << std::endl;
                     try {
                         Station& station = trainBoom->station(stationId);
-                        const auto& vec = station.query(json["stationId"].as<std::string>(), Datetime::parse(json["date"].as<std::string>()));
-   //                     std::cout << "Done query." << std::endl;
-                        Generic::sendJson(response, Generic::vec2Json(vec, "route"));
+                        if (!json.HasMember("routeName")) {
+                            const auto& vec = station.query(json["stationName"].as<std::string>(), Datetime::parse(json["date"].as<std::string>()));
+                            //                     std::cout << "Done query." << std::endl;
+                            Generic::sendJson(response, Generic::vec2Json(vec, "route"));
+                        }
+                        else {
+                            const auto& route = station.query(json["stationName"].as<std::string>(), Datetime::parse(json["date"].as<std::string>()), json["routeName"].as<std::string>());
+                            SENDJSON(route.toJson());
+                        }
                     }
                     HANDLEERR;
                 }
@@ -398,8 +406,14 @@ namespace trainBoom {
                         std::string startStationId = trainBoom->idByStationName(json["startStation"]);
                         std::string endStationId = trainBoom->idByStationName(json["endStation"]);
                         const Station& station = trainBoom->station(startStationId);
-                        const auto& routes = station.query(endStationId, Datetime::parse(json["date"]));
-                        SENDVEC(routes, "routeInterval");
+                        if (!json.HasMember("routeName")) {
+                            const auto& routes = station.query(json["endStation"], Datetime::parse(json["date"]));
+                            SENDVEC(routes, "routeInterval");
+                        }
+                        else {
+                            const auto& route = station.query(json["endStation"], Datetime::parse(json["date"]), json["routeName"].as<std::string>());
+                            SENDJSON(route.toJson());
+                        }
                     }
                     HANDLEERR;
                 }

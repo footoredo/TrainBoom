@@ -484,6 +484,10 @@ public:
         return document;
     }
 
+    const JsonValue& getData() const {
+        return data;
+    }
+
     JsonValue operator[](std::string key) {
         return data[key];
     }
