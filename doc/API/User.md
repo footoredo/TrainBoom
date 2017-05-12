@@ -136,16 +136,22 @@ GET /users/:userId/orders/:orderId
 ```json
 {
     "data": {
-        "ticketPrice": 259.0,
-        "startStationId": "c4d36e6e39c1bee38644761c8d562fd5c5ede28b",
+        "endStationName": "Shanghai-Hong-Qiao",
+        "routeInterval": {
+            "l": 0,
+            "r": 1,
+            "routeId": "c87297363a7a0b67e9be2cd6a16c62afe3646914",
+            "routeName": "G106"
+        },
+        "startStationName": "Changzhou-North",
         "ticketNumber": 2,
-        "routeId": "f5f2225f7758cc97253c658c42320f40b1db282a",
-        "endStationId": "089c3301cde7f387d4d53c0a0be7bfe51ad32229",
+        "ticketPrice": 259.0,
         "ticketType": "first class"
     },
-    "type": "order",
-    "id": "c5e32ab22f6227e9f177612148f044c72624fa1f"
+    "id": "6bbf03d66511bff98746a98bf0f12a786df50d47",
+    "type": "order"
 }
+
 ```
 
 ## username
@@ -165,9 +171,7 @@ POST /users/username
 ### Response body
 ```json
 {
-   "type": "userId",
-   "data": {
-      "userId": "f3a6e5276e18609a6845321ab858708bdf75c2db"
-   }
+    "userId": "dba0283f1e9356d6fe4654ab36fa8fcb9d44b421"
 }
+
 ```

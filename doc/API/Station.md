@@ -95,10 +95,7 @@ POST /users/username
 ### Response body
 ```json
 {
-   "type": "stationId",
-   "data": {
-      "stationId": "45cd9b0bcc316846ddc27ffe18f2a68a32a17ada"
-   }
+   "stationId": "45cd9b0bcc316846ddc27ffe18f2a68a32a17ada"
 }
 ```
 

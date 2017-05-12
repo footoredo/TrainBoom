@@ -10,107 +10,47 @@ POST /routes
 
 ### Request body
 
+- In `flags`, 1 stands for start station, 2 stands for end station, 0 stands for normal station.
+
 ```json
 {
     "informations": [
         {
             "distance": 1,
-            "stationId": "45cd9b0bcc316846ddc27ffe18f2a68a32a17ada",
+            "flags": 1,
             "leaveTime": "2017/5/5 12:23",
-            "flags": 1
+            "stationName": "Changzhou-North"
         },
         {
             "arriveTime": "2017/5/5 13:15",
             "distance": 2,
-            "stationId": "da81e4553f89751731dea2adb486a4582ba3fa1d",
-            "flags": 2
+            "flags": 2,
+            "stationName": "Shanghai-Hong-Qiao"
         }
     ],
+    "n": 2,
+    "name": "G106",
     "segments": [
         {
             "tickets": {
-                "second class": {
-                    "price": 74.5
-                },
                 "bussiness class": {
-                    "price": 239.5,
-                    "number": 5
+                    "nonstop": false,
+                    "number": 5,
+                    "price": 239.5
                 },
                 "first class": {
-                    "price": 129.5,
-                    "number": 17
+                    "nonstop": false,
+                    "number": 15,
+                    "price": 129.5
+                },
+                "second class": {
+                    "nonstop": false,
+                    "number": 200,
+                    "price": 74.5
                 }
             }
         }
-    ],
-    "name": "G105",
-    "n": 2
-}
-```
-
-### Response body
-
-```json
-{
-    "data": {
-        "informations": [
-            {
-                "data": {
-                    "distance": 1,
-                    "stationId": "45cd9b0bcc316846ddc27ffe18f2a68a32a17ada",
-                    "leaveTime": "2017/5/5 12:23",
-                    "flags": 1
-                },
-                "type": "information",
-                "id": "7347174fba44779087fc719630d8b56ac078d1c0"
-            },
-            {
-                "data": {
-                    "arriveTime": "2017/5/5 13:15",
-                    "distance": 2,
-                    "stationId": "da81e4553f89751731dea2adb486a4582ba3fa1d",
-                    "flags": 2
-                },
-                "type": "information",
-                "id": "f45edf78549e96124b39dc616fa42c64adb63976"
-            }
-        ],
-        "segments": [
-            {
-                "data": {
-                    "tickets": {
-                        "bussiness class": {
-                            "data": {
-                                "price": 239.5,
-                                "number": 5
-                            },
-                            "type": "attribute"
-                        },
-                        "second class": {
-                            "data": {
-                                "price": 74.5,
-                                "number": 200
-                            },
-                            "type": "attribute"
-                        },
-                        "first class": {
-                            "data": {
-                                "price": 129.5,
-                                "number": 17
-                            },
-                            "type": "attribute"
-                        }
-                    }
-                },
-                "type": "segment",
-                "id": "53886ca5ae915b79603630d7efb22dee87675975"
-            }
-        ],
-        "name": "G105",
-        "n": 2
-    },
-    "type": "route",
-    "id": "d092e0575781635f2109791936a8d020f68082aa"
+    ]
 }
 ```
 
@@ -142,7 +82,7 @@ GET /routes/:routeId
 
 ### Response body
 ```
-GET /routes/748b74b9dc7bb96a828b72cdd0b8eb492a608eb6
+GET /routes/779d46f7840e11bdd20f61d36d5d8ff9cd441909
 ```
 ```json
 {
@@ -152,18 +92,18 @@ GET /routes/748b74b9dc7bb96a828b72cdd0b8eb492a608eb6
                 "distance": 1,
                 "flags": 1,
                 "leaveTime": "2017/5/5 12:23",
-                "stationId": "18f3b9f27a590702bada96ae323017513ed4bc75"
+                "stationName": "Changzhou-North"
             },
             {
                 "arriveTime": "2017/5/5 13:15",
                 "distance": 2,
                 "flags": 2,
-                "stationId": "ea73227c2842e2ce637dbc8a313372f70d7374d6"
+                "stationName": "Shanghai-Hong-Qiao"
             }
         ],
         "n": 2,
-        "name": "G105",
-        "running": false,
+        "name": "G106",
+        "running": true,
         "segments": [
             {
                 "tickets": {
@@ -174,7 +114,7 @@ GET /routes/748b74b9dc7bb96a828b72cdd0b8eb492a608eb6
                     },
                     "first class": {
                         "nonstop": false,
-                        "number": 17,
+                        "number": 15,
                         "price": 129.5
                     },
                     "second class": {
@@ -186,7 +126,7 @@ GET /routes/748b74b9dc7bb96a828b72cdd0b8eb492a608eb6
             }
         ]
     },
-    "id": "748b74b9dc7bb96a828b72cdd0b8eb492a608eb6",
+    "id": "779d46f7840e11bdd20f61d36d5d8ff9cd441909",
     "type": "route"
 }
 ```
@@ -265,12 +205,12 @@ POST /routes/:routeId/tickets
     "endStation": {
         "arriveTime": "2017/5/5 13:15",
         "distance": 2,
-        "stationId": "a2ee7702ff88ee1d147e5220bf767d91e3a327fc",
+        "stationName": "Shanghai-Hong-Qiao",
         "flags": 2
     },
     "startStation": {
         "distance": 1,
-        "stationId": "c82516e6c86b81590b7e397aae8fb8d217402eab",
+        "stationName": "Changzhou-North",
         "leaveTime": "2017/5/5 12:23",
         "flags": 1
     }
@@ -297,20 +237,25 @@ PUT /routes/:routeId/tickets
 
 ### Response body
 
-- `ticketPrice` is total price.
+- `ticketPrice` is the total price.
 - The order is immediately attached to the user.
 
 ```json
 {
     "data": {
-        "ticketPrice": 259.0,
-        "startStationId": "c4d36e6e39c1bee38644761c8d562fd5c5ede28b",
+        "endStationName": "Shanghai-Hong-Qiao",
+        "routeInterval": {
+            "l": 0,
+            "r": 1,
+            "routeId": "c87297363a7a0b67e9be2cd6a16c62afe3646914",
+            "routeName": "G106"
+        },
+        "startStationName": "Changzhou-North",
         "ticketNumber": 2,
-        "routeId": "f5f2225f7758cc97253c658c42320f40b1db282a",
-        "endStationId": "089c3301cde7f387d4d53c0a0be7bfe51ad32229",
+        "ticketPrice": 259.0,
         "ticketType": "first class"
     },
-    "type": "order",
-    "id": "c5e32ab22f6227e9f177612148f044c72624fa1f"
+    "id": "6bbf03d66511bff98746a98bf0f12a786df50d47",
+    "type": "order"
 }
 ```

@@ -27,8 +27,10 @@ POST /routeInterval/get
             "data": {
                 "l": 0,
                 "r": 1,
-                "routeId": "65eef8b3eda80c29b72a86420fab5de8d20c1388"
+                "routeId": "779d46f7840e11bdd20f61d36d5d8ff9cd441909",
+                "routeName": "G106"
             },
+            "id": "e5733b1f865e3a083dd05cd46b68492736b05d59",
             "type": "routeInterval"
         }
     ]
