@@ -4,7 +4,7 @@
 #include <iostream>
 #include "util/map.hpp"
 #include "util/stupid_ptr.hpp"
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 #include "User.hpp"
 #include "Route.hpp"
 #include "Station.hpp"
@@ -80,23 +80,28 @@ public:
                     "The route you tried to stop is not running!") {}
     };
 	TrainBoom(): id(Id("TrainBoom")) {}
-	TrainBoom(std::string id, stupid_ptr<BinaryFile> bfp): id(id) {
-		Json tmp; tmp.read(id, bfp);
+	TrainBoom(const Json& tmp) {
+		if (tmp.getId() != "") {
+			id = tmp.getId();
+		}
+		else {
+			id = Id("TrainBoom");
+		}
 		std::string usersId = tmp["usersId"].as<std::string>();
-		users.read(usersId, DataManager::getFile(usersId));
+		users = util::map<std::string, User>::load(usersId);
 		std::string routesId = tmp["routesId"].as<std::string>();
-		routes.read(routesId, DataManager::getFile(routesId));
+		routes = util::map<std::string, Route>::load(routesId);
 		std::string stationsId = tmp["stationsId"].as<std::string>();
-		stations.read(stationsId, DataManager::getFile(stationsId));
+		stations = util::map<std::string, Station>::load(stationsId);
 		std::string usernameMapId = tmp["usernameMapId"].as<std::string>();
-		usernameMap.read(usernameMapId, DataManager::getFile(usernameMapId));
+		usernameMap = util::map<std::string, Blob>::load(usernameMapId);
 		std::string stationNameMapId = tmp["stationNameMapId"].as<std::string>();
-		stationNameMap.read(stationNameMapId, DataManager::getFile(stationNameMapId));
+		stationNameMap = util::map<std::string, Blob>::load(stationNameMapId);
 	}
 
-    void load(std::string _id) {
+    /*void load(std::string _id) {
         id = _id;
-		Json tmp; tmp.read(id, DataManager::getFile(_id));
+		Json tmp(DataManager::getJson(_id));
 		std::string usersId = tmp["usersId"].as<std::string>();
 		users.read(usersId, DataManager::getFile(usersId));
 		std::string routesId = tmp["routesId"].as<std::string>();
@@ -107,7 +112,11 @@ public:
 		usernameMap.read(usernameMapId, DataManager::getFile(usernameMapId));
 		std::string stationNameMapId = tmp["stationNameMapId"].as<std::string>();
 		stationNameMap.read(stationNameMapId, DataManager::getFile(stationNameMapId));
-    }
+    }*/
+
+	static TrainBoom load(std::string id) {
+		return TrainBoom(DataManager::getJson(id));
+	}
 
 	void loadFromCSV(std::string csvFile) {
 		CSV csv; csv.load(csvFile);
@@ -124,6 +133,7 @@ public:
 
 			++ i;
 			int ticketCount = csv.size(i) - 5;
+			while (csv.data(i, ticketCount + 5) == "") -- ticketCount;
 			stupid_array<std::string> ticketName(new std::string[ticketCount], ticketCount);
 			for (int j = 0; j < ticketCount; ++ j)
 				ticketName[j] = csv.data(i, 6 + j);
@@ -191,7 +201,7 @@ public:
 			insertRoute(tmp);
 			startRoute(routes[tmp.getId()]);
 
-			if (i > 150) break;
+			// if (i > 150) break;
 		}
 
 		std::cout << "Import done." << std::endl;
@@ -332,7 +342,8 @@ public:
 		usernameMap.save();
 		tmp["stationNameMapId"] = stationNameMap.getId();
 		stationNameMap.save();
-		tmp.write(DataManager::getFile(id));
+		// tmp.write(DataManager::getFile(id));
+		DataManager::save(tmp);
 	}
 
     void listRouteCnt() const {

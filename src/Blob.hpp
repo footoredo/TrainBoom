@@ -13,9 +13,19 @@ namespace trainBoom {
         std::string id;
         Blob(): content(), id(Id("Blob")) {}
         Blob(std::string content): content(content), id(Id("Blob")) {}
-        Blob(std::string id, stupid_ptr<BinaryFile> bfp): id(id) {
-            Json tmp; tmp.read(bfp);
-            content = tmp["content"].as<std::string>();
+        Blob(const Json& json) {
+            // std::cout << "!" << std::endl;
+            // std::cout << json.toString() << std::endl;
+            if (json.getId() == "") {
+                id = Id("Blob");
+            }
+            else {
+                id = json.getId();
+            }
+            content = json["content"].as<std::string>();
+        }
+        static Blob load(std::string id) {
+            return Blob(DataManager::getJson(id));
         }
         operator std::string() const {
             return content;
@@ -29,7 +39,7 @@ namespace trainBoom {
             return json;
         }
         void save() const {
-        	toJson().write(DataManager::getFile(id));
+        	DataManager::save(toJson());
         }
         bool operator<(const Blob& other) const {
             return content < other.content;

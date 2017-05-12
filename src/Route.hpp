@@ -4,7 +4,7 @@
 #include "util/Json.hpp"
 #include "util/stupid_ptr.hpp"
 #include "util/IntervalManip.hpp"
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 #include "Order.hpp"
 #include "Segment.hpp"
 #include "Information.hpp"
@@ -177,7 +177,10 @@ public:
         segmentsIntervalManip = new SegmentsInvervalManip(segments, n - 1);
     }
 
-    Route(std::string id, stupid_ptr<BinaryFile> bfp): Route(Json().read(id, bfp)) {}
+    // Route(std::string id, stupid_ptr<BinaryFile> bfp): Route(Json().read(id, bfp)) {}
+    static Route load(std::string id) {
+        return Route(DataManager::getJson(id));
+    }
 
     /*void rebuild(unsigned _n,
         const util::stupid_array<Id>& _stations,
@@ -229,7 +232,12 @@ public:
 
     Segment queryTickets(unsigned l, unsigned r) {
         // auto interval = getInterval(startStation, endStation);
-        return segmentsIntervalManip->query(l, r - 1);
+        auto segment = segmentsIntervalManip->query(l, r - 1);
+        for (const auto item: segment.getTickets()) {
+            std::string type = item.first;
+            segment.ticket(type).nonstop = isNonstop(l, type) || isNonstop(r, type);
+        }
+        return segment;
     }
 
     void modifyTickets(unsigned l, unsigned r, const TicketDelta& deltas) {
@@ -324,7 +332,8 @@ public:
 
     void save() {
         // std::cout << id << std::endl;
-        toJson().write(DataManager::getFile(id));
+        // toJson().write(DataManager::getFile(id));
+        DataManager::save(toJson());
     }
 
     // std::string toString() {

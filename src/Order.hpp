@@ -5,7 +5,7 @@
 #include "util/Json.hpp"
 #include "util/Datetime.hpp"
 #include "Id.hpp"
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 #include "route_util.hpp"
 
 namespace trainBoom {
@@ -28,6 +28,7 @@ namespace trainBoom {
             id(Id("Order")) {}
 
         Order(const Json& json): routeInterval(json["routeInterval"]) {
+            std::cout << json.toString() << std::endl;
             if (json.getId() != "") {
                 id = json.getId();
             }
@@ -41,7 +42,10 @@ namespace trainBoom {
             ticketNumber = json["ticketNumber"].as<unsigned>();
         }
 
-        Order(std::string id, stupid_ptr<BinaryFile> bfp): Order(Json().read(id, bfp)) {}
+        // Order(std::string id, stupid_ptr<BinaryFile> bfp): Order(Json().read(id, bfp)) {}
+        static Order load(std::string id) {
+            return Order(DataManager::getJson(id));
+        }
 
         std::string getId() const {
             return id;
@@ -59,7 +63,7 @@ namespace trainBoom {
         }
 
         void save() const {
-            toJson().write(DataManager::getFile(id));
+            DataManager::save(toJson());
         }
     };
 }

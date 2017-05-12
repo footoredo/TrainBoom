@@ -219,6 +219,31 @@ public:
 	 */
 	constexpr map(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0), id(Id("Map")) {
 	}
+	map(const Json& tmp) {
+		if (tmp.getId() == "") {
+			id = Id("Map");
+		}
+		else {
+			id = tmp.getId();
+		}
+		_size = tmp["size"].as<unsigned>();
+		if (tmp.HasMember("root")) {
+			std::string rootId = tmp["root"].as<std::string>();
+			root = util::make_stupid<Node>(DataManager::getJson(rootId));
+			root->link_child(root);
+			min_p = find_min(root); max_p = find_max(root);
+			list_link_all();
+		}
+		else {
+			root = nullptr;
+			min_p = nullptr; max_p = nullptr;
+		}
+	}
+
+	static map load(std::string id) {
+		return map(DataManager::getJson(id));
+	}
+	/*
 	map(std::string id, util::stupid_ptr<BinaryFile> bfp): id(id) {
 		Json tmp; tmp.read(bfp);
 		_size = tmp["size"].as<unsigned>();
@@ -233,21 +258,32 @@ public:
 			root = nullptr;
 			min_p = nullptr; max_p = nullptr;
 		}
-	}
-	map(const map &other): _size(other._size), id(other.id) {
+	}*/
+	map(const map &other): _size(other._size) {
 		root = copy_tree(other.root);
 		// std::cout << "incopy " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
 		min_p = find_min(root); max_p = find_max(root);
+		id = other.id;
 		list_link_all();
 	}
-	void read(std::string _id, util::stupid_ptr<BinaryFile> bfp) {
+	// map(map &&other): _size(other._size) {
+	// 	root = copy_tree(other.root);
+	// 	// std::cout << "incopy " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
+	// 	min_p = find_min(root); max_p = find_max(root);
+	// 	id = other.id;
+	// 	list_link_all();
+	//
+	// 	other.clear();
+	// }
+	/*
+	void read(std::string _id) {
 		delete_tree(root);
 		id = _id;
-		Json tmp; tmp.read(bfp);
+		Json tmp = DataManager::getJson(_id);
 		_size = tmp["size"].as<unsigned>();
 		if (tmp.HasMember("root")) {
 			std::string rootId = tmp["root"].as<std::string>();
-			root = util::make_stupid<Node>(rootId, DataManager::getFile(rootId));
+			root = util::make_stupid<Node>(DataManager::getJson(rootId));
 			root->link_child(root);
 			min_p = find_min(root); max_p = find_max(root);
 			list_link_all();
@@ -257,6 +293,7 @@ public:
 			min_p = nullptr; max_p = nullptr;
 		}
 	}
+	*/
 	/**
 	 * TODO assignment operator
 	 */
@@ -267,8 +304,24 @@ public:
 			root = copy_tree(other.root);
 			// std::cout << "in = " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
 			min_p = find_min(root); max_p = find_max(root);
+			// id = other.id;
 			list_link_all();
 			_size = other._size;
+		}
+		return *this;
+	}
+
+	map & operator=(map &&other) {
+		if (this != &other) {
+		// std::cout << "in = " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
+			delete_tree(root);
+			root = copy_tree(other.root);
+			// std::cout << "in = " << (bool)(root->child[0]) << " " << (bool)(root->child[1]) << " " << (bool)(other.root->child[0]) << " " << (bool)(other.root->child[1]) << std::endl;
+			min_p = find_min(root); max_p = find_max(root);
+			list_link_all();
+			_size = other._size;
+			id = other.id;
+			other.clear();
 		}
 		return *this;
 	}
@@ -457,7 +510,7 @@ public:
 	}
 
 	void save() const {
-		toJson().write(DataManager::getFile(id));
+		DataManager::save(toJson());
 		if (root) root->save();
 	}
 
@@ -488,7 +541,27 @@ private:
 				// self(this),
 				// who(who),
 				color(other->color), id(other->id) {}
-
+		Node (const Json& tmp) {
+			if (tmp.getId() == "") {
+				id = Id("Node");
+			}
+			else {
+				id = tmp.getId();
+			}
+			std::string valueId = tmp["value"].as<std::string>();
+			value = util::make_stupid<value_type>(Key(tmp["key"].as<std::string>()), T::load(valueId));
+			color = tmp["color"].as<bool>();
+			// std::cout << color << std::endl;
+			if (tmp.HasMember("child0")) {
+				std::string childId = tmp["child0"];
+				child[0] = make_stupid<Node>(DataManager::getJson(childId));
+			}
+			if (tmp.HasMember("child1")) {
+				std::string childId = tmp["child1"];
+				child[1] = make_stupid<Node>(DataManager::getJson(childId));
+			}
+		}
+		/*
 		Node (std::string id, util::stupid_ptr<BinaryFile> bfp):
 			child({nullptr, nullptr}),
 			parent(nullptr),
@@ -508,6 +581,7 @@ private:
 				child[1] = make_stupid<Node>(childId, DataManager::getFile(childId));
 			}
 		}
+		*/
 
 		void link_child(const stupid_ptr<Node>& self) {
 			// std::cout << "121" << std::endl;
@@ -536,7 +610,8 @@ private:
 		}
 
 		void save() const {
-			toJson().write(DataManager::getFile(id));
+			// toJson().write(DataManager::getFile(id));
+			DataManager::save(toJson());
 			value->second.save();
 			if (child[0]) {
 				child[0]->save();

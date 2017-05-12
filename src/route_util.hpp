@@ -3,7 +3,7 @@
 
 #include "util/Json.hpp"
 #include "util/stupid_ptr.hpp"
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 #include "Id.hpp"
 #include <string>
 
@@ -26,7 +26,12 @@ namespace trainBoom {
 			l = json["l"].as<unsigned>();
 			r = json["r"].as<unsigned>();
 		}
-		RouteInterval(std::string id, stupid_ptr<BinaryFile> bfp): RouteInterval(Json().read(id, bfp)) {}
+		// RouteInterval(std::string id, stupid_ptr<BinaryFile> bfp): RouteInterval(Json().read(id, bfp)) {}
+
+        static RouteInterval load(std::string id) {
+            return RouteInterval(DataManager::getJson(id));
+        }
+
 	    bool operator<(const RouteInterval& other) const {
 	        if (routeId == other.routeId)
 	            if (l == other.l)
@@ -57,8 +62,9 @@ namespace trainBoom {
 	    }
 		void save() const {
 			// std::cout << "RouteInterval {" << std::endl;
-			toJson().write(DataManager::getFile(id));
+			// toJson().write(DataManager::getFile(id));
 			// std::cout << "RouteInterval }" << std::endl;
+            DataManager::save(toJson());
 		}
 	};
 

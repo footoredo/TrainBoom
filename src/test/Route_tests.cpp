@@ -56,7 +56,6 @@ int main() {
     route.modifyTickets(0, 2, order);
 //    route.display();
 
-
     q = route.queryTickets(0, 2);
 //    q.display();
     assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 998 + 15) && q.getTickets()["APTV"].number == 20);
@@ -82,8 +81,11 @@ int main() {
 
     route.save();
     std::cout << "save done." << std::endl;
+    std::string key = DataManager::finish();
+    DataManager::init();
+    DataManager::load(key);
 
-    Route newRoute(route.getId(), DataManager::getFile(route.getId()));
+    Route newRoute(Route::load(route.getId()));
     // std::cout << newRoute.toJson().toString() << std::endl;
     assert(newRoute.toJson().toString() == route.toJson().toString());
     std::cout << "save & load test passed!" << std::endl;

@@ -56,3 +56,6 @@ test_Order:
 
 test_DataManager:
 	$(CXX) -o $(BIN)/DataManager_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/DataManager_tests.cpp
+
+test_Blob:
+	$(CXX) -o $(BIN)/Blob_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/Blob_tests.cpp

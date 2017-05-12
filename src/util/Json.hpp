@@ -135,12 +135,15 @@ public:
             }
             else if (type == BIN_TYPE_DICT) {
                 int size; bf.Read(size);
+                // std::cout << size << std::endl;
                 value->SetObject();
                 for (int i = 0; i < size; ++ i) {
                     Value tmp;
                     std::string key;
                     bf.Read(key);
+                    // std::cout << key << std::endl;
                     value->AddMember(Value(key, *allocator), JsonValue(allocator, &tmp).read(bfp).getValue(), *allocator);
+                    // std::cout << (*value)[key].GetString() << std::endl;
                 }
             }
             else throw type_error("readable JsonValue");
@@ -407,11 +410,17 @@ public:
     Json(const Json& jv) {
         allocator = &(document.GetAllocator());
         document.CopyFrom(jv.getDocument(), *allocator);
-        if (document.HasMember("type"))
-            type = document["type"].GetString();
-        if (document.HasMember("id"))
-            id = document["id"].GetString();
-        data = JsonValue(allocator, &document["data"]);
+        type = jv.getType();
+        id = jv.getId();
+        if (document.HasMember("data")) {
+            data = JsonValue(allocator, &document["data"]);
+        }
+        else {
+            data = JsonValue(
+                allocator,
+                &(document)
+            );
+        }
     }
 
     Json(const JsonValue& jv) {
@@ -449,8 +458,9 @@ public:
 
     Json& read(std::string _id, stupid_ptr<BinaryFile> bfp) {
         // try {
-            id = _id; data.read(bfp);
-            return *this;
+        // std::cout << _id << std::endl;
+        id = _id; data.read(bfp);
+        return *this;
         // }
         // catch (const exception& e) {
             // std::cerr << e.what() << std::endl;

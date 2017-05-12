@@ -1,7 +1,7 @@
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 #include "Blob.hpp"
 #include "util/map.hpp"
-#include "util/set.hpp"
+// #include "util/set.hpp"
 using namespace trainBoom;
 
 int main() {
@@ -9,8 +9,12 @@ int main() {
 
     Blob blob("123124");
     blob.save();
+    std::string key = DataManager::finish();
 
-    Blob newblob(blob.id, DataManager::getFile(blob.id));
+    DataManager::init();
+    DataManager::load(key);
+
+    Blob newblob = Blob::load(blob.getId());
     // std::cout << newblob.content << std::endl;
     assert(newblob.content == blob.content);
     std::cout << "Blob save & load test passed!" << std::endl;
@@ -21,8 +25,12 @@ int main() {
     }
 
     testMap.save();
+    std::cout << "save done." << std::endl;
+    key = DataManager::finish();
+    DataManager::init();
+    DataManager::load(key);
 
-    util::map<std::string, Blob> newTestMap(testMap.getId(), DataManager::getFile(testMap.getId()));
+    util::map<std::string, Blob> newTestMap = util::map<std::string, Blob>::load(testMap.getId());
     unsigned cnt = 0;
     for (const auto& item: newTestMap) {
         // std::cout << item.first << " " << std::string(item.second) << std::endl;
@@ -42,7 +50,7 @@ int main() {
     assert(newTestMap.size() == 2000);
 
     std::cout << "Map accessiblity test after load passed!" << std::endl;
-
+/*
     util::set<Blob> testSet;
     for (int i = 0; i < 1000; ++ i) {
         testSet.insert(Blob(IdNamespace::getSalt(10)));
@@ -70,12 +78,15 @@ int main() {
     assert(newTestSet.size() == 2000);
 
     std::cout << "Set accessiblity test after load passed!" << std::endl;
-
+*/
     util::map<Blob, Blob> emptyMap;
     emptyMap.save();
+    key = DataManager::finish();
+    DataManager::init();
+    DataManager::load(key);
     // std::cout << "x" << std::endl;
 
-    util::map<Blob, Blob> newEmptyMap(emptyMap.getId(), DataManager::getFile(emptyMap.getId()));
+    util::map<Blob, Blob> newEmptyMap = util::map<Blob, Blob>::load(emptyMap.getId());
     assert(newEmptyMap.size() == 0);
     cnt = 0;
     for (const auto& item: newEmptyMap) {
@@ -85,6 +96,7 @@ int main() {
     assert(cnt == 0);
     std::cout << "Empty map test passed!" << std::endl;
 
+/*
     util::set<Blob> emptySet;
     emptySet.save();
     // std::cout << "x" << std::endl;
@@ -97,5 +109,8 @@ int main() {
         ++ cnt;
     }
     assert(cnt == 0);
-    std::cout << "Empty set test passed!" << std::endl;
+    std::cout << "Empty set test passed!" << std::endl;*/
+
+    std::cout << "All tests passed!" << std::endl;
+
 }

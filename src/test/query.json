@@ -1,5 +1,6 @@
 {
-    "startStation": "Changzhou-North",
-    "endStation": "Shanghai-Hong-Qiao",
-    "date": "2017/5/5"
+    "startStation": "攀枝花",
+    "endStation": "绵阳",
+    "routeName": "T8870",
+    "date": "2017/3/28"
 }

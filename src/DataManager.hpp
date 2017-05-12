@@ -3,15 +3,31 @@
 
 #include "util/BinaryFile.hpp"
 #include "util/stupid_ptr.hpp"
+#include "Id.hpp"
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <cstring>
+#include <unistd.h>
+#include <ctime>
 
 namespace trainBoom {
+    namespace util {
+        namespace json {
+            class Json;
+        }
+    }
     namespace DataManager {
-        const char root[] = ".TrainBoom/";
-        const int root_len = strlen(root);
+        class id_not_found : public exception{
+        public:
+            id_not_found(std::string id):
+                exception("id_not_found","id [" + id + "] is not found!!!") {};
+        };
+
+        const std::string root = ".TrainBoom/";
+        const int root_len = root.length();
+        std::string data_file_name;
+        stupid_ptr<BinaryFile> data_file_p;
 
         void touch_dir(const char* dir) {
             if (!~access(dir, 0)) {
@@ -19,11 +35,13 @@ namespace trainBoom {
             }
         }
 
-        void init() {
-            touch_dir(root);
-        }
+        void init();
+        void load(std::string last_data_file_name);
+        const util::json::Json& getJson(std::string id);
+        std::string finish();
+        void save(const util::json::Json& json);
 
-        util::stupid_ptr<BinaryFile> getFile(std::string id) {
+        /*util::stupid_ptr<BinaryFile> getFile(std::string id) {
             // std::cout << "getFile {" << std::endl;
             char file_path[root_len + 41 + 1];
             strcpy(file_path, root);
@@ -36,7 +54,8 @@ namespace trainBoom {
 
             // std::cout << "getFile }" << std::endl;
             return util::make_stupid<BinaryFile>(std::string(file_path));
-        }
+        }*/
+
     }
 }
 

@@ -1,5 +1,5 @@
 #include "User.hpp"
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 
 using namespace trainBoom;
 
@@ -14,7 +14,7 @@ int main() {
     info["isRoot"] = true;
 //    std::cout << info["username"].as<std::string>() << std::endl;
     User user(info);
-    Order order("routeId", "ssId", "esId", "airplane", 99.8, 5);
+    Order order(RouteInterval("routeId", "route", 0, 2), "ssId", "esId", "airplane", 99.8, 5);
     user.addOrder(order);
 //    return 0;
 //    user.addOrder(Order("Order"));
@@ -28,8 +28,11 @@ int main() {
 
     user.save();
     std::cout << "save done." << std::endl;
+    std::string key = DataManager::finish();
+    DataManager::init();
+    DataManager::load(key);
 
-    User newUser(user.getId(), DataManager::getFile(user.getId()));
+    User newUser(User::load(user.getId()));
     // std::cout << newUser.toJson().toString() << std::endl;
     assert(newUser.toJson().toString() == user.toJson().toString());
     auto orders = newUser.getOrders();

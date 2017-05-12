@@ -1,5 +1,5 @@
 #include "TrainBoom.hpp"
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 using namespace trainBoom;
 
 int main() {
@@ -32,10 +32,15 @@ int main() {
         std::cout << route.queryTickets(routeInterval.l, routeInterval.r).toJson().toString() << std::endl;
     }
 
+    std::cout << "start saving." << std::endl;
     trainBoom.save();
     std::cout << "save done." << std::endl;
 
-    TrainBoom newTrainBoom(trainBoom.getId(), DataManager::getFile(trainBoom.getId()));
+    std::string key = DataManager::finish();
+    DataManager::init();
+    DataManager::load(key);
+
+    TrainBoom newTrainBoom(TrainBoom::load(trainBoom.getId()));
     assert(newTrainBoom.getId() == trainBoom.getId());
     assert(newTrainBoom.listUsers() == usersList);
     for (const auto& userId: newTrainBoom.listUsers()) {

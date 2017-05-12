@@ -100,7 +100,7 @@ public:
         return tickets;
     }
 
-    Ticket::Attribute ticket(const Ticket::Type& ticketType) const {
+    Ticket::Attribute& ticket(const Ticket::Type& ticketType) {
         if (!tickets.count(ticketType))
             throw ticket_not_found();
         return tickets.at(ticketType);

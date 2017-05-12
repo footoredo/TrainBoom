@@ -6,7 +6,7 @@
 #include "util/stupid_ptr.hpp"
 #include "util/vector.hpp"
 #include "Id.hpp"
-#include "DataManager.hpp"
+#include "DataManager2.hpp"
 #include "Order.hpp"
 #include <string>
 #include <vector>
@@ -77,10 +77,13 @@ public:
 
         if (json.HasMember("ordersId")) {
             std::string ordersId = json["ordersId"];
-            orders.read(ordersId, DataManager::getFile(ordersId));
+            orders = util::map<std::string, Order>::load(ordersId);
         }
     }
-    User (std::string id, stupid_ptr<BinaryFile> bfp): User(Json().read(id, bfp)) {}
+    // User (std::string id, stupid_ptr<BinaryFile> bfp): User(Json().read(id, bfp)) {}
+    static User load(std::string id) {
+        return User(DataManager::getJson(id));
+    }
 	// User operator=(const User &t):id(t.id),username(t.username),password(t.password),avatar(t.avatar),realname(t.realname),phone(t.phone),email(t.email),motto(t.motto),gender(t.gender),root(t.root),order(t.order) {}
     std::string getId() const {return id;}
 	void update(const Json& json) {
@@ -169,7 +172,8 @@ public:
     void save() const {
         Json tmp = toJson();
         tmp["ordersId"] = orders.getId();
-        tmp.write(DataManager::getFile(id));
+        // tmp.write(DataManager::getFile(id));
+        DataManager::save(tmp);
         orders.save();
     }
 /*
