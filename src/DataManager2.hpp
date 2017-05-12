@@ -4,6 +4,7 @@
 #include "DataManager.hpp"
 #include "util/map.hpp"
 #include "util/Json.hpp"
+#include "util/stupid_ptr.hpp"
 
 namespace trainBoom {
 
@@ -15,7 +16,9 @@ public:
         exception("object_has_no_id","The object [" + json.toString() + "] you saved has no id!") {};
 };
 
-util::map<std::string, Json> json_map;
+const int MAX_OBJECT_COUNT = 5e6;
+util::map<std::string, unsigned> json_map;
+util::stupid_ptr<Json> json_objects[MAX_OBJECT_COUNT];
 
 void init() {
     srand(time(nullptr) ^ getpid());
@@ -29,8 +32,10 @@ Json getJson(std::string id) {
     try {
         // std::cout << json_map.at(id).getId() << std::endl;
         auto iter = json_map.find(id);
-        Json json = iter->second;
+        unsigned index = iter->second;
+        Json json = *json_objects[index];
         json_map.erase(iter);
+        json_objects[index] = nullptr;
         return json;
     }
     catch (const exception& e) {
@@ -40,6 +45,7 @@ Json getJson(std::string id) {
 
 void load(std::string last_data_file_name) {
     stupid_ptr<BinaryFile> last_data_file_p = make_stupid<BinaryFile>(root + last_data_file_name);
+    int cnt = 0;
     while (true) {
         bool obj; last_data_file_p->Read(obj);
         if (!obj) break;
@@ -48,9 +54,16 @@ void load(std::string last_data_file_name) {
             // std::cout << id << std::endl;
             // Json tmp; tmp.read(id, last_data_file_p);
             // std::cout << "done" << std::endl;
-            json_map.insert(util::make_pair(id, Json().read(id, last_data_file_p)));
+            json_objects[cnt] = make_stupid<Json>();
+            json_objects[cnt]->read(id, last_data_file_p);
+            json_map.insert(util::make_pair(id, cnt));
+            ++ cnt;
+            if (cnt % 1000 == 0)
+                std::cout << cnt + " objects have been loaded." << std::endl; 
         }
     }
+    std::cout << "A total of " << cnt << " object(s) have been loaded." << std::endl;
+    // std::cout << json_map.size() << std::endl;
 }
 
 std::string finish() {
