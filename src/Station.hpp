@@ -19,7 +19,7 @@ namespace trainBoom {
 	class Station {
 		private:
 			std::string name;
-            util::map<RouteKey, util::map<std::string, RouteInterval>> routesMap;
+            util::map<std::string, util::map<std::string, RouteInterval>> routesMap;
 			std::string id;
 
 		public:
@@ -50,7 +50,7 @@ namespace trainBoom {
 				}
                 name = json["name"].as<std::string>();
 				if (json.HasMember("routesMap")) {
-					routesMap = util::map<RouteKey, util::map<std::string, RouteInterval>>::load(json["routesMap"]);
+					routesMap = util::map<std::string, util::map<std::string, RouteInterval>>::load(json["routesMap"]);
 				}
             }
 
@@ -80,14 +80,14 @@ namespace trainBoom {
 				return name;
 			}
 
-			void add(const std::string& stationName, const util::Datetime::Datetime& date, const RouteInterval& routeInterval){
+			void add(const std::string& stationName, const RouteInterval& routeInterval){
                 ++ routeCnt;
-				routesMap[RouteKey(stationName, date)].insert(util::make_pair(routeInterval.routeName, routeInterval)).second; // assuming return value is pair<iterator,bool>
+				routesMap[stationName].insert(util::make_pair(routeInterval.routeName, routeInterval)).second; // assuming return value is pair<iterator,bool>
 			}
 
-			void del(const std::string& stationName, const util::Datetime::Datetime& date, const RouteInterval& routeInterval) {
+			void del(const std::string& stationName, const RouteInterval& routeInterval) {
 				try {
-					auto& routes = routesMap[RouteKey(stationName, date)];
+					auto& routes = routesMap[stationName];
 					// std::cout << "done" << std::endl;
 					routes.erase(routes.find(routeInterval.routeName));
 				}
@@ -104,17 +104,16 @@ namespace trainBoom {
 				if (map[stationId].erase(trainId)<1) throw delete_trainId_failed();
 			}*/
 
-			util::vector<RouteInterval> query(const std::string& stationName, const util::Datetime::Datetime& date) const {
+			util::vector<RouteInterval> query(const std::string& stationName) const {
                 util::vector<RouteInterval> ret;
-				RouteKey routeKey(stationName, date);
-				for (const auto& item: routesMap.at(routeKey)) {
+				for (const auto& item: routesMap.at(stationName)) {
                     ret.push_back(item.second);
                 }
                 return ret;
 			}
 
-			RouteInterval query(const std::string& stationName, const util::Datetime::Datetime& date, std::string routeName) const {
-                return routesMap.at(RouteKey(stationName, date)).at(routeName);
+			RouteInterval query(const std::string& stationName, std::string routeName) const {
+                return routesMap.at(stationName).at(routeName);
 			}
 
             Json toJson() const {

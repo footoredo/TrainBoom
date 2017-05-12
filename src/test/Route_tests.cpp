@@ -14,16 +14,16 @@ int main() {
     util::stupid_array<std::string> stations(new std::string[3]{Id("Station"), Id("Station"), Id("Station")}, 3);
     // std::cout << "sads" << std::endl;
     util::stupid_array<size_t> distance(new size_t[2]{10, 20}, 2);
-    util::stupid_array<util::Datetime::Datetime> arriveTime(
-        new util::Datetime::Datetime[2]{
-            util::Datetime::Datetime::parse("2017/4/14 23:39"),
-            util::Datetime::Datetime::parse("2017/4/14 23:59")
+    util::stupid_array<Duration> arriveTime(
+        new Duration[2]{
+            Duration::parse("23:39"),
+            Duration::parse("23:59")
         }, 2
     );
-    util::stupid_array<util::Datetime::Datetime> leaveTime(
-        new util::Datetime::Datetime[2]{
-            util::Datetime::Datetime::parse("2017/4/14 23:19"),
-            util::Datetime::Datetime::parse("2017/4/14 23:49")
+    util::stupid_array<Duration> leaveTime(
+        new Duration[2]{
+            Duration::parse("23:19"),
+            Duration::parse("23:49")
         }, 2
     );
     stupid_ptr<Segment> s0 = make_stupid<Segment>();
@@ -40,44 +40,46 @@ int main() {
         make_stupid<Information>(stations[2], distance[1], arriveTime[1], isEnd)
     }, 3);
 
+    // std::cout << "here" << std::endl;
     Route route("CRH", 3, informations, segments);
+    std::cout << route.toJson().toString() << std::endl;
     std::cout << "Initialization test passed!" << std::endl;
-//    route.display();
-    auto q = route.queryTickets(0, 2);
-//    q.display();
+// //    route.display();
+    auto q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
+// //    q.display();
     assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 998 + 15) && q.getTickets()["APTV"].number == 15);
     assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 1);
     std::cout << "query test passed!" << std::endl;
-
+//
     TicketDelta order;
     order["APTV"] = 5;
     order["人民的名义"] = -1;
 
-    route.modifyTickets(0, 2, order);
+    route.modifyTickets(Datetime::parse("2017/3/28"), 0, 2, order);
 //    route.display();
 
-    q = route.queryTickets(0, 2);
-//    q.display();
+    q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
+// //    q.display();
     assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 998 + 15) && q.getTickets()["APTV"].number == 20);
     assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 0);
-
+//
     std::cout << "modify test passed!" << std::endl;
-
-
+//
+//
     for (int i = 0; i < 3; ++ i) {
         // route.information(i).display();
 
         util::Json json = route.information(i).toJson();
-        std::cout << json.toString() << std::endl;
+        // std::cout << json.toString() << std::endl;
 
         // std::cout << route.information(i).getId() << std::endl;
 
         Information tmp(json);
-        tmp.display();
+        assert(tmp.toJson().toString() == json.toString());
     }
-
+//
     util::Json routeJson = route.toJson();
-    std::cout << routeJson.toString() << std::endl;
+    // std::cout << routeJson.toString() << std::endl;
 
     route.save();
     std::cout << "save done." << std::endl;
@@ -85,10 +87,18 @@ int main() {
     DataManager::init();
     DataManager::load(key);
 
-    Route newRoute(Route::load(route.getId()));
+    try {
+        Route newRoute(Route::load(route.getId()));
+        // std::cout << "done " << std::endl;
+        std::cout << newRoute.toJson().toString() << std::endl;
+        assert(newRoute.toJson().toString() == route.toJson().toString());
+        std::cout << "save & load test passed!" << std::endl;
+    }
+    catch (const exception& e) {
+        std::cout << e.what() << std::endl;
+        std::cout << "save & load test failed!" << std::endl;
+    }
     // std::cout << newRoute.toJson().toString() << std::endl;
-    assert(newRoute.toJson().toString() == route.toJson().toString());
-    std::cout << "save & load test passed!" << std::endl;
 
     // std::cout << route.toString() << std::endl;
 }

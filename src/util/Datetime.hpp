@@ -13,7 +13,7 @@ namespace trainBoom {
 
 namespace util {
 
-namespace Datetime {
+namespace date_time {
 
     class time_out_of_range : public exception {
     public:
@@ -36,33 +36,49 @@ namespace Datetime {
     		"Your time is not initiated!!!") {}
     };
 
+    class duration_is_negative : public exception {
+    public:
+    	duration_is_negative() : exception(
+    		"duration_is_negative",
+    		"Your duration is negative!!!") {}
+    };
+
     typedef unsigned short Date_t;
     typedef short signed_Date_t;
 
+    signed_Date_t getNum(const std::string& s, int st, int en)
+    {
+        signed_Date_t num = 0;
+        for(int i = st; i <= en; i++)
+        {
+            if (s[i] < '0' || s[i] > '9') continue;
+            num = num * 10 + s[i] - '0';
+            if (num > 9999) throw time_out_of_range();
+        }
+        return num;
+    }
+
     class Duration {
     private:
-        Date_t day, hour, minute;
+        Date_t hour, minute;
     public:
-        Duration(signed_Date_t _day = 0, signed_Date_t _hour = 0, signed_Date_t _minute = 0) {
+        Duration(signed_Date_t _hour = 0, signed_Date_t _minute = 0) {
                 minute = (_minute % 60 + 60) % 60; _hour += (_minute - minute) / 60;
-                hour = (_hour % 24 + 24) % 24; _day += (_hour - hour) / 24;
-            if (_day < 0) {
-                // std::cout << "!!!" << std::endl;
-                throw time_out_of_range();
-            }
-            else {
-                day = _day;
-            }
+                hour = _hour;
         }
 
         //Duration(const std::string& fmttime)
 
         std::string format() const noexcept {
             std::stringstream buffer;
+            /*
             buffer << day << " day" << (day > 1 ? "s" : "" ) << " "
                 << hour << " hour" << (hour > 1 ? "s" : "" ) << " "
                 << minute << " minute" << (minute > 1 ? "s" : "" );
-
+*/
+            buffer << hour << ':'
+                << std::setw(2) << std::setfill('0')
+                << minute;
             return buffer.str();
         }
 
@@ -72,7 +88,6 @@ namespace Datetime {
 
         Duration operator+(const Duration& duration) const {
             return Duration (
-                day + duration.day,
                 hour + duration.hour,
                 minute + duration.minute
             );
@@ -80,14 +95,9 @@ namespace Datetime {
 
         Duration operator-(const Duration& duration) const {
             return Duration (
-                signed_Date_t(day) - duration.day,
                 signed_Date_t(hour) - duration.hour,
                 signed_Date_t(minute) - duration.minute
             );
-        }
-
-        Date_t getDay() const noexcept {
-            return day;
         }
 
         Date_t getHour() const noexcept {
@@ -101,6 +111,30 @@ namespace Datetime {
         friend std::ostream& operator<<(std::ostream& os, const Duration& duration) {
             os << duration.format();
             return os;
+        }
+
+        Duration(std::string fmt) {
+            Duration tmp = parse(fmt);
+            hour = tmp.hour;
+            minute = tmp.minute;
+        }
+
+        static Duration parse(const std::string& fmttime) // YYYY/MM/DD hh:mm
+        {
+        	int len = fmttime.size();
+        	int colon = 0;
+
+        	for (int i = 0; i < len; i++)
+        	{
+	        	if (fmttime[i] == ':')
+				{
+					if (!colon) colon = i;
+					else throw time_format_wrong();
+				}
+	        }
+       		if (!colon) throw time_format_wrong();
+        	signed_Date_t hour = getNum(fmttime, 0, colon - 1), minute = getNum(fmttime, colon + 1, len - 1);
+            return Duration(hour, minute);
         }
     };
 
@@ -192,17 +226,6 @@ namespace Datetime {
                 year = _year;
         }
 
-        static signed_Date_t getNum(const std::string& s, int st, int en)
-        {
-        	signed_Date_t num = 0;
-        	for(int i = st; i <= en; i++)
-        	{
-        		if (s[i] < '0' || s[i] > '9') continue;
-	        	num = num * 10 + s[i] - '0';
-	        	if (num > 9999) throw time_out_of_range();
-	        }
-	        return num;
-        }
         static Datetime parse(const std::string& fmttime) // YYYY/MM/DD hh:mm
         {
         	int len = fmttime.size();
@@ -281,23 +304,52 @@ namespace Datetime {
         Datetime operator+(const Duration& duration) const {
             if (!initiated)
                 throw not_initiated();
-            return Datetime (
-                year, month,
-                day + duration.getDay(),
+            Datetime tmp (
+                year, month, day,
                 hour + duration.getHour(),
                 minute + duration.getMinute()
             );
+            if (dayOnly) {
+                tmp = tmp.clearTime();
+            }
+            return tmp;
         }
 
         Datetime operator-(const Duration& duration) const {
             if (!initiated)
                 throw not_initiated();
             return Datetime (
-                year, month,
-                signed_Date_t(day) - duration.getDay(),
+                year, month, day,
                 signed_Date_t(hour) - duration.getHour(),
                 signed_Date_t(minute) - duration.getMinute()
             );
+        }
+
+        Duration operator-(Datetime datetime) const {
+            if (!initiated || !datetime.initiated)
+                throw not_initiated();
+            if (year < datetime.year ||
+                (year == datetime.year && month < datetime.month) ||
+                (year == datetime.year && month == datetime.month && day < datetime.day)) {
+                    throw duration_is_negative();
+                }
+            int dayCount = 0;
+            while (datetime.year != year ||
+                datetime.month != month ||
+                datetime.day != day) {
+                    // std::cout << datetime << std::endl;
+                    datetime = datetime.incDay();
+                    ++ dayCount;
+                }
+            return Duration (
+                dayCount * 24 +
+                signed_Date_t(hour) - datetime.getHour(),
+                signed_Date_t(minute) - datetime.getMinute()
+            );
+        }
+
+        Datetime incDay() const {
+            return this->operator+(Duration(24, 0));
         }
 
         Date_t getYear() const {
@@ -381,7 +433,8 @@ namespace Datetime {
 
 }   // util
 
-using util::Datetime::Datetime;
+using util::date_time::Duration;
+using util::date_time::Datetime;
 
 }   // TrainBoom
 

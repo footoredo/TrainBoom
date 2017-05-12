@@ -139,7 +139,7 @@ public:
 				ticketName[j] = csv.data(i, 6 + j);
 
 			++ i;
-			int cnt = 0;
+			int cnt = 0, start = i;
 			while (i <= csv.size() && csv.data(i, 2) != "") {
 				Json information("information");
 
@@ -161,15 +161,15 @@ public:
 				std::string date(csv.data(i, 2));
 				if (csv.data(i, 3) == "起点站") {
 					flags |= isStart;
-					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4));
+					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4)) - Datetime::parse(date + " " + csv.data(start, 4));
 				}
 				else if (csv.data(i, 4) == "终到站") {
 					flags |= isEnd;
-					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3));
+					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3)) - Datetime::parse(date + " " + csv.data(start, 3));
 				}
 				else {
-					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3));
-					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4));
+					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3)) - Datetime::parse(date + " " + csv.data(start, 3));
+					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4)) - Datetime::parse(date + " " + csv.data(start, 4));
 				}
 
 				information["distance"] = std::stoi(csv.data(i, 5));
@@ -293,7 +293,6 @@ public:
             for (unsigned j = 0; j < i; ++ j) {
                 station(idByStationName(route.information(j).getStationName())).
                     add(route.information(i).getStationName(),
-                            route.information(j).getDate(),
                             RouteInterval(route.getId(), route.getName(), j, i));
             }
     }
@@ -308,7 +307,6 @@ public:
             for (unsigned j = 0; j < i; ++ j) {
                 station(idByStationName(route.information(j).getStationName())).
                     del(route.information(i).getStationName(),
-                            route.information(j).getDate(),
                             RouteInterval(route.getId(), route.getName(), j, i));
             }
     }

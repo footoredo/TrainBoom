@@ -343,8 +343,10 @@ public:
         }
 
         void forEach(std::function< void (const std::string&, JsonValue) > func) const {
-            if (!value->IsObject())
+            if (!value->IsObject()) {
+                // std::cout << Json(*this).toString() << std::endl;
                 throw type_error("object");
+            }
             for (auto& item: value->GetObject()) {
                 func(item.name.GetString(),
                     JsonValue(allocator, &item.value));
@@ -425,8 +427,8 @@ public:
 
     Json(const JsonValue& jv) {
         allocator = &(document.GetAllocator());
-        if (jv.HasMember("data")) {
-            document.CopyFrom(jv.getValue(), *allocator);
+        document.CopyFrom(jv.getValue(), *allocator);
+        if (jv.getValue().IsObject() && jv.HasMember("data")) {
             if (document.HasMember("type"))
                 type = document["type"].GetString();
             if (document.HasMember("id"))
@@ -434,13 +436,13 @@ public:
             data = JsonValue(allocator, &document["data"]);
         }
         else {
-            document.SetObject();
-            document.AddMember("data", Value(kObjectType), *allocator);
+            // document.SetObject();
+            // document.AddMember("data", Value(kObjectType), *allocator);
             data = JsonValue(
                     allocator,
-                    &(document["data"])
+                    &(document)
                     );
-            document["data"].CopyFrom(jv.getValue(), *allocator);
+            // data.CopyFrom(jv.getValue(), *allocator);
         }
     }
 
@@ -524,6 +526,10 @@ public:
 
     void SetObject() {
         data.SetObject();
+    }
+
+    size_t Size() {
+        return data.Size();
     }
 
     std::string toString() const {

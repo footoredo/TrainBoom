@@ -96,6 +96,13 @@ public:
         });
     }
 
+    Segment& operator=(const Segment& other) {
+        if (this != &other) {
+            tickets = other.tickets;
+        }
+        return *this;
+    }
+
     const util::map<Ticket::Type, Ticket::Attribute>& getTickets() const {
         return tickets;
     }

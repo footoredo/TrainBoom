@@ -58,8 +58,8 @@ void load(std::string last_data_file_name) {
             json_objects[cnt]->read(id, last_data_file_p);
             json_map.insert(util::make_pair(id, cnt));
             ++ cnt;
-            if (cnt % 1000 == 0)
-                std::cout << cnt + " objects have been loaded." << std::endl; 
+            // if (cnt % 1000 == 0)
+                // std::cout << cnt + " objects have been loaded." << std::endl;
         }
     }
     std::cout << "A total of " << cnt << " object(s) have been loaded." << std::endl;

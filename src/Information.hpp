@@ -18,7 +18,7 @@ class Information {
 private:
     std::string stationName;
     unsigned distance;
-    util::Datetime::Datetime arriveTime, leaveTime;
+    Duration arriveTime, leaveTime;
     unsigned flags;
     // std::string id;
 
@@ -38,8 +38,8 @@ public:
     };
 
     Information(std::string stationName, unsigned distance,
-        const util::Datetime::Datetime& arriveTime,
-        const util::Datetime::Datetime& leaveTime,
+        const Duration& arriveTime,
+        const Duration& leaveTime,
         unsigned flags = 0
     ) : stationName(stationName), distance(distance),
         arriveTime(arriveTime), leaveTime(leaveTime), flags(flags) {
@@ -48,7 +48,7 @@ public:
     }
 
     Information(std::string stationName, unsigned distance,
-        const util::Datetime::Datetime& tmpTime,
+        const Duration& tmpTime,
         unsigned flags = 0
     ) : stationName(stationName), distance(distance), flags(flags) {
             if (flags == 0)
@@ -73,8 +73,8 @@ public:
             flags(json["flags"].as<unsigned>()) {
                 // if (json.getId() != "") id = json.getId();
                 // else id = Id("Information");
-                if (!(flags & isStart)) arriveTime = util::Datetime::Datetime::parse(json["arriveTime"]);
-                if (!(flags & isEnd)) leaveTime = util::Datetime::Datetime::parse(json["leaveTime"]);
+                if (!(flags & isStart)) arriveTime = Duration::parse(json["arriveTime"]);
+                if (!(flags & isEnd)) leaveTime = Duration::parse(json["leaveTime"]);
                 // createTime = std::time(nullptr);
                 // id = generateId("Information", createTime);
             }
@@ -97,25 +97,25 @@ public:
         distance = _distance;
     }
 
-    util::Datetime::Datetime getArriveTime() const {
+    Duration getArriveTime() const {
         if (flags == isStart)
             throw access_not_permitted();
         return arriveTime;
     }
 
-    void setArriveTime(util::Datetime::Datetime& _arriveTime) {
+    void setArriveTime(Duration& _arriveTime) {
         if (flags == isStart)
             throw access_not_permitted();
         arriveTime = _arriveTime;
     }
 
-    util::Datetime::Datetime getLeaveTime() const {
+    Duration getLeaveTime() const {
         if (flags == isEnd)
             throw access_not_permitted();
         return leaveTime;
     }
 
-    void setLeaveTime(util::Datetime::Datetime& _leaveTime) {
+    void setLeaveTime(Duration& _leaveTime) {
         if (flags == isEnd)
             throw access_not_permitted();
         leaveTime = _leaveTime;
@@ -136,10 +136,10 @@ public:
         if (!isEndStation()) std::cout << "\tLeave time: " << leaveTime << std::endl;
     }
 
-    Datetime getDate() const {
-        if (isStartStation()) return leaveTime.clearTime();
-        else return arriveTime.clearTime();
-    }
+    // Duration getDate() const {
+    //     if (isStartStation()) return leaveTime.clearTime();
+    //     else return arriveTime.clearTime();
+    // }
 
     util::Json toJson() const {
         util::Json json;

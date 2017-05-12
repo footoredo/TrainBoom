@@ -26,15 +26,16 @@ int main() {
     std::string diaozhou = trainBoom.idByStationName("吊州");
     std::string shanghaihongqiao = trainBoom.idByStationName("上海虹桥");
     std::cout << "find id done." << std::endl;
-    const auto& vec = trainBoom.station(diaozhou).query("上海虹桥", Datetime::parse("2017/3/28"));
+    const auto& vec = trainBoom.station(diaozhou).query("上海虹桥");
     for (const auto routeInterval: vec) {
         auto& route = trainBoom.route(routeInterval.routeId);
-        std::cout << route.queryTickets(routeInterval.l, routeInterval.r).toJson().toString() << std::endl;
+        // std::cout << route.queryTickets(Route::startDate, routeInterval.l, routeInterval.r).toJson().toString() << std::endl;
     }
 
     std::cout << "start saving." << std::endl;
     trainBoom.save();
     std::cout << "save done." << std::endl;
+    // return 0;
 
     std::string key = DataManager::finish();
     DataManager::init();
@@ -64,14 +65,14 @@ int main() {
     }
     assert(newTrainBoom.idByStationName("吊州") == diaozhou);
     assert(newTrainBoom.idByStationName("上海虹桥") == shanghaihongqiao);
-    const auto& vec2 = newTrainBoom.station(diaozhou).query("上海虹桥", Datetime::parse("2017/3/28"));
+    const auto& vec2 = newTrainBoom.station(diaozhou).query("上海虹桥");
     assert(vec.size() == vec2.size());
     for (unsigned i = 0; i < vec.size(); ++ i) {
         assert(vec[i].l == vec2[i].l && vec[i].r == vec2[i].r && vec[i].routeId == vec2[i].routeId);
         auto& route = trainBoom.route(vec[i].routeId);
         auto& route2 = newTrainBoom.route(vec2[i].routeId);
-        assert(route.queryTickets(vec[i].l, vec[i].r).toJson().toString()
-            == route2.queryTickets(vec[i].l, vec[i].r).toJson().toString());
+        assert(route.queryTickets(Route::startDate, vec[i].l, vec[i].r).toJson().toString()
+            == route2.queryTickets(Route::startDate, vec[i].l, vec[i].r).toJson().toString());
     }
     // assert(newTrainBoom.station(diaozhou).query(shanghaihongqiao, Datetime::parse("2017/3/28")) == vec);
 
