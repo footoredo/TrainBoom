@@ -25,7 +25,8 @@ int main() {
 
     std::string diaozhou = trainBoom.idByStationName("吊州");
     std::string shanghaihongqiao = trainBoom.idByStationName("上海虹桥");
-    const auto& vec = trainBoom.station(diaozhou).query(shanghaihongqiao, Datetime::parse("2017/3/28"));
+    std::cout << "find id done." << std::endl;
+    const auto& vec = trainBoom.station(diaozhou).query("上海虹桥", Datetime::parse("2017/3/28"));
     for (const auto routeInterval: vec) {
         auto& route = trainBoom.route(routeInterval.routeId);
         std::cout << route.queryTickets(routeInterval.l, routeInterval.r).toJson().toString() << std::endl;
@@ -58,7 +59,7 @@ int main() {
     }
     assert(newTrainBoom.idByStationName("吊州") == diaozhou);
     assert(newTrainBoom.idByStationName("上海虹桥") == shanghaihongqiao);
-    const auto& vec2 = newTrainBoom.station(diaozhou).query(shanghaihongqiao, Datetime::parse("2017/3/28"));
+    const auto& vec2 = newTrainBoom.station(diaozhou).query("上海虹桥", Datetime::parse("2017/3/28"));
     assert(vec.size() == vec2.size());
     for (unsigned i = 0; i < vec.size(); ++ i) {
         assert(vec[i].l == vec2[i].l && vec[i].r == vec2[i].r && vec[i].routeId == vec2[i].routeId);

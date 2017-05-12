@@ -3,38 +3,39 @@
 
 #include <string>
 #include "util/Json.hpp"
+#include "util/Datetime.hpp"
 #include "Id.hpp"
 #include "DataManager.hpp"
+#include "route_util.hpp"
 
 namespace trainBoom {
     struct Order {
-        std::string routeId;
-        std::string startStationId, endStationId;
+        RouteInterval routeInterval;
+        std::string startStationName, endStationName;
         std::string ticketType;
         double ticketPrice;  // Total price.
         unsigned ticketNumber;
 
         std::string id;
 
-        Order(std::string routeId,
-                std::string startStationId, std::string endStationId,
+        Order(RouteInterval routeInterval,
+                std::string startStationName, std::string endStationName,
                 std::string ticketType,
                 double ticketPrice, unsigned ticketNumber):
-            routeId(routeId), startStationId(startStationId),
-            endStationId(endStationId), ticketType(ticketType),
+            routeInterval(routeInterval), startStationName(startStationName),
+            endStationName(endStationName), ticketType(ticketType),
             ticketPrice(ticketPrice), ticketNumber(ticketNumber),
             id(Id("Order")) {}
 
-        Order(const Json& json) {
+        Order(const Json& json): routeInterval(json["routeInterval"]) {
             if (json.getId() != "") {
                 id = json.getId();
             }
             else {
                 id = Id("Order");
             }
-            routeId = json["routeId"].as<std::string>();
-            startStationId = json["startStationId"].as<std::string>();
-            endStationId = json["endStationId"].as<std::string>();
+            startStationName = json["startStationName"].as<std::string>();
+            endStationName = json["endStationName"].as<std::string>();
             ticketType = json["ticketType"].as<std::string>();
             ticketPrice = json["ticketPrice"].as<double>();
             ticketNumber = json["ticketNumber"].as<unsigned>();
@@ -48,9 +49,9 @@ namespace trainBoom {
 
         Json toJson() const {
             Json json("order", id);
-            json["routeId"] = routeId;
-            json["startStationId"] = startStationId;
-            json["endStationId"] = endStationId;
+            json["routeInterval"] = routeInterval.toJson();
+            json["startStationName"] = startStationName;
+            json["endStationName"] = endStationName;
             json["ticketType"] = ticketType;
             json["ticketPrice"] = ticketPrice;
             json["ticketNumber"] = ticketNumber;

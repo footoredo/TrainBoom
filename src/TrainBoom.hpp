@@ -146,7 +146,7 @@ public:
 					insertStation(station);
 					stationId = station.getId();
 				}
-				information["stationId"] = stationId;
+				information["stationName"] = stationName;
 
 				std::string date(csv.data(i, 2));
 				if (csv.data(i, 3) == "起点站") {
@@ -191,7 +191,7 @@ public:
 			insertRoute(tmp);
 			startRoute(routes[tmp.getId()]);
 
-		//	if (i > 150) break;
+			if (i > 150) break;
 		}
 
 		std::cout << "Import done." << std::endl;
@@ -281,10 +281,10 @@ public:
         unsigned n = route.size();
         for (unsigned i = 0; i < n; ++ i)
             for (unsigned j = 0; j < i; ++ j) {
-                station(route.information(j).getStationId()).
-                    add(route.information(i).getStationId(),
+                station(idByStationName(route.information(j).getStationName())).
+                    add(route.information(i).getStationName(),
                             route.information(j).getDate(),
-                            RouteInterval(route.getId(), j, i));
+                            RouteInterval(route.getId(), route.getName(), j, i));
             }
     }
 
@@ -296,10 +296,10 @@ public:
         unsigned n = route.size();
         for (unsigned i = 0; i < n; ++ i)
             for (unsigned j = 0; j < i; ++ j) {
-                station(route.information(j).getStationId()).
-                    del(route.information(i).getStationId(),
+                station(idByStationName(route.information(j).getStationName())).
+                    del(route.information(i).getStationName(),
                             route.information(j).getDate(),
-                            RouteInterval(route.getId(), j, i));
+                            RouteInterval(route.getId(), route.getName(), j, i));
             }
     }
 

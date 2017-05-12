@@ -34,26 +34,10 @@ private:
     util::stupid_array<util::stupid_ptr<Segment>> segments;
 
     util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip;
-//    util::map<std::string, unsigned> stationsMap;
 
     std::string id;
 
     bool running;
-
-/*    util::pair<unsigned, unsigned> getInterval(const std::string& startStation, const std::string& endStation) {
-        const auto& iterStart = stationsMap.find(startStation),
-            iterEnd = stationsMap.find(endStation);
-        if (iterStart == stationsMap.end() ||
-            iterEnd == stationsMap.end()) {
-                throw station_not_found();
-            }
-        unsigned start = iterStart->second, end = iterEnd->second;
-        if (end <= start) {
-            throw interval_invalid();
-        }
-
-        return util::make_pair(start, end - 1); // Attenion here !!
-    }*/
 
 public:
 
@@ -151,8 +135,6 @@ public:
             if (informations.size() != n || segments.size() != n - 1) {
                     throw station_number_not_consistent();
                 }
-//            for (unsigned i = 0; i < n; ++ i)
-//                stationsMap[informations[i]->getStationId()] = i;
             segmentsIntervalManip = new SegmentsInvervalManip(
                 segments, n - 1
             );
@@ -191,9 +173,6 @@ public:
                 segments[i] = make_stupid<Segment>(json["segments"][i]);
             }
         }
-
-//        for (unsigned i = 0; i < n; ++ i)
-//            stationsMap[informations[i]->getStationId()] = i;
 
         segmentsIntervalManip = new SegmentsInvervalManip(segments, n - 1);
     }
@@ -259,7 +238,6 @@ public:
     }
 
     Order bookTickets(unsigned l, unsigned r, const std::string& ticketType, unsigned ticketNumber) {
-        // auto interval = getInterval(startStationId, endStationId);
         if (isNonstop(l, ticketType))
             throw nonstop_station("start station", ticketType);
         if (isNonstop(r, ticketType))
@@ -267,7 +245,7 @@ public:
         Segment segment = segmentsIntervalManip->query(l, r - 1);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();
-        Order order(id, informations[l]->getStationId(), informations[r]->getStationId(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
+        Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
         TicketDelta ticketDelta;
         ticketDelta[ticketType] = - (int)ticketNumber;
         segmentsIntervalManip->modify(l, r - 1, ticketDelta);

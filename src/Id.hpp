@@ -52,6 +52,7 @@ namespace trainBoom {
         };
     }
     using IdNamespace::Id;
+    using IdNamespace::getSalt;
 }
 
 #endif

@@ -10,73 +10,12 @@
 #include "util/set.hpp"
 #include "DataManager.hpp"
 #include "Id.hpp"
+#include "util/Json.hpp"
+#include "route_util.hpp"
 #include <sstream>
 
 namespace trainBoom {
 	// struct RouteInterval;
-	struct RouteInterval {
-	    std::string routeId;
-	    unsigned l, r;
-		std::string id;
-		RouteInterval(std::string routeId, unsigned l, unsigned r):
-			routeId(routeId), l(l), r(r), id(Id("RouteInterval")) {}
-		RouteInterval(std::string id, stupid_ptr<BinaryFile> bfp): id(id) {
-			Json tmp; tmp.read(bfp);
-			routeId = tmp["routeId"].as<std::string>();
-			l = tmp["l"].as<unsigned>();
-			r = tmp["r"].as<unsigned>();
-		}
-	    bool operator<(const RouteInterval& other) const {
-	        if (routeId == other.routeId)
-	            if (l == other.l)
-	                return r < other.r;
-	            else
-	                return l < other.l;
-	        else
-	            return routeId < other.routeId;
-	    }
-		std::string getId() const {
-			return id;
-		}
-	    Json toJson() const {
-	        Json json("routeInterval", id);
-	        json["routeId"] = routeId;
-	        json["l"] = l;
-	        json["r"] = r;
-			return json;
-	    }
-		void save() const {
-			// std::cout << "RouteInterval {" << std::endl;
-			toJson().write(DataManager::getFile(id));
-			// std::cout << "RouteInterval }" << std::endl;
-		}
-	};
-
-    struct RouteKey {
-        std::string stationName;
-        Datetime datetime;
-    
-        RouteKey(std::string stationName, Datetime datetime):
-            stationId(stationName), datetime(datetime) {}
-        RouteKey(std::string routeKey) {
-            std::stringstream ss(routeKey);
-            ss >> stationId >> datetime;
-        }
-
-        operator std::string() const {
-            std::stringstream ss;
-            ss << stationName << " " << datetime;
-            return ss.str();
-        }
-
-        bool operator<(const RouteKey& other) const {
-            if (stationName == other.stationName)
-                return datetime < other.datetime;
-            else
-                return stationName < other.stationName;
-        }
-    };
-
 	class Station {
 		private:
 			std::string name;
@@ -127,12 +66,14 @@ namespace trainBoom {
 
 			void add(const std::string& stationName, const util::Datetime::Datetime& date, const RouteInterval& routeInterval){
                 ++ routeCnt;
-				if (!routesMap[RouteKey(stationName)].insert(routeInterval).second) throw add_routeId_failed(); // assuming return value is pair<iterator,bool>
+				routesMap[RouteKey(stationName, date)].insert(util::make_pair(routeInterval.routeName, routeInterval)).second; // assuming return value is pair<iterator,bool>
 			}
 
-			void del(const std::string& stationId, const util::Datetime::Datetime& date, const RouteInterval& routeInterval) {
+			void del(const std::string& stationName, const util::Datetime::Datetime& date, const RouteInterval& routeInterval) {
 				try {
-					routesMap[stationId][date].erase(routeInterval);
+					auto& routes = routesMap[RouteKey(stationName, date)];
+					// std::cout << "done" << std::endl;
+					routes.erase(routes.find(routeInterval.routeName));
 				}
 				catch (const invalid_iterator& e) {
 					throw delete_routeId_failed();
@@ -147,15 +88,17 @@ namespace trainBoom {
 				if (map[stationId].erase(trainId)<1) throw delete_trainId_failed();
 			}*/
 
-			util::vector<RouteInterval> query(const std::string& stationId, const util::Datetime::Datetime& date) const {
+			util::vector<RouteInterval> query(const std::string& stationName, const util::Datetime::Datetime& date) const {
                 util::vector<RouteInterval> ret;
-                if (!routesMap.count(stationId) ||
-                        !routesMap.at(stationId).count(date))
-                    return ret;
-				for (const auto& routeInterval: routesMap.at(stationId).at(date)) {
-                    ret.push_back(routeInterval);
+				RouteKey routeKey(stationName, date);
+				for (const auto& item: routesMap.at(routeKey)) {
+                    ret.push_back(item.second);
                 }
                 return ret;
+			}
+
+			RouteInterval query(const std::string& stationName, const util::Datetime::Datetime& date, std::string routeName) const {
+                return routesMap.at(RouteKey(stationName, date)).at(routeName);
 			}
 
             Json toJson() const {

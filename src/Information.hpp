@@ -16,7 +16,7 @@ namespace trainBoom {
 
 class Information {
 private:
-    std::string stationId;
+    std::string stationName;
     unsigned distance;
     util::Datetime::Datetime arriveTime, leaveTime;
     unsigned flags;
@@ -37,20 +37,20 @@ public:
     		"Your access is not permitted ( Did you access arriveTime of a start station or such ? ) !!!") {}
     };
 
-    Information(Id stationId, unsigned distance,
+    Information(std::string stationName, unsigned distance,
         const util::Datetime::Datetime& arriveTime,
         const util::Datetime::Datetime& leaveTime,
         unsigned flags = 0
-    ) : stationId(stationId), distance(distance),
+    ) : stationName(stationName), distance(distance),
         arriveTime(arriveTime), leaveTime(leaveTime), flags(flags) {
             if (flags != 0)
                  throw wrong_information();
     }
 
-    Information(Id stationId, unsigned distance,
+    Information(std::string stationName, unsigned distance,
         const util::Datetime::Datetime& tmpTime,
         unsigned flags = 0
-    ) : stationId(stationId), distance(distance), flags(flags) {
+    ) : stationName(stationName), distance(distance), flags(flags) {
             if (flags == 0)
                 throw wrong_information();
             else if ((flags & isStart) && (flags & isEnd))
@@ -67,20 +67,8 @@ public:
                 throw wrong_information();
     }
 
-    /*Information(const Value& jsonValue)
-        : stationId(jsonValue["data"]["stationId"].GetUint64()),
-            distance(jsonValue["data"]["distance"].GetUint64()),
-            flags(jsonValue["data"]["flags"].GetUint()) {
-                assert(jsonValue["name"] == "information");
-                if ((flags & isStart)) {
-                    if (jsonValue["data"].HasMember("arriveTime"))
-                        throw wrong_information();
-                    leaveTime = Datetime::parse(jsonValue["data"])
-                }
-            }*/
-
     Information(const util::Json& json)
-        : stationId(json["stationId"].as<std::string>()),
+        : stationName(json["stationName"].as<std::string>()),
             distance(json["distance"].as<unsigned>()),
             flags(json["flags"].as<unsigned>()) {
                 // if (json.getId() != "") id = json.getId();
@@ -91,12 +79,12 @@ public:
                 // id = generateId("Information", createTime);
             }
 
-    std::string getStationId() const {
-        return stationId;
+    std::string getStationName() const {
+        return stationName;
     }
 
-    void setStationId(Id _stationId) {
-        stationId = _stationId;
+    void setStationName(Id _stationName) {
+        stationName = _stationName;
     }
 
     unsigned getDistance() const {
@@ -142,25 +130,11 @@ public:
     }
 
     void display() const {
-        std::cout << "\tStation id: " << stationId << std::endl;
+        std::cout << "\tStation Name: " << stationName << std::endl;
         std::cout << "\tDistance: " << distance << " km" << std::endl;
         if (!isStartStation()) std::cout << "\tArrive time: " << arriveTime << std::endl;
         if (!isEndStation()) std::cout << "\tLeave time: " << leaveTime << std::endl;
     }
-
-    /*Document toJson() const {
-        Document document;
-        Document::AllocatorType& allocator = document.GetAllocator();
-        Value& data = initiateDocument(document, "information");
-        {
-            data.AddMember("stationId", Value().SetUint64(stationId), allocator);
-            data.AddMember("distance", Value().SetUint64(distance), allocator);
-            if (!isStartStation()) data.AddMember("arriveTime", arriveTime.format(), allocator);
-            if (!isEndStation()) data.AddMember("leaveTime", leaveTime.format(), allocator);
-            data.AddMember("flags", Value().SetUint(flags), allocator);
-        }
-        return document;
-    }*/
 
     Datetime getDate() const {
         if (isStartStation()) return leaveTime.clearTime();
@@ -169,7 +143,7 @@ public:
 
     util::Json toJson() const {
         util::Json json;
-        json["stationId"] = stationId;
+        json["stationName"] = stationName;
         json["distance"] = distance;
         if (!isStartStation()) json["arriveTime"] = arriveTime.format();
         if (!isEndStation()) json["leaveTime"] = leaveTime.format();
@@ -179,7 +153,7 @@ public:
 
     std::string toString() const {
         std::stringstream ss;
-        ss << "stationId " << stationId << '\n'
+        ss << "stationName " << stationName << '\n'
             << "distance " << distance << '\n';
         if (!isStartStation()) ss << "arriveTime " << arriveTime.format() << '\n';
         if (!isEndStation()) ss << "leaveTime " << leaveTime.format() << '\n';

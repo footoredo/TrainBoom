@@ -1,8 +1,13 @@
 #include "Route.hpp"
 #include <string>
+#include <cmath>
 using namespace trainBoom;
 using namespace util;
 const double eps = 1e-8;
+
+bool equal(double a, double b) {
+    return std::abs(a - b) < eps;
+}
 
 int main() {
     DataManager::init();
