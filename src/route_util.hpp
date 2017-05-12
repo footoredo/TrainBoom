@@ -47,6 +47,14 @@ namespace trainBoom {
 	        json["r"] = r;
 			return json;
 	    }
+	    Json toJsonEmpty() const {
+	        Json json;
+	        json["routeId"] = routeId;
+			json["routeName"] = routeName;
+	        json["l"] = l;
+	        json["r"] = r;
+			return json;
+	    }
 		void save() const {
 			// std::cout << "RouteInterval {" << std::endl;
 			toJson().write(DataManager::getFile(id));

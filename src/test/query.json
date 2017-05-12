@@ -1,4 +1,5 @@
 {
-    "l": 0,
-    "r": 2
+    "startStation": "Changzhou-North",
+    "endStation": "Shanghai-Hong-Qiao",
+    "date": "2017/5/5"
 }
