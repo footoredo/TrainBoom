@@ -10,7 +10,8 @@ int main(int argc, char **argv) {
     if (argc > 1) {
         DataManager::load(std::string(argv[1]));
         std::cout << "DataManager load done." << std::endl;
-        trainBoom->load(std::string(argv[2]));
+//        std::cout << std::string(argv[2]) << std::endl;
+        trainBoom->inside_load(std::string(argv[2]));
     }
     else trainBoom->loadFromCSV("test/test.csv");
 //    trainBoom->listRouteCnt();

@@ -10,21 +10,28 @@ namespace trainBoom {
     namespace IdNamespace {
         std::string getSalt(unsigned length) {
             std::string salt;
-            for (unsigned i = 0; i < length; ++ i)
-                salt += rand() % 26 + 'a';
+            for (unsigned i = 0; i < length; ++ i) {
+                int key = rand() % (26 * 2 + 10);
+                char ch;
+                if (key < 10) ch = key + '0';
+                else if ((key -= 10) < 26) ch = key + 'a';
+                else ch = key - 26 + 'A';
+                salt += ch;
+            }
             return salt;
         }
 
         // typedef std::string Id;
 
         std::string generateId(const std::string& type, time_t createTime) {
-            std::stringstream ss;
+/*            std::stringstream ss;
             ss << type << " " << createTime << " " << getSalt(8);
             SHA1 sha; sha.update(ss.str());
             // std::cout << "--- generating sha1 of ---\n";
             // std::cout << ss.str() << std::endl;
-            // std::cout << "--- end ---\n";
-            return sha.final();
+            // std::cout << "--- end ---\n";*/
+//            return sha.final();
+            return getSalt(8);
         }
 
         class Id {
