@@ -85,6 +85,7 @@ namespace trainBoom {
                 void setupRoutes() {
                     using namespace Net::Rest;
 
+                    ROUTING(Get, "/save", saveTrainBoom);
                     Routes::Get(router, "/shutdown", Routes::bind(&StatsEndpoint::_shutdown, this));
 
                     Routes::Post(router, "/users", Routes::bind(&StatsEndpoint::insertUser, this));
@@ -118,6 +119,11 @@ namespace trainBoom {
                     ROUTING(Post, "/routeInterval/get", getRouteInterval);
 //                    ROUTING(Post, "/routeInterval/query", queryRouteInterval);
   //                  ROUTING(Post, "/routeInterval/book", bookRouteInterval);
+                }
+
+                APIHANDLER(saveTrainBoom) {
+                    response.send(Http:Code::Ok, "[" + trainBoom->getId() + "] saving...");
+                    trainBoom->save();
                 }
 
                 void _shutdown(const Rest::Request& request, Net::Http::ResponseWriter response) {
@@ -466,6 +472,7 @@ namespace trainBoom {
                 while (!stats->shutdownFlag) {
 //                    sleep(1);
                 }
+//                std::cout << "!!" << std::endl;
 
                 stats->shutdown();
             }

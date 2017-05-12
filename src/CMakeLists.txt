@@ -11,6 +11,8 @@ elseif(COMPILER_SUPPORTS_CXX0X)
 else()
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
+
 set (TEST_SRC_DIR "test")
 include_directories (.)
 include_directories (../include)

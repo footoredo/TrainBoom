@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++11 -Wall -g -I. -I../include
+CXXFLAGS = -O2 -std=c++11 -Wall -g -I. -I../include
 SOURCE = test
 BIN = test_bin
 CPPFILES = sha1.cpp

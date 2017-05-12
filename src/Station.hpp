@@ -10,6 +10,7 @@
 #include "util/set.hpp"
 #include "DataManager.hpp"
 #include "Id.hpp"
+#include <sstream>
 
 namespace trainBoom {
 	// struct RouteInterval;
@@ -51,13 +52,39 @@ namespace trainBoom {
 		}
 	};
 
+    struct RouteKey {
+        std::string stationName;
+        Datetime datetime;
+    
+        RouteKey(std::string stationName, Datetime datetime):
+            stationId(stationName), datetime(datetime) {}
+        RouteKey(std::string routeKey) {
+            std::stringstream ss(routeKey);
+            ss >> stationId >> datetime;
+        }
+
+        operator std::string() const {
+            std::stringstream ss;
+            ss << stationName << " " << datetime;
+            return ss.str();
+        }
+
+        bool operator<(const RouteKey& other) const {
+            if (stationName == other.stationName)
+                return datetime < other.datetime;
+            else
+                return stationName < other.stationName;
+        }
+    };
+
 	class Station {
 		private:
 			std::string name;
-			util::map<std::string, util::map<util::Datetime::Datetime, util::set<RouteInterval>>> routesMap;
+            util::map<RouteKey, util::map<std::string, RouteInterval>> routesMap;
 			std::string id;
 
 		public:
+            unsigned routeCnt;
 			class add_routeId_failed : public exception{
 			public:
 				add_routeId_failed():exception("add routeId failed","wtf") {};
@@ -98,8 +125,9 @@ namespace trainBoom {
 				return name;
 			}
 
-			void add(const std::string& stationId, const util::Datetime::Datetime& date, const RouteInterval& routeInterval){
-				if (!routesMap[stationId][date].insert(routeInterval).second) throw add_routeId_failed(); // assuming return value is pair<iterator,bool>
+			void add(const std::string& stationName, const util::Datetime::Datetime& date, const RouteInterval& routeInterval){
+                ++ routeCnt;
+				if (!routesMap[RouteKey(stationName)].insert(routeInterval).second) throw add_routeId_failed(); // assuming return value is pair<iterator,bool>
 			}
 
 			void del(const std::string& stationId, const util::Datetime::Datetime& date, const RouteInterval& routeInterval) {

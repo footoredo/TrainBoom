@@ -335,6 +335,13 @@ public:
 		tmp.write(DataManager::getFile(id));
 	}
 
+    void listRouteCnt() const {
+        int cnt = 0;
+        for (const auto& item: stations) {
+            std::cout << ++cnt << ": " << item.second.routeCnt << std::endl;
+        }
+    }
+
 };
 
 }   // trainBoom
