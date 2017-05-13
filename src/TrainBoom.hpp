@@ -21,7 +21,7 @@ private:
 	util::map <std::string, Station> stations;
 	std::string id;
 
-    util::map <std::string, Blob> usernameMap, stationNameMap;
+    util::map <std::string, Blob> usernameMap, stationNameMap, routeNameMap;
 
 	static double readPrice(std::string buffer) {
 		if (buffer == "-") return 0;
@@ -67,6 +67,18 @@ public:
     		"stationName_not_found",
     		"Your stationName [" + stationName + "] already exists!!!") {}
     };
+	class routeName_not_found: public exception {
+    public:
+    	routeName_not_found(std::string routeName): exception(
+    		"routeName_not_found",
+    		"Your routeName [" + routeName + "] is not found!!!") {}
+    };
+	class routeName_exists : public exception {
+    public:
+    	routeName_exists(std::string routeName): exception(
+    		"routeName_not_found",
+    		"Your routeName [" + routeName + "] already exists!!!") {}
+    };
     class route_already_running: public exception {
         public:
             route_already_running(): exception(
@@ -97,6 +109,8 @@ public:
 		usernameMap = util::map<std::string, Blob>::load(usernameMapId);
 		std::string stationNameMapId = tmp["stationNameMapId"].as<std::string>();
 		stationNameMap = util::map<std::string, Blob>::load(stationNameMapId);
+		std::string routeNameMapId = tmp["routeNameMapId"].as<std::string>();
+		routeNameMap = util::map<std::string, Blob>::load(routeNameMapId);
 	}
 
     void inside_load(std::string _id) {
@@ -112,6 +126,8 @@ public:
 		usernameMap = util::map<std::string, Blob>::load(usernameMapId);
 		std::string stationNameMapId = tmp["stationNameMapId"].as<std::string>();
 		stationNameMap = util::map<std::string, Blob>::load(stationNameMapId);
+		std::string routeNameMapId = tmp["routeNameMapId"].as<std::string>();
+		routeNameMap = util::map<std::string, Blob>::load(routeNameMapId);
     }
 
 	static TrainBoom load(std::string id) {
@@ -123,7 +139,7 @@ public:
 		int routeCnt = 0;
 		for (int i = 1; i <= csv.size(); ) {
 			++ routeCnt;
-			std::cout << "Importing Route #" << routeCnt << std::endl;
+			// std::cout << "Importing Route #" << routeCnt << std::endl;
 			assert(csv.data(i, 2) == "");
 			Json route("route");
 			route["name"] = csv.data(i, 1);
@@ -198,10 +214,15 @@ public:
 			route["n"] = cnt;
 			// std::cout << route.toString() << std::endl;
 			Route tmp(route);
-			insertRoute(tmp);
-			startRoute(routes[tmp.getId()]);
+			try {
+				insertRoute(tmp);
+				startRoute(routes[tmp.getId()]);
+			}
+			catch (const routeName_exists& e) {
+				std::cout << "Duplicated route found [" + tmp.getName() << "]" << std::endl;
+			}
 
-			// if (i > 150) break;
+			if (i > 150) break;
 		}
 
 		std::cout << "Import done." << std::endl;
@@ -228,6 +249,12 @@ public:
 		if(routes.count(id) == 0) throw id_not_exist("route");
 		return routes.at(id);
 	}
+	std::string idByRouteName(std::string routeName) const {
+        if (!routeNameMap.count(routeName)) {
+            throw routeName_not_found(routeName);
+        }
+        return routeNameMap.at(routeName);
+    }
 	Station& station(std::string id)
 	{
 		if(stations.count(id) == 0) throw id_not_exist("station");
@@ -248,7 +275,10 @@ public:
 		// users[user.getId()] = user;
 	}
 	void insertRoute(const Route& route) {
-		std::cout << "new route [" << route.getName() << "] => " << route.getId() << std::endl;
+		if (routeNameMap.count(route.getName()) != 0) {
+			throw routeName_exists(route.getName());
+		}
+		// std::cout << "new route [" << route.getName() << "] => " << route.getId() << std::endl;
 		routes.insert(util::make_pair(route.getId(), route));
 		// trains[train.getId()] = train;
 	}
@@ -256,10 +286,31 @@ public:
 		if (stationNameMap.count(station.getName()) != 0) {
 			throw stationName_exists(station.getName());
 		}
-		std::cout << "new station [" << station.getName() << "] => " << station.getId() << std::endl;
+		// std::cout << "new station [" << station.getName() << "] => " << station.getId() << std::endl;
 		stations.insert(util::make_pair(station.getId(), station));
 		stationNameMap.insert(util::make_pair(station.getName(), station.getId()));
 		// stations[station.getId()] = station;
+	}
+
+	void deleteUser(std::string id) {
+		if (!users.count(id))
+			throw id_not_exist(id);
+		usernameMap.erase(usernameMap.find(users.at(id).getUsername()));
+		users.erase(users.find(id));
+	}
+
+	void deleteRoute(std::string id) {
+		if (!routes.count(id))
+			throw id_not_exist(id);
+		routeNameMap.erase(routeNameMap.find(routes.at(id).getName()));
+		routes.erase(routes.find(id));
+	}
+
+	void deleteStation(std::string id) {
+		if (!stations.count(id))
+			throw id_not_exist(id);
+		stationNameMap.erase(stationNameMap.find(stations.at(id).getName()));
+		stations.erase(stations.find(id));
 	}
 
     util::vector<std::string> listUsers() {
@@ -293,7 +344,7 @@ public:
             for (unsigned j = 0; j < i; ++ j) {
                 station(idByStationName(route.information(j).getStationName())).
                     add(route.information(i).getStationName(),
-                            RouteInterval(route.getId(), route.getName(), j, i));
+                            RouteInterval(route.getId(), route.getName(), j, i, route.information(j).getLeaveTime()));
             }
     }
 
@@ -307,7 +358,7 @@ public:
             for (unsigned j = 0; j < i; ++ j) {
                 station(idByStationName(route.information(j).getStationName())).
                     del(route.information(i).getStationName(),
-                            RouteInterval(route.getId(), route.getName(), j, i));
+                            RouteInterval(route.getId(), route.getName(), j, i, route.information(j).getLeaveTime()));
             }
     }
 
@@ -340,6 +391,8 @@ public:
 		usernameMap.save();
 		tmp["stationNameMapId"] = stationNameMap.getId();
 		stationNameMap.save();
+		tmp["routeNameMapId"] = routeNameMap.getId();
+		routeNameMap.save();
 		// tmp.write(DataManager::getFile(id));
 		DataManager::save(tmp);
 	}

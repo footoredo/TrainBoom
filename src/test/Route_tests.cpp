@@ -42,7 +42,7 @@ int main() {
 
     // std::cout << "here" << std::endl;
     Route route("CRH", 3, informations, segments);
-    std::cout << route.toJson().toString() << std::endl;
+    // std::cout << route.toJson().toString() << std::endl;
     std::cout << "Initialization test passed!" << std::endl;
 // //    route.display();
     auto q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
@@ -64,6 +64,26 @@ int main() {
     assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 0);
 //
     std::cout << "modify test passed!" << std::endl;
+
+    try {
+        route.startSelling(Datetime::parse("2017/4/1"));
+        std::cout << "Duplicated start test failed!" << std::endl;
+        assert(false);
+    }
+    catch (const Route::already_selling& e) {
+        std::cout << "Duplicated start test passed!" << std::endl;
+    }
+
+    route.stopSelling(Datetime::parse("2017/4/1"));
+
+    try {
+        route.queryTickets(Datetime::parse("2017/4/1"), 0, 2);
+        std::cout << "Query not selling date test failed!" << std::endl;
+        assert(false);
+    }
+    catch (const Route::not_selling& e) {
+        std::cout << "Query not selling date test passed!" << std::endl;
+    }
 //
 //
     for (int i = 0; i < 3; ++ i) {
@@ -90,13 +110,14 @@ int main() {
     try {
         Route newRoute(Route::load(route.getId()));
         // std::cout << "done " << std::endl;
-        std::cout << newRoute.toJson().toString() << std::endl;
+        // std::cout << newRoute.toJson().toString() << std::endl;
         assert(newRoute.toJson().toString() == route.toJson().toString());
         std::cout << "save & load test passed!" << std::endl;
     }
     catch (const exception& e) {
         std::cout << e.what() << std::endl;
         std::cout << "save & load test failed!" << std::endl;
+        assert(false);
     }
     // std::cout << newRoute.toJson().toString() << std::endl;
 

@@ -33,7 +33,7 @@ class Attribute {
 		}
 
 		Attribute(const util::Json& json): price(json["price"].as<double>()),
-		 	number(json.HasMember("number") ? json["number"].as<unsigned>() : 200),
+		 	number(json.HasMember("number") ? json["number"].as<unsigned>() : 2000),
 			nonstop(json.HasMember("nonstop") ? json["nonstop"].as<bool>() : false) {
 //				assert(json.getType() == "attribute");
 		}

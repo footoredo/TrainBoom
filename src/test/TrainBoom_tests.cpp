@@ -17,20 +17,45 @@ int main() {
 //    std::cout << info["username"].as<std::string>() << std::endl;
     User user(info);
     trainBoom.insertUser(user);
+
+    Json info2("user");
+//    info["username"] = std::string("footoredo");
+    info2["username"] = "redofooto";
+    info2["salt"] = "iamsalt";
+    info2["password"] = "password";
+//    std::cout << info["username"].as<std::string>() << std::endl;
+    User user2(info2);
+    trainBoom.insertUser(user2);
+
     // std::cout << trainBoom.toString() << std::endl;
 
-    const util::vector<std::string> usersList = trainBoom.listUsers();
+    util::vector<std::string> usersList = trainBoom.listUsers();
     for (const auto& userId: usersList)
-        std::cout << userId << std::endl;
+        std::cout << trainBoom.user(userId).getUsername() << std::endl;
+
+    trainBoom.deleteUser(user2.getId());
+    usersList = trainBoom.listUsers();
+    for (const auto& userId: usersList) {
+        assert(trainBoom.user(userId).getUsername() != "redofooto");
+    }
+
+    try {
+        std::cout << trainBoom.idByUsername("redofooto") << std::endl;
+        std::cout << "delete user test falied!" << std::endl;
+        assert(false);
+    }
+    catch (const TrainBoom::username_not_found& e) {
+        std::cout << "delete user test passed!" << std::endl;
+    }
 
     std::string diaozhou = trainBoom.idByStationName("吊州");
     std::string shanghaihongqiao = trainBoom.idByStationName("上海虹桥");
     std::cout << "find id done." << std::endl;
     const auto& vec = trainBoom.station(diaozhou).query("上海虹桥");
-    for (const auto routeInterval: vec) {
-        auto& route = trainBoom.route(routeInterval.routeId);
-        // std::cout << route.queryTickets(Route::startDate, routeInterval.l, routeInterval.r).toJson().toString() << std::endl;
-    }
+    // for (const auto routeInterval: vec) {
+    //     auto& route = trainBoom.route(routeInterval.routeId);
+    //     // std::cout << route.queryTickets(Route::startDate, routeInterval.l, routeInterval.r).toJson().toString() << std::endl;
+    // }
 
     std::cout << "start saving." << std::endl;
     trainBoom.save();

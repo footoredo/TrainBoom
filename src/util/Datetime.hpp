@@ -98,6 +98,11 @@ namespace date_time {
                 signed_Date_t(hour) - duration.hour,
                 signed_Date_t(minute) - duration.minute
             );
+
+        }
+
+        Duration setToDay() const {
+            return Duration(hour / 24 * 24, 0);
         }
 
         Date_t getHour() const noexcept {
