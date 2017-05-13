@@ -250,7 +250,7 @@ public:
                     _segments[j] = make_stupid<Segment>(json["segments"][j]);
                 }
                 segments[i] = _segments;
-                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
+//                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
                 // std::cout << "1" << std::endl;
                 // segments.insert(util::make_pair(curDate, _segments));
                 // std::cout << "2" << std::endl;
@@ -330,6 +330,11 @@ public:
         return segments[date][index - 1]->ticket(ticketType).nonstop;
     }
 
+    bool isNonstop(int date, unsigned index, int ticketType) {
+        if (index == 0) return false;
+        return segments[date][index - 1]->ticket(ticketType).nonstop;
+    }
+
     Segment queryTickets(Datetime date, unsigned l, unsigned r) {
         // auto interval = getInterval(startStation, endStation);
         Duration dayShift = informations[l]->getLeaveTime().setToDay();
@@ -342,7 +347,7 @@ public:
         }
         auto segment = segmentsIntervalManip[idate]->query(l, r - 1);
         for (const auto item: segment.getTickets()) {
-            std::string type = item.first;
+            int type = item.first;
             segment.ticket(type).nonstop = isNonstop(idate, l, type) || isNonstop(idate, r, type);
         }
         return segment;
@@ -371,7 +376,7 @@ public:
             throw not_enough_tickets_left();
         Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
         TicketDelta ticketDelta;
-        ticketDelta[ticketType] = - (int)ticketNumber;
+        ticketDelta[rand()] = - (int)ticketNumber;
         segmentsIntervalManip[idate]->modify(l, r - 1, ticketDelta);
         return order;
     }

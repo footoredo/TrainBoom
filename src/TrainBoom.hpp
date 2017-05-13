@@ -139,7 +139,7 @@ public:
 		int routeCnt = 0;
 		for (int i = 1; i <= csv.size(); ) {
 			++ routeCnt;
-			// std::cout << "Importing Route #" << routeCnt << std::endl;
+			std::cout << "Importing Route #" << routeCnt << std::endl;
 			assert(csv.data(i, 2) == "");
 			Json route("route");
 			route["name"] = csv.data(i, 1);

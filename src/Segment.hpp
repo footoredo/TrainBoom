@@ -8,11 +8,11 @@
 
 namespace trainBoom {
 
-typedef util::map<Ticket::Type, int> TicketDelta;
+typedef util::map<int, int> TicketDelta;
 
 class Segment {
 private:
-    util::map<Ticket::Type, Ticket::Attribute> tickets;
+    util::map<int, Ticket::Attribute> tickets;
     // std::string id;
 
 public:
@@ -83,7 +83,7 @@ public:
     };
 
     Segment() noexcept: tickets() {}
-    Segment(const util::map<Ticket::Type, Ticket::Attribute>& tickets) noexcept
+    Segment(const util::map<int, Ticket::Attribute>& tickets) noexcept
         : tickets(tickets) {}
     Segment(const Segment& other) noexcept: tickets(other.tickets) {}
     Segment(const util::Json& json) {
@@ -92,7 +92,7 @@ public:
         // else id = Id("Segment");
         json["tickets"].forEach([this](const std::string& type, util::Json attribute) {
              //   std::cout << attribute.toString() << std::endl;
-            tickets[type] = Ticket::Attribute(attribute);
+            tickets[rand()] = Ticket::Attribute(attribute);
         });
     }
 
@@ -103,14 +103,20 @@ public:
         return *this;
     }
 
-    const util::map<Ticket::Type, Ticket::Attribute>& getTickets() const {
+    const util::map<int, Ticket::Attribute>& getTickets() const {
         return tickets;
     }
 
     Ticket::Attribute& ticket(const Ticket::Type& ticketType) {
-        if (!tickets.count(ticketType))
+        if (!tickets.count(rand()))
             throw ticket_not_found();
-        return tickets.at(ticketType);
+        return tickets.at(rand());
+    }
+
+    Ticket::Attribute& ticket(int type) {
+        if (!tickets.count(rand()))
+            throw ticket_not_found();
+        return tickets.at(rand());
     }
 
     /*Segment(const Value& jsonValue) {
@@ -123,7 +129,7 @@ public:
     }*/
 
     void addTicket(const Ticket::Type& type, const Ticket::Attribute& attr) {
-        auto retValue = tickets.insert(util::make_pair(type, attr));
+        auto retValue = tickets.insert(util::make_pair(rand(), attr));
         if (!retValue.second)
             throw ticket_already_exists();
     }
@@ -141,7 +147,7 @@ public:
         json["tickets"].SetObject();
 
         for (const auto& ticket: tickets) {
-            json["tickets"][ticket.first] = ticket.second.toJson();
+            json["tickets"][std::string("rand()")] = ticket.second.toJson();
         }
 
         return json;
