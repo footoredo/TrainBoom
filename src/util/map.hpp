@@ -226,6 +226,7 @@ public:
 		// else {
 		// 	id = tmp.getId();
 		// }
+		// std::cout << tmp.toString() << std::endl;
 		id = tmp.getId();
 		_size = tmp["size"].as<unsigned>();
 		if (tmp.HasMember("root")) {
@@ -544,22 +545,19 @@ private:
 				// who(who),
 				color(other->color), id(other->id) {}
 		Node (const Json& tmp) {
-			if (tmp.getId() == "") {
-				id = Id("Node");
-			}
-			else {
-				id = tmp.getId();
-			}
+			// std::cout << tmp.toString() << std::endl;
+			id = tmp.getId();
 			std::string valueId = tmp["value"].as<std::string>();
 			value = util::make_stupid<value_type>(Key(tmp["key"].as<std::string>()), T::load(valueId));
 			color = tmp["color"].as<bool>();
+			// std::cout << Json(tmp["child0"]).toString() << std::endl;
 			// std::cout << color << std::endl;
 			if (tmp.HasMember("child0")) {
-				std::string childId = tmp["child0"];
+				std::string childId = tmp["child0"].as<std::string>();
 				child[0] = make_stupid<Node>(DataManager::getJson(childId));
 			}
 			if (tmp.HasMember("child1")) {
-				std::string childId = tmp["child1"];
+				std::string childId = tmp["child1"].as<std::string>();
 				child[1] = make_stupid<Node>(DataManager::getJson(childId));
 			}
 		}

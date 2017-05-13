@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
+#include <algorithm>
 #include "exception.hpp"
 
 namespace trainBoom {
@@ -234,8 +235,20 @@ public:
 		return this->ptr[pos];
 	}
 
+	T* begin() {
+		return this->ptr;
+	}
+
+	T* end() {
+		return this->ptr + n;
+	}
+
 	size_t size() const {
 		return n;
+	}
+
+	void sort() {
+		std::sort(this->ptr, this->ptr + n);
 	}
 
 private:
@@ -263,11 +276,17 @@ stupid_ptr<T> make_stupid() {
     return stupid_ptr<T>(new T());
 }
 
+template <class T>
+stupid_array<T> make_array(size_t n) {
+    return stupid_array<T>(new T[n], n);
+}
+
 }	// util
 
 using util::stupid_ptr;
 using util::stupid_array;
 using util::make_stupid;
+using util::make_array;
 
 }	// TrainBoom
 

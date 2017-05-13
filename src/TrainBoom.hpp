@@ -99,18 +99,25 @@ public:
 		else {
 			id = Id("TrainBoom");
 		}
+		// std::cout << tmp.toString() << std::endl;
 		std::string usersId = tmp["usersId"].as<std::string>();
 		users = util::map<std::string, User>::load(usersId);
+		// std::cout << "User loaded" << std::endl;
 		std::string routesId = tmp["routesId"].as<std::string>();
 		routes = util::map<std::string, Route>::load(routesId);
+		// std::cout << "Route loaded" << std::endl;
 		std::string stationsId = tmp["stationsId"].as<std::string>();
 		stations = util::map<std::string, Station>::load(stationsId);
+		// std::cout << "Station loaded" << std::endl;
 		std::string usernameMapId = tmp["usernameMapId"].as<std::string>();
 		usernameMap = util::map<std::string, Blob>::load(usernameMapId);
+		// std::cout << "usernameMap loaded" << std::endl;
 		std::string stationNameMapId = tmp["stationNameMapId"].as<std::string>();
 		stationNameMap = util::map<std::string, Blob>::load(stationNameMapId);
+		// std::cout << "stationNameMap loaded" << std::endl;
 		std::string routeNameMapId = tmp["routeNameMapId"].as<std::string>();
 		routeNameMap = util::map<std::string, Blob>::load(routeNameMapId);
+		// std::cout << "routeNameMap loaded" << std::endl;
 	}
 
     void inside_load(std::string _id) {
@@ -139,7 +146,7 @@ public:
 		int routeCnt = 0;
 		for (int i = 1; i <= csv.size(); ) {
 			++ routeCnt;
-			std::cout << "Importing Route #" << routeCnt << std::endl;
+			// std::cout << "Importing Route #" << routeCnt << std::endl;
 			assert(csv.data(i, 2) == "");
 			Json route("route");
 			route["name"] = csv.data(i, 1);
@@ -385,20 +392,20 @@ public:
 		return ss.str();
 	}
 
-	void save() const {
+	void save() {
 		Json tmp("TrainBoom", id);
-		tmp["usersId"] = users.getId();
 		users.save();
-		tmp["routesId"] = routes.getId();
+		tmp["usersId"] = users.getId();
 		routes.save();
-		tmp["stationsId"] = stations.getId();
+		tmp["routesId"] = routes.getId();
 		stations.save();
-		tmp["usernameMapId"] = usernameMap.getId();
+		tmp["stationsId"] = stations.getId();
 		usernameMap.save();
-		tmp["stationNameMapId"] = stationNameMap.getId();
+		tmp["usernameMapId"] = usernameMap.getId();
 		stationNameMap.save();
-		tmp["routeNameMapId"] = routeNameMap.getId();
+		tmp["stationNameMapId"] = stationNameMap.getId();
 		routeNameMap.save();
+		tmp["routeNameMapId"] = routeNameMap.getId();
 		// tmp.write(DataManager::getFile(id));
 		DataManager::save(tmp);
 	}

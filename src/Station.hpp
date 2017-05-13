@@ -123,10 +123,10 @@ namespace trainBoom {
                 return json;
             }
 
-			void save() const {
+			void save() {
 				// toJson().write(DataManager::getFile(id));
-				DataManager::save(toJson());
 				routesMap.save();
+				DataManager::save(toJson());
 			}
 /*
             Json queryJson(const std::string& stationId, const Datetime& date) const {

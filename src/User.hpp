@@ -169,12 +169,12 @@ public:
         return json;
     }
 
-    void save() const {
+    void save() {
         Json tmp = toJson();
+        orders.save();
         tmp["ordersId"] = orders.getId();
         // tmp.write(DataManager::getFile(id));
         DataManager::save(tmp);
-        orders.save();
     }
 /*
     util::Json getOrderJson() const {

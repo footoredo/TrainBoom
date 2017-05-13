@@ -8,12 +8,14 @@
 
 namespace trainBoom {
 
-typedef util::map<int, int> TicketDelta;
+typedef util::map<std::string, int> TicketDelta;
 
 class Segment {
 private:
-    util::map<int, Ticket::Attribute> tickets;
+    // util::map<int, Ticket::Attribute> tickets;
     // std::string id;
+    size_t _size;
+    stupid_array<util::pair<std::string, Ticket::Attribute>> tickets;
 
 public:
     class ticket_not_found : public exception {
@@ -37,6 +39,7 @@ public:
             "The ticket you insert already exists!!!") {}
     };
 
+/*
     class Modifier {
         friend class Segment;
     public:
@@ -80,43 +83,108 @@ public:
             }
             return ret;
         }
-    };
+    };*/
 
-    Segment() noexcept: tickets() {}
-    Segment(const util::map<int, Ticket::Attribute>& tickets) noexcept
-        : tickets(tickets) {}
-    Segment(const Segment& other) noexcept: tickets(other.tickets) {}
+    Segment() noexcept {}
+    Segment(const util::map<std::string, Ticket::Attribute>& _tickets) {
+        _size = _tickets.size();
+        // type = make_array<std::string>(size);
+        // attr = make_array<Ticket::Attribute>(size);
+        tickets = make_array<util::pair<std::string, Ticket::Attribute>>(_size);
+        size_t i = 0;
+        for (const auto& item: _tickets) {
+            tickets[i].first = item.first;
+            tickets[i].second = item.second;
+            ++ i;
+        }
+        tickets.sort();
+    }
+    Segment(const Segment& other) {
+        _size = other._size;
+        // type = make_array<std::string>(_size);
+        // attr = make_array<Ticket::Attribute>(_size);
+        tickets = make_array<util::pair<std::string, Ticket::Attribute>>(_size);
+        for (size_t i = 0; i < _size; ++ i) {
+            // type[i] = other.type[i];
+            // attr[i] = other.attr[i];
+            tickets[i] = other.tickets[i];
+        }
+    }
     Segment(const util::Json& json) {
 //        assert(json.getType() == "segment");
         // if (json.getId() != "") id = json.getId();
         // else id = Id("Segment");
-        json["tickets"].forEach([this](const std::string& type, util::Json attribute) {
-             //   std::cout << attribute.toString() << std::endl;
-            tickets[rand()] = Ticket::Attribute(attribute);
+        _size = json["tickets"].Size();
+        // type = make_array<std::string>(_size);
+        // attr = make_array<Ticket::Attribute>(_size);
+        tickets = make_array<util::pair<std::string, Ticket::Attribute>>(_size);
+        size_t i = 0;
+        json["tickets"].forEach([&](const std::string& _type, util::Json _attr) {
+            // type[i] = _type;
+            // attr[i] = Ticket::Attribute(_attr);
+            tickets[i] = util::make_pair(_type, Ticket::Attribute(_attr));
+            ++ i;
         });
+        tickets.sort();
+    }
+
+    stupid_array<util::pair<std::string, Ticket::Attribute>> getTickets() {
+        return tickets;
     }
 
     Segment& operator=(const Segment& other) {
         if (this != &other) {
-            tickets = other.tickets;
+            _size = other._size;
+            tickets = make_array<util::pair<std::string, Ticket::Attribute>>(_size);
+            for (size_t i = 0; i < _size; ++ i) {
+                tickets[i] = other.tickets[i];
+            }
         }
         return *this;
     }
 
+    size_t count(std::string ticketType) const {
+        size_t ans = 0;
+        for (size_t i = 0; i < _size; ++ i)
+            if (tickets[i].first == ticketType)
+                ++ ans;
+        return ans;
+    }
+
+/*
     const util::map<int, Ticket::Attribute>& getTickets() const {
         return tickets;
+    }*/
+
+    size_t find(std::string ticketType) const {
+        for (size_t i = 0; i < _size; ++ i)
+            if (tickets[i].first == ticketType)
+                return i;
+        throw ticket_not_found();
     }
 
     Ticket::Attribute& ticket(const Ticket::Type& ticketType) {
-        if (!tickets.count(rand()))
-            throw ticket_not_found();
-        return tickets.at(rand());
+        return tickets[find(ticketType)].second;
     }
 
-    Ticket::Attribute& ticket(int type) {
-        if (!tickets.count(rand()))
-            throw ticket_not_found();
-        return tickets.at(rand());
+    const Ticket::Attribute& ticket(const Ticket::Type& ticketType) const {
+        return tickets[find(ticketType)].second;
+    }
+
+    size_t size() const {
+        return _size;
+    }
+
+    Segment operator+(const Segment& other) const {
+        Segment ret;
+        assert(_size == other._size);
+        ret._size = _size;
+        ret.tickets = make_array<util::pair<std::string, Ticket::Attribute>>(_size);
+        for (size_t i = 0; i < _size; ++ i) {
+            assert(tickets[i].first == other.tickets[i].first);
+            ret.tickets[i] = util::make_pair(tickets[i].first, mergeAttribute(tickets[i].second, other.tickets[i].second));
+        }
+        return ret;
     }
 
     /*Segment(const Value& jsonValue) {
@@ -127,7 +195,7 @@ public:
                 Ticket::Attribute(ticketObject.value);
         }
     }*/
-
+/*
     void addTicket(const Ticket::Type& type, const Ticket::Attribute& attr) {
         auto retValue = tickets.insert(util::make_pair(rand(), attr));
         if (!retValue.second)
@@ -141,18 +209,18 @@ public:
         }
         std::cout << "#####################" << std::endl;
     }
-
+*/
     util::Json toJson() const {
         util::Json json;
         json["tickets"].SetObject();
 
-        for (const auto& ticket: tickets) {
-            json["tickets"][std::string("rand()")] = ticket.second.toJson();
+        for (size_t i = 0; i < _size; ++ i) {
+            json["tickets"][tickets[i].first] = tickets[i].second.toJson();
         }
 
         return json;
     }
-
+/*
     std::string toString() const {
         std::stringstream ss;
         // ss << "createTime " << createTime << '\n';
@@ -160,7 +228,7 @@ public:
         for (const auto& ticket: tickets)
             ss << "ticket " << ticket.first << " " << ticket.second.price << " " << ticket.second.number << '\n';
         return ss.str();
-    }
+    }*/
 };
 
 }   // TrainBoom

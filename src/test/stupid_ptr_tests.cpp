@@ -23,6 +23,16 @@ int main() {
 //        std::cout << b[i] << std::endl;
         assert(b[i] == i);
     }
+    for (int i = 0; i < 5; ++ i) {
+        a[i] = 5 - i;
+        assert(a[i] == 5 - i);
+    }
+    a.sort();
+    int t = 1;
+    for (int x: a) {
+        assert(x == t);
+        ++ t;
+    }
     std::cout << "All tests passed!" << std::endl;
     // a.dec(); b.dec();
 }

@@ -26,12 +26,16 @@ int main() {
             Duration::parse("24:49")
         }, 2
     );
-    stupid_ptr<Segment> s0 = make_stupid<Segment>();
-    s0->addTicket(Ticket::Type("APTV"), Ticket::Attribute(998, 10000));
-    s0->addTicket(Ticket::Type("人民的名义"), Ticket::Attribute(7773.12453, 1));
-    stupid_ptr<Segment> s1 = make_stupid<Segment>();
-    s1->addTicket(Ticket::Type("APTV"), Ticket::Attribute(15, 15));
-    s1->addTicket(Ticket::Type("人民的名义"), Ticket::Attribute(1522, 15));
+    util::map<std::string, Ticket::Attribute> s0m;
+    s0m.insert(util::make_pair(Ticket::Type("APTV"), Ticket::Attribute(998, 10000)));
+    s0m.insert(util::make_pair(Ticket::Type("人民的名义"), Ticket::Attribute(7773.12453, 1)));
+    stupid_ptr<Segment> s0 = make_stupid<Segment>(s0m);
+    std::cout << "create segment done." << std::endl;
+    std::cout << s0->toJson().toString() << std::endl;
+    util::map<std::string, Ticket::Attribute> s1m;
+    s1m.insert(util::make_pair(Ticket::Type("APTV"), Ticket::Attribute(15, 15)));
+    s1m.insert(util::make_pair(Ticket::Type("人民的名义"), Ticket::Attribute(1522, 15)));
+    stupid_ptr<Segment> s1 = make_stupid<Segment>(s1m);
     util::stupid_array<util::stupid_ptr<Segment>> segments(new stupid_ptr<Segment>[2]{s0, s1}, 2);
 
     util::stupid_array<stupid_ptr<Information>> informations(new stupid_ptr<Information>[3]{
@@ -47,8 +51,8 @@ int main() {
 // //    route.display();
     auto q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
 // //    q.display();
-    assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 998 + 15) && q.getTickets()["APTV"].number == 15);
-    assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 1);
+    assert(q.count("APTV") && equal(q.ticket("APTV").price, 998 + 15) && q.ticket("APTV").number == 15);
+    assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.12453 + 1522) && q.ticket("人民的名义").number == 1);
     std::cout << "query test passed!" << std::endl;
 //
     TicketDelta order;
@@ -60,14 +64,14 @@ int main() {
 
     q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
 // //    q.display();
-    assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 998 + 15) && q.getTickets()["APTV"].number == 20);
-    assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 0);
+    assert(q.count("APTV") && equal(q.ticket("APTV").price, 998 + 15) && q.ticket("APTV").number == 20);
+    assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.12453 + 1522) && q.ticket("人民的名义").number == 0);
 //
     std::cout << "modify test passed!" << std::endl;
 
     q = route.queryTickets(Datetime::parse("2017/3/29"), 1, 2);
-    assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 15) && q.getTickets()["APTV"].number == 20);
-    assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 1522) && q.getTickets()["人民的名义"].number == 14);
+    assert(q.count("APTV") && equal(q.ticket("APTV").price, 15) && q.ticket("APTV").number == 20);
+    assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 1522) && q.ticket("人民的名义").number == 14);
 
     try {
         route.startSelling(Datetime::parse("2017/4/1"));

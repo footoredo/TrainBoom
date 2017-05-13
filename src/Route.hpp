@@ -14,13 +14,14 @@
 
 namespace trainBoom {
 
+/*
 typedef util::IntervalManip<
     Segment,
     TicketDelta,
     Segment::Modifier,
     Segment::MergerT,
     Segment::MergerM
-> SegmentsInvervalManip;
+> SegmentsInvervalManip;*/
 
 class Information;
 
@@ -37,7 +38,7 @@ private:
     util::stupid_array<util::stupid_ptr<Information>> informations;
 
     util::stupid_array<util::stupid_ptr<Segment>> segments[lastDays];
-    util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip[lastDays];
+    // util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip[lastDays];
 
     std::string id;
 
@@ -170,7 +171,7 @@ public:
                 for (unsigned j = 0; j < n - 1; ++ j)
                     cur_segments[j] = make_stupid<Segment>(*(_segments[j]));
                 segments[i] = cur_segments;
-                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(cur_segments, n - 1);
+                // segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(cur_segments, n - 1);
                 selling[i] = true;
                 // segments.insert(util::make_pair(curDate, cur_segments));
                 // segmentsIntervalManip.insert(util::make_pair(curDate, make_stupid<SegmentsInvervalManip>(cur_segments, n - 1)));
@@ -231,7 +232,7 @@ public:
                     _segments[i] = make_stupid<Segment>(tmp[i]);
                 }
                 segments[i] = _segments;
-                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
+                // segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
                 // std::cout << "1" << std::endl;
                 // segments.insert(util::make_pair(date, _segments));
                 // std::cout << "2" << std::endl;
@@ -330,13 +331,7 @@ public:
         return segments[date][index - 1]->ticket(ticketType).nonstop;
     }
 
-    bool isNonstop(int date, unsigned index, int ticketType) {
-        if (index == 0) return false;
-        return segments[date][index - 1]->ticket(ticketType).nonstop;
-    }
-
-    Segment queryTickets(Datetime date, unsigned l, unsigned r) {
-        // auto interval = getInterval(startStation, endStation);
+    int getIDate(Datetime& date, unsigned l) {
         Duration dayShift = informations[l]->getLeaveTime().setToDay();
         date = date - dayShift;
         if (date < startDate)
@@ -345,39 +340,67 @@ public:
         if (!selling[idate]) {
             throw not_selling(date);
         }
-        auto segment = segmentsIntervalManip[idate]->query(l, r - 1);
-        for (const auto item: segment.getTickets()) {
-            int type = item.first;
-            segment.ticket(type).nonstop = isNonstop(idate, l, type) || isNonstop(idate, r, type);
+        return idate;
+    }
+
+    Segment queryTickets(Datetime date, unsigned l, unsigned r) {
+        int idate = getIDate(date, l);
+        auto segment = *(segments[idate][l]);
+        for (unsigned i = l + 1; i < r; ++ i) {
+            segment = segment + *(segments[idate][i]);
+        }
+        for (auto& item: segment.getTickets()) {
+            item.second.nonstop = isNonstop(idate, l, item.first) || isNonstop(idate, r, item.first);
+        }
+        return segment;
+    }
+
+    Segment queryTickets(int idate, unsigned l, unsigned r) {
+        auto segment = *(segments[idate][l]);
+        for (unsigned i = l + 1; i < r; ++ i) {
+            segment = segment + *(segments[idate][i]);
+        }
+        for (auto& item: segment.getTickets()) {
+            item.second.nonstop = isNonstop(idate, l, item.first) || isNonstop(idate, r, item.first);
         }
         return segment;
     }
 
     void modifyTickets(Datetime date, unsigned l, unsigned r, const TicketDelta& deltas) {
         // auto interval = getInterval(startStation, endStation);
-        segmentsIntervalManip[(date - startDate).countDay()]->modify(l, r - 1, deltas);
+        int idate = getIDate(date, l);
+        for (unsigned i = l; i < r; ++ i) {
+            for (const auto& delta: deltas) {
+                segments[idate][i]->ticket(delta.first).number += delta.second;
+            }
+        }
+        // segmentsIntervalManip[(date - startDate).countDay()]->modify(l, r - 1, deltas);
+    }
+
+    void modifyTickets(int idate, unsigned l, unsigned r, const TicketDelta& deltas) {
+        // auto interval = getInterval(startStation, endStation);
+        for (unsigned i = l; i < r; ++ i) {
+            for (const auto& delta: deltas) {
+                segments[idate][i]->ticket(delta.first).number += delta.second;
+            }
+        }
+        // segmentsIntervalManip[(date - startDate).countDay()]->modify(l, r - 1, deltas);
     }
 
     Order bookTickets(Datetime date, unsigned l, unsigned r, const std::string& ticketType, unsigned ticketNumber) {
-        Duration dayShift = informations[l]->getLeaveTime().setToDay();
-        date = date - dayShift;
-        if (date < startDate)
-            throw not_selling(date);
-        int idate = (date - startDate).countDay();
-        if (!selling[idate]) {
-            throw not_selling(date);
-        }
+        int idate = getIDate(date, l);
         if (isNonstop(idate, l, ticketType))
             throw nonstop_station("start station", ticketType);
         if (isNonstop(idate, r, ticketType))
             throw nonstop_station("end station", ticketType);
-        Segment segment = segmentsIntervalManip[idate]->query(l, r - 1);
+        Segment segment = queryTickets(idate, l, r);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();
         Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
         TicketDelta ticketDelta;
-        ticketDelta[rand()] = - (int)ticketNumber;
-        segmentsIntervalManip[idate]->modify(l, r - 1, ticketDelta);
+        ticketDelta[ticketType] = - (int)ticketNumber;
+        modifyTickets(idate, l, r, ticketDelta);
+        // segmentsIntervalManip[idate]->modify(l, r - 1, ticketDelta);
         return order;
     }
 
@@ -465,7 +488,7 @@ public:
 
         for (int j = 0; j < lastDays; ++ j) {
             // std::cout << "!" << std::endl;
-            segmentsIntervalManip[j]->forceApply();
+            // segmentsIntervalManip[j]->forceApply();
             Json tmp; tmp.getData().SetArray();
             for (unsigned int i = 0; i < n - 1; ++ i) {
                 tmp.getData().PushBack(segments[j][i]->toJson());

@@ -50,6 +50,16 @@ class Attribute {
 			return *this;
 		}
 
+		bool operator<(const Attribute& other) {
+			if (price == other.price)
+				if (number == other.number)
+					return nonstop < other.nonstop;
+				else
+					return number < other.number;
+			else
+				return price < other.price;
+		}
+
 		friend ostream& operator<<(ostream &fout, const Attribute &rhs){ //测试用，重载输出
 			fout << /*"车票种类:\n" << rhs.type << '\n' << */"车票单价:\n" << rhs.price << '\n' << "车票余量:\n" << rhs.number << '\n';
 			return fout;

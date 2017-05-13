@@ -43,7 +43,7 @@ public:
     public:
     	type_error(const std::string& type) : exception(
     		"type_error",
-    		"It is not a " + type + "!!!") {}
+    		"It is not " + type + "!!!") {}
     };
 
     class JsonValue {
@@ -331,8 +331,12 @@ public:
         }
 
         size_t Size() const {
-            if (!value->IsArray())
-                throw type_error("array");
+            if (!value->IsArray()) {
+                if (!value->IsObject())
+                    throw type_error("something with a size");
+                else
+                    return value->MemberCount();
+            }
             return value->Size();
         }
 
