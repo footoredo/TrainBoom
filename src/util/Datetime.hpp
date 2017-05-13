@@ -254,7 +254,7 @@ namespace date_time {
 					else if (!space) space = i;
 					else throw time_format_wrong();
 				}
-	        	else if (fmttime[i] == '/')
+	        	else if (fmttime[i] == '/' || fmttime[i] == '-')
 	        	{
 	        		if (!_1) _1 = i;
 	        		else _2 = i;

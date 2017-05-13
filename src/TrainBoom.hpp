@@ -11,6 +11,7 @@
 #include "Blob.hpp"
 #include "util/CSV.hpp"
 #include <sstream>
+#include <fstream>
 
 namespace trainBoom {
 
@@ -141,6 +142,70 @@ public:
 		return TrainBoom(DataManager::getJson(id));
 	}
 
+	void loadModifications(std::string modificationFile) {
+		std::ifstream modification(modificationFile);
+		int cnt = 0;
+		while (!modification.eof()) {
+			std::string trash;
+			std::string realname; modification >> realname;
+			if (realname == "") break;
+			std::string id; modification >> id;
+			std::string op; modification >> op;
+			unsigned number; modification >> number;
+			std::string ticketType; modification >> ticketType;
+			modification >> trash;	// tickets
+			modification >> trash;	// of
+			std::string routeName; modification >> routeName;
+			modification >> trash; 	// from
+			std::string startStation; modification >> startStation;
+			modification >> trash; 	// to
+			std::string endStation; modification >> endStation;
+			modification >> trash;	// in
+			std::string date_str; modification >> date_str;
+
+			std::string userId;
+			if (!usernameMap.count(id)) {
+				Json user_json;
+
+				user_json["username"] = id;
+				user_json["realname"] = realname;
+
+				std::string salt = getSalt(8);
+				user_json["salt"] = salt;
+				user_json["password"] = encrypt("000000", salt);
+
+				User user(user_json);
+				insertUser(user);
+
+				userId = user.getId();
+			}
+			else {
+				userId = usernameMap.at(id);
+			}
+
+			// std::cout << "User [" + userId + "]" << std::endl;
+
+			RouteInterval routeInterval = stations.at(stationNameMap.at(startStation)).query(endStation, routeName);
+
+			try {
+				if (op == "bought")
+					routes.at(routeInterval.routeId).bookTickets(Datetime::parse(date_str), routeInterval.l, routeInterval.r, ticketType, number);
+				else
+					routes.at(routeInterval.routeId).refundTickets(Datetime::parse(date_str), routeInterval.l, routeInterval.r, ticketType, number);
+				// std::cout << "User [" + id + ":" + realname + "] not waterloo." << std::endl;
+			}
+			catch (const exception& e) {
+				std::cout << e.what() << std::endl;
+				std::cout << "User [" + id + ":" + realname + "] waterloo." << std::endl;
+			}
+
+			++ cnt;
+			// if (cnt > 100) break;
+		}
+
+		std::cout << "!" << std::endl;
+	}
+
 	void loadFromCSV(std::string csvFile) {
 		CSV csv; csv.load(csvFile);
 		int routeCnt = 0;
@@ -162,7 +227,7 @@ public:
 				ticketName[j] = csv.data(i, 6 + j);
 
 			++ i;
-			int cnt = 0, start = i;
+			int cnt = 0;
 			while (i <= csv.size() && csv.data(i, 2) != "") {
 				Json information("information");
 
@@ -184,15 +249,15 @@ public:
 				std::string date(csv.data(i, 2));
 				if (csv.data(i, 3) == "起点站") {
 					flags |= isStart;
-					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4)) - Datetime::parse(date + " " + csv.data(start, 4));
+					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4)) - Route::startDate;
 				}
 				else if (csv.data(i, 4) == "终到站") {
 					flags |= isEnd;
-					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3)) - Datetime::parse(date + " " + csv.data(start, 3));
+					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3)) - Route::startDate;;
 				}
 				else {
-					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3)) - Datetime::parse(date + " " + csv.data(start, 3));
-					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4)) - Datetime::parse(date + " " + csv.data(start, 4));
+					information["arriveTime"] = Datetime::parse(date + " " + csv.data(i, 3)) - Route::startDate;;
+					information["leaveTime"] = Datetime::parse(date + " " + csv.data(i, 4)) - Route::startDate;;
 				}
 
 				information["distance"] = std::stoi(csv.data(i, 5));
@@ -229,7 +294,7 @@ public:
 				std::cout << "Duplicated route found [" + tmp.getName() << "]" << std::endl;
 			}
 
-//			if (i > 150) break;
+			// if (i > 500) break;
 		}
 
 		std::cout << "Import done." << std::endl;

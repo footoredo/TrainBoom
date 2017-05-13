@@ -404,6 +404,18 @@ public:
         return order;
     }
 
+    void refundTickets(Datetime date, unsigned l, unsigned r, const std::string& ticketType, unsigned ticketNumber) {
+        int idate = getIDate(date, l);
+        // std::cout << idate << std::endl;
+        if (isNonstop(idate, l, ticketType))
+            throw nonstop_station("start station", ticketType);
+        if (isNonstop(idate, r, ticketType))
+            throw nonstop_station("end station", ticketType);
+        TicketDelta ticketDelta;
+        ticketDelta[ticketType] = (int)ticketNumber;
+        modifyTickets(idate, l, r, ticketDelta);
+    }
+
     void startSelling(Datetime date) {
         int idate = (date - startDate).countDay();
         if (selling[idate])

@@ -8,6 +8,12 @@ int main() {
     TrainBoom trainBoom;
     DataManager::init();
     trainBoom.loadFromCSV("test/test.csv");
+    trainBoom.loadModifications("../test/FinalMushroom.out");
+
+    std::cout << trainBoom.idByUsername("070219000") << std::endl;
+    assert(trainBoom.user(trainBoom.idByUsername("070219000")).getRealname() == "朱兰");
+    std::cout << "modification load check done." << std::endl;
+
     trainBoom.insertUser(User());
     Json info("user");
 //    info["username"] = std::string("footoredo");
@@ -32,8 +38,8 @@ int main() {
     // std::cout << trainBoom.toString() << std::endl;
 
     util::vector<std::string> usersList = trainBoom.listUsers();
-    for (const auto& userId: usersList)
-        std::cout << trainBoom.user(userId).getUsername() << std::endl;
+    // for (const auto& userId: usersList)
+        // std::cout << trainBoom.user(userId).getUsername() << std::endl;
 
     trainBoom.deleteUser(user2.getId());
     usersList = trainBoom.listUsers();
@@ -54,6 +60,16 @@ int main() {
     std::string shanghaihongqiao = trainBoom.idByStationName("上海虹桥");
     std::cout << "find id done." << std::endl;
     const auto& vec = trainBoom.station(diaozhou).query("上海虹桥");
+
+    // trainBoom.route(trainBoom.idByRouteName("D936/D937")).bookTickets(Datetime::parse("2017/3/28"), 0, 6, "软卧下", 1000);
+    // trainBoom.route(trainBoom.idByRouteName("D936/D937")).refundTickets(Datetime::parse("2017/3/29"), 4, 6, "二等座", 2333);
+    // auto queryResult = trainBoom.route(trainBoom.idByRouteName("D936/D937")).queryTickets(Datetime::parse("2017/3/29"), 4, 6);
+    // // std::cout << queryResult.toJson().toString() << std::endl;
+    // assert(queryResult.ticket("软卧下").number == 1000 &&
+    //         queryResult.ticket("二等座").number == 4333 &&
+    //         queryResult.ticket("高级软卧").number == 2000);
+    // std::cout << "book & refund test passed!" << std::endl;
+
     // for (const auto routeInterval: vec) {
     //     auto& route = trainBoom.route(routeInterval.routeId);
     //     // std::cout << route.queryTickets(Route::startDate, routeInterval.l, routeInterval.r).toJson().toString() << std::endl;

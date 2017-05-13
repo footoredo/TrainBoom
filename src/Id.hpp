@@ -21,6 +21,16 @@ namespace trainBoom {
             return salt;
         }
 
+        std::string sha1(std::string input) {
+            SHA1 checksum;
+            checksum.update(input);
+            return checksum.final();
+        }
+
+        std::string encrypt(std::string password, std::string salt) {
+            return sha1(password + "|" + salt);
+        }
+
         // typedef std::string Id;
 
         std::string generateId(const std::string& type, time_t createTime) {
@@ -60,6 +70,8 @@ namespace trainBoom {
     }
     using IdNamespace::Id;
     using IdNamespace::getSalt;
+    using IdNamespace::sha1;
+    using IdNamespace::encrypt;
 }
 
 #endif
