@@ -13,8 +13,7 @@ POST /routeInterval/get
 ```json
 {
     "startStation": "Changzhou North",
-    "endStation": "Shanghai Hong Qiao",
-    "date": "2017/5/5"
+    "endStation": "Shanghai Hong Qiao"
 }
 ```
 

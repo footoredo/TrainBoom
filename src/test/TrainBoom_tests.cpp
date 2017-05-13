@@ -1,8 +1,10 @@
 #include "TrainBoom.hpp"
 #include "DataManager2.hpp"
+#include <unistd.h>
 using namespace trainBoom;
 
 int main() {
+    std::cout << getpid() << std::endl;
     TrainBoom trainBoom;
     DataManager::init();
     trainBoom.loadFromCSV("test/test.csv");

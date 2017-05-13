@@ -10,6 +10,7 @@
 #include "Information.hpp"
 #include <iostream>
 #include <sstream>
+#include <string>
 
 namespace trainBoom {
 
@@ -35,14 +36,14 @@ private:
     // Datetime startDate;
     util::stupid_array<util::stupid_ptr<Information>> informations;
 
-    util::map<Datetime, util::stupid_array<util::stupid_ptr<Segment>>> segments;
-    util::map<Datetime, util::stupid_ptr<SegmentsInvervalManip>> segmentsIntervalManip;
+    util::stupid_array<util::stupid_ptr<Segment>> segments[lastDays];
+    util::stupid_ptr<SegmentsInvervalManip> segmentsIntervalManip[lastDays];
 
     std::string id;
 
     bool running;
 
-    util::map<Datetime, bool> selling;
+    bool selling[lastDays];
 
 public:
 
@@ -65,6 +66,13 @@ public:
     	station_number_not_consistent() : exception(
     		"station_number_not_consistent",
     		"Your station number is not consistent among all information!!!") {}
+    };
+
+    class last_days_not_consistent : public exception {
+    public:
+    	last_days_not_consistent() : exception(
+    		"last_days_not_consistent",
+    		"Your last days is not " + std::to_string(lastDays) + "!!!") {}
     };
 
     class station_not_found : public exception {
@@ -156,18 +164,21 @@ public:
             if (informations.size() != n || _segments.size() != n - 1) {
                 throw station_number_not_consistent();
             }
-            Datetime curDate = startDate;
+            // Datetime curDate = startDate;
             for (int i = 0; i < lastDays; ++ i) {
                 stupid_array<stupid_ptr<Segment>> cur_segments(new stupid_ptr<Segment>[n - 1], n - 1);
                 for (unsigned j = 0; j < n - 1; ++ j)
                     cur_segments[j] = make_stupid<Segment>(*(_segments[j]));
-                segments.insert(util::make_pair(curDate, cur_segments));
-                segmentsIntervalManip.insert(util::make_pair(curDate, make_stupid<SegmentsInvervalManip>(cur_segments, n - 1)));
-                selling.insert(util::make_pair(curDate, true));
+                segments[i] = cur_segments;
+                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(cur_segments, n - 1);
+                selling[i] = true;
+                // segments.insert(util::make_pair(curDate, cur_segments));
+                // segmentsIntervalManip.insert(util::make_pair(curDate, make_stupid<SegmentsInvervalManip>(cur_segments, n - 1)));
+                // selling.insert(util::make_pair(curDate, true));
                 // segmentsIntervalManip = new SegmentsInvervalManip(
                 //     segments, n - 1
                 // );
-                curDate = curDate.incDay();
+                // curDate = curDate.incDay();
             }
         }
 
@@ -207,51 +218,62 @@ public:
         // std::cout << Json(json["segments"]).toString() << std::endl;
         // std::cout << json["segments"].getValue().IsObject() << std::endl;
         if (json.HasMember("dateSegments")) {
-            json["dateSegments"].forEach([&] (const std::string& date_str, Json json) {
+            if (json["dateSegments"].Size() != lastDays)
+                throw last_days_not_consistent();
+            for (int i = 0; i < lastDays; ++ i) {
+                Json tmp = json["dateSegments"][i];
                 // std::cout << json.toString() << std::endl;
-                if (json.Size() != n - 1)
+                if (tmp.Size() != n - 1)
                     throw station_number_not_consistent();
-                auto date = Datetime::parse(date_str);
                 // std::cout << date << std::endl;
                 auto _segments = stupid_array<stupid_ptr<Segment>>(new stupid_ptr<Segment>[n - 1], n - 1);
                 for (unsigned i = 0; i < n - 1; ++ i) {
-                    _segments[i] = make_stupid<Segment>(json[i]);
+                    _segments[i] = make_stupid<Segment>(tmp[i]);
                 }
+                segments[i] = _segments;
+                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
                 // std::cout << "1" << std::endl;
-                segments.insert(util::make_pair(date, _segments));
+                // segments.insert(util::make_pair(date, _segments));
                 // std::cout << "2" << std::endl;
-                segmentsIntervalManip.insert(util::make_pair(date, make_stupid<SegmentsInvervalManip>(_segments, n - 1)));
+                // segmentsIntervalManip.insert(util::make_pair(date, make_stupid<SegmentsInvervalManip>(_segments, n - 1)));
                 // std::cout << "3" << std::endl;
                 // auto _segmentsIntervalManip = make_stupid<SegmentsInvervalManip>(segments, n - 1);
-            });
+            }
         }
         else {
             if (!json.HasMember("segments")) throw information_missing("segments");
-            Datetime curDate = startDate;
-            for (int i = 0; i < lastDays; ++ i, curDate = curDate.incDay()) {
+            if (json["segments"].Size() != n - 1)
+                throw station_number_not_consistent();
+            for (int i = 0; i < lastDays; ++ i) {
                 auto _segments = stupid_array<stupid_ptr<Segment>>(new stupid_ptr<Segment>[n - 1], n - 1);
-                for (unsigned i = 0; i < n - 1; ++ i) {
-                    _segments[i] = make_stupid<Segment>(json["segments"][i]);
+                for (unsigned j = 0; j < n - 1; ++ j) {
+                    _segments[j] = make_stupid<Segment>(json["segments"][j]);
                 }
+                segments[i] = _segments;
+                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
                 // std::cout << "1" << std::endl;
-                segments.insert(util::make_pair(curDate, _segments));
+                // segments.insert(util::make_pair(curDate, _segments));
                 // std::cout << "2" << std::endl;
-                segmentsIntervalManip.insert(util::make_pair(curDate, make_stupid<SegmentsInvervalManip>(_segments, n - 1)));
+                // segmentsIntervalManip.insert(util::make_pair(curDate, make_stupid<SegmentsInvervalManip>(_segments, n - 1)));
             }
         }
 
         if (json.HasMember("selling")) {
+            if (json["selling"].Size() != lastDays)
+                throw last_days_not_consistent();
             // std::cout << Json(json["selling"]).toString() << std::endl;
-            Datetime curDate = startDate;
-            for (int i = 0; i < lastDays; ++ i, curDate = curDate.incDay()) {
+            // Datetime curDate = startDate;
+            for (int i = 0; i < lastDays; ++ i) {
                 // std::cout << curDate << " " << json["selling"][curDate.format()].as<bool>() << std::endl;
-                selling.insert(util::make_pair(curDate, json["selling"][curDate.format()].as<bool>()));
+                selling[i] = json["selling"][curDate.format()].as<bool>();
+                // selling.insert(util::make_pair(curDate, json["selling"][curDate.format()].as<bool>()));
             }
         }
         else {
             Datetime curDate = startDate;
-            for (int i = 0; i < lastDays; ++ i, curDate = curDate.incDay()) {
-                selling.insert(util::make_pair(curDate, true));
+            for (int i = 0; i < lastDays; ++ i) {
+                selling[i] = true;
+                // selling.insert(util::make_pair(curDate, true));
             }
         }
     }
@@ -304,44 +326,52 @@ public:
         return n;
     }
 
-    bool isNonstop(Datetime date, unsigned index, std::string ticketType) {
+    bool isNonstop(int date, unsigned index, std::string ticketType) {
         if (index == 0) return false;
         return segments[date][index - 1]->ticket(ticketType).nonstop;
     }
 
     Segment queryTickets(Datetime date, unsigned l, unsigned r) {
         // auto interval = getInterval(startStation, endStation);
-        if (!selling[date]) {
+        if (date < startDate)
             throw not_selling(date);
+        int idate = (date - startDate).countDay();
+        if (!selling[idate]) {
+            throw not_selling(idate);
         }
-        auto segment = segmentsIntervalManip[date]->query(l, r - 1);
+        auto segment = segmentsIntervalManip[idate]->query(l, r - 1);
         for (const auto item: segment.getTickets()) {
             std::string type = item.first;
-            segment.ticket(type).nonstop = isNonstop(date, l, type) || isNonstop(date, r, type);
+            segment.ticket(type).nonstop = isNonstop(idate, l, type) || isNonstop(idate, r, type);
         }
         return segment;
     }
 
     void modifyTickets(Datetime date, unsigned l, unsigned r, const TicketDelta& deltas) {
         // auto interval = getInterval(startStation, endStation);
-        segmentsIntervalManip[date]->modify(l, r - 1, deltas);
+        segmentsIntervalManip[(date - startDate).countDay()]->modify(l, r - 1, deltas);
     }
 
     Order bookTickets(Datetime date, unsigned l, unsigned r, const std::string& ticketType, unsigned ticketNumber) {
-        if (!selling[date]) {
+        if (date < startDate)
             throw not_selling(date);
+        Duration dayShift = 
+        if (informations[l]->getLeaveTime())
+        int idate = (date - startDate).countDay();
+        if (!selling[idate]) {
+            throw not_selling(idate);
         }
-        if (isNonstop(date, l, ticketType))
+        if (isNonstop(idate, l, ticketType))
             throw nonstop_station("start station", ticketType);
-        if (isNonstop(date, r, ticketType))
+        if (isNonstop(idate, r, ticketType))
             throw nonstop_station("end station", ticketType);
         Segment segment = segmentsIntervalManip[date]->query(l, r - 1);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();
-        Order order(RouteInterval(id, name, l, r, informations[l]->getLeaveTime()), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
+        Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
         TicketDelta ticketDelta;
         ticketDelta[ticketType] = - (int)ticketNumber;
-        segmentsIntervalManip[date]->modify(l, r - 1, ticketDelta);
+        segmentsIntervalManip[idate]->modify(l, r - 1, ticketDelta);
         return order;
     }
 

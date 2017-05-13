@@ -11,6 +11,7 @@ POST /routes
 ### Request body
 
 - In `flags`, 1 stands for start station, 2 stands for end station, 0 stands for normal station.
+- In `segments.tickets`, `number` is optional with a default value of 2000.
 
 ```json
 {
@@ -18,11 +19,11 @@ POST /routes
         {
             "distance": 1,
             "flags": 1,
-            "leaveTime": "2017/5/5 12:23",
+            "leaveTime": "12:23",
             "stationName": "Changzhou-North"
         },
         {
-            "arriveTime": "2017/5/5 13:15",
+            "arriveTime": "13:15",
             "distance": 2,
             "flags": 2,
             "stationName": "Shanghai-Hong-Qiao"
@@ -91,11 +92,11 @@ GET /routes/779d46f7840e11bdd20f61d36d5d8ff9cd441909
             {
                 "distance": 1,
                 "flags": 1,
-                "leaveTime": "2017/5/5 12:23",
+                "leaveTime": "12:23",
                 "stationName": "Changzhou-North"
             },
             {
-                "arriveTime": "2017/5/5 13:15",
+                "arriveTime": "13:15",
                 "distance": 2,
                 "flags": 2,
                 "stationName": "Shanghai-Hong-Qiao"
@@ -131,37 +132,29 @@ GET /routes/779d46f7840e11bdd20f61d36d5d8ff9cd441909
 }
 ```
 
-## startRoute
+## update
 
 ### HTTP Request
 
 ```
-GET /routes/d0bda205ca3042fd5398c7e2c8bc163803080888/start
+PUT /route/:routeId
+```
+
+The rest is same as `insert`, all informations are **required**.
+
+## delete
+
+### HTTP Request
+
+```
+DELETE /route/:routeId
 ```
 
 ### Response body
 ```json
 {
     "data": {
-        "succMsg": "Start Route succeeded!"
-    },
-    "type": "success"
-}
-```
-
-## stopRoute
-
-### HTTP Request
-
-```
-GET /routes/d0bda205ca3042fd5398c7e2c8bc163803080888/stop
-```
-
-### Response body
-```json
-{
-    "data": {
-        "succMsg": "Stop Route succeeded!"
+        "succMsg": "Delete route succeeded!"
     },
     "type": "success"
 }
@@ -177,6 +170,7 @@ POST /routes/:routeId/tickets
 ### Request body
 ```json
 {
+    "date": "2017/5/5",
     "l": 0,
     "r": 1
 }
@@ -203,7 +197,7 @@ POST /routes/:routeId/tickets
         }
     },
     "endStation": {
-        "arriveTime": "2017/5/5 13:15",
+        "arriveTime": "13:15",
         "distance": 2,
         "stationName": "Shanghai-Hong-Qiao",
         "flags": 2
@@ -211,7 +205,7 @@ POST /routes/:routeId/tickets
     "startStation": {
         "distance": 1,
         "stationName": "Changzhou-North",
-        "leaveTime": "2017/5/5 12:23",
+        "leaveTime": "12:23",
         "flags": 1
     }
 }
@@ -227,6 +221,7 @@ PUT /routes/:routeId/tickets
 ### Request body
 ```json
 {
+    "date": "2017/5/5",
     "l": 0,
     "r": 1,
     "ticketNumber": 2,

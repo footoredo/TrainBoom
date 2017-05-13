@@ -105,6 +105,10 @@ namespace date_time {
             return Duration(hour / 24 * 24, 0);
         }
 
+        Date_t countDay() const {
+            return hour / 24;
+        }
+
         Date_t getHour() const noexcept {
             return hour;
         }

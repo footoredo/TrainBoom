@@ -109,6 +109,24 @@ PUT /users/:userId
 
 The rest is same as `insert`, except for all informations are optional.
 
+## delete
+
+### HTTP Request
+
+```
+DELETE /users/:userId
+```
+
+### Response body
+```json
+{
+    "data": {
+        "succMsg": "Delete user succeeded!"
+    },
+    "type": "success"
+}
+```
+
 ## listOrders
 
 ### HTTP Request
