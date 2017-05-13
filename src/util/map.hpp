@@ -217,15 +217,16 @@ public:
 	/**
 	 * TODO two constructors
 	 */
-	constexpr map(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0), id(Id("Map")) {
+	constexpr map(): root(nullptr), min_p(nullptr), max_p(nullptr), _size(0) {
 	}
 	map(const Json& tmp) {
-		if (tmp.getId() == "") {
-			id = Id("Map");
-		}
-		else {
-			id = tmp.getId();
-		}
+		// if (tmp.getId() == "") {
+		// 	id = Id("Map");
+		// }
+		// else {
+		// 	id = tmp.getId();
+		// }
+		id = tmp.getId();
 		_size = tmp["size"].as<unsigned>();
 		if (tmp.HasMember("root")) {
 			std::string rootId = tmp["root"].as<std::string>();
@@ -509,9 +510,10 @@ public:
 		return id;
 	}
 
-	void save() const {
-		DataManager::save(toJson());
+	void save() {
 		if (root) root->save();
+		if (id == "") id = Id("Map");
+		DataManager::save(toJson());
 	}
 
 private:
@@ -532,7 +534,7 @@ private:
 				prev_p(nullptr), next_p(nullptr),
 				// self(this),
 				// who(who),
-				color(RED), id(Id("Node")) {}
+				color(RED) {}
 		Node (const stupid_ptr<Node>& other)
 			: value(new value_type(*other->value)),
 				child({nullptr, nullptr}),
@@ -609,9 +611,9 @@ private:
 			return json;
 		}
 
-		void save() const {
+		void save() {
 			// toJson().write(DataManager::getFile(id));
-			DataManager::save(toJson());
+			if (id == "") id = Id("Node");
 			value->second.save();
 			if (child[0]) {
 				child[0]->save();
@@ -619,6 +621,7 @@ private:
 			if (child[1]) {
 				child[1]->save();
 			}
+			DataManager::save(toJson());
 		}
 
 		friend stupid_ptr<Node> grandparent(const stupid_ptr<Node>& u) {
