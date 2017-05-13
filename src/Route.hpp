@@ -265,12 +265,11 @@ public:
             // Datetime curDate = startDate;
             for (int i = 0; i < lastDays; ++ i) {
                 // std::cout << curDate << " " << json["selling"][curDate.format()].as<bool>() << std::endl;
-                selling[i] = json["selling"][curDate.format()].as<bool>();
+                selling[i] = json["selling"][i].as<bool>();
                 // selling.insert(util::make_pair(curDate, json["selling"][curDate.format()].as<bool>()));
             }
         }
         else {
-            Datetime curDate = startDate;
             for (int i = 0; i < lastDays; ++ i) {
                 selling[i] = true;
                 // selling.insert(util::make_pair(curDate, true));
@@ -333,11 +332,13 @@ public:
 
     Segment queryTickets(Datetime date, unsigned l, unsigned r) {
         // auto interval = getInterval(startStation, endStation);
+        Duration dayShift = informations[l]->getLeaveTime().setToDay();
+        date = date - dayShift;
         if (date < startDate)
             throw not_selling(date);
         int idate = (date - startDate).countDay();
         if (!selling[idate]) {
-            throw not_selling(idate);
+            throw not_selling(date);
         }
         auto segment = segmentsIntervalManip[idate]->query(l, r - 1);
         for (const auto item: segment.getTickets()) {
@@ -353,19 +354,19 @@ public:
     }
 
     Order bookTickets(Datetime date, unsigned l, unsigned r, const std::string& ticketType, unsigned ticketNumber) {
+        Duration dayShift = informations[l]->getLeaveTime().setToDay();
+        date = date - dayShift;
         if (date < startDate)
             throw not_selling(date);
-        Duration dayShift = 
-        if (informations[l]->getLeaveTime())
         int idate = (date - startDate).countDay();
         if (!selling[idate]) {
-            throw not_selling(idate);
+            throw not_selling(date);
         }
         if (isNonstop(idate, l, ticketType))
             throw nonstop_station("start station", ticketType);
         if (isNonstop(idate, r, ticketType))
             throw nonstop_station("end station", ticketType);
-        Segment segment = segmentsIntervalManip[date]->query(l, r - 1);
+        Segment segment = segmentsIntervalManip[idate]->query(l, r - 1);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();
         Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
@@ -376,15 +377,17 @@ public:
     }
 
     void startSelling(Datetime date) {
-        if (selling[date])
+        int idate = (date - startDate).countDay();
+        if (selling[idate])
             throw already_selling(date);
-        selling[date] = true;
+        selling[idate] = true;
     }
 
     void stopSelling(Datetime date) {
-        if (!selling[date])
+        int idate = (date - startDate).countDay();
+        if (!selling[idate])
             throw not_selling(date);
-        selling[date] = false;
+        selling[idate] = false;
     }
 
     Information& information(unsigned pos) {
@@ -439,8 +442,8 @@ public:
         // json["startDate"] = startDate.format();
         json["running"] = running;
         json["informations"].SetArray();
-        json["dateSegments"].SetObject();
-        json["selling"].SetObject();
+        json["dateSegments"].SetArray();
+        json["selling"].SetArray();
         // json["stationsMap"].SetObject();
 
         for (unsigned int i = 0; i < n; ++ i) {
@@ -455,14 +458,15 @@ public:
             // std::cout << "!!asdasd!" << i << std::endl;
         }
 
-        for (const auto& _segments: segments) {
+        for (int j = 0; j < lastDays; ++ j) {
             // std::cout << "!" << std::endl;
-            segmentsIntervalManip[_segments.first]->forceApply();
-            json["dateSegments"][_segments.first].SetArray();
+            segmentsIntervalManip[j]->forceApply();
+            Json tmp; tmp.getData().SetArray();
             for (unsigned int i = 0; i < n - 1; ++ i) {
-                json["dateSegments"][_segments.first].PushBack(_segments.second[i]->toJson());
+                tmp.getData().PushBack(segments[j][i]->toJson());
             }
-            json["selling"][_segments.first] = selling[_segments.first];
+            json["dateSegments"].PushBack(tmp);
+            json["selling"].PushBack(selling[j]);
         }
 
         /* for (const auto& item: stationsMap) {

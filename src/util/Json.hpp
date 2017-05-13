@@ -500,6 +500,10 @@ public:
         return data;
     }
 
+    JsonValue& getData() {
+        return data;
+    }
+
     JsonValue operator[](std::string key) {
         return data[key];
     }
@@ -538,6 +542,10 @@ public:
         document.Accept(writer);
     	return sb.GetString();
     }
+
+/*    ~Json() {
+        Value(kObjectType).Swap(document);
+    }*/
 };
 
 } // json

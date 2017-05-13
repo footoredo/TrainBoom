@@ -12,10 +12,9 @@ namespace trainBoom {
     struct RouteInterval {
 	    std::string routeId, routeName;
 	    unsigned l, r;
-        Duration dayShift;
 		std::string id;
-		RouteInterval(std::string routeId, std::string routeName, unsigned l, unsigned r, Duration relativeLeaveTime):
-			routeId(routeId), routeName(routeName), l(l), r(r), dayShift(relativeLeaveTime.setToDay()), id(Id("RouteInterval")) {}
+		RouteInterval(std::string routeId, std::string routeName, unsigned l, unsigned r):
+			routeId(routeId), routeName(routeName), l(l), r(r), id(Id("RouteInterval")) {}
 		RouteInterval(const Json& json) {
 			if (json.getId() != "") {
 				id = json.getId();
@@ -27,7 +26,6 @@ namespace trainBoom {
 			routeName = json["routeName"].as<std::string>();
 			l = json["l"].as<unsigned>();
 			r = json["r"].as<unsigned>();
-            dayShift = Duration::parse(json["dayShift"].as<std::string>());
 		}
 		// RouteInterval(std::string id, stupid_ptr<BinaryFile> bfp): RouteInterval(Json().read(id, bfp)) {}
 
@@ -53,7 +51,6 @@ namespace trainBoom {
 			json["routeName"] = routeName;
 	        json["l"] = l;
 	        json["r"] = r;
-            json["dayShift"] = dayShift.format();
 			return json;
 	    }
 	    Json toJsonEmpty() const {
@@ -62,7 +59,6 @@ namespace trainBoom {
 			json["routeName"] = routeName;
 	        json["l"] = l;
 	        json["r"] = r;
-            json["dayShift"] = dayShift.format();
 			return json;
 	    }
 		void save() const {

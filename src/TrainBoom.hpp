@@ -216,7 +216,7 @@ public:
 			Route tmp(route);
 			try {
 				insertRoute(tmp);
-				startRoute(routes[tmp.getId()]);
+				// startRoute(routes[tmp.getId()]);
 			}
 			catch (const routeName_exists& e) {
 				std::cout << "Duplicated route found [" + tmp.getName() << "]" << std::endl;
@@ -280,6 +280,7 @@ public:
 		}
 		// std::cout << "new route [" << route.getName() << "] => " << route.getId() << std::endl;
 		routes.insert(util::make_pair(route.getId(), route));
+        startRoute(route.getId());
 		// trains[train.getId()] = train;
 	}
 	void insertStation(const Station& station) {
@@ -302,6 +303,9 @@ public:
 	void deleteRoute(std::string id) {
 		if (!routes.count(id))
 			throw id_not_exist(id);
+        if (routes.at(id).getRunning()) {
+            stopRoute(id);
+        }
 		routeNameMap.erase(routeNameMap.find(routes.at(id).getName()));
 		routes.erase(routes.find(id));
 	}
@@ -334,7 +338,8 @@ public:
         return routesList;
     }
 
-    void startRoute(Route& route) {
+    void startRoute(std::string routeId) {
+        Route& route = this->route(routeId);
         if (route.getRunning()) {
             throw route_already_running();
         }
@@ -344,11 +349,12 @@ public:
             for (unsigned j = 0; j < i; ++ j) {
                 station(idByStationName(route.information(j).getStationName())).
                     add(route.information(i).getStationName(),
-                            RouteInterval(route.getId(), route.getName(), j, i, route.information(j).getLeaveTime()));
+                            RouteInterval(route.getId(), route.getName(), j, i));
             }
     }
 
-    void stopRoute(Route& route) {
+    void stopRoute(std::string routeId) {
+        Route& route = this->route(routeId);
         if (!route.getRunning()) {
             throw route_not_running();
         }
@@ -358,7 +364,7 @@ public:
             for (unsigned j = 0; j < i; ++ j) {
                 station(idByStationName(route.information(j).getStationName())).
                     del(route.information(i).getStationName(),
-                            RouteInterval(route.getId(), route.getName(), j, i, route.information(j).getLeaveTime()));
+                            RouteInterval(route.getId(), route.getName(), j, i));
             }
     }
 

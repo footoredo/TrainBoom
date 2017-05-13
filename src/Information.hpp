@@ -79,6 +79,11 @@ public:
                 // id = generateId("Information", createTime);
             }
 
+    void shift(Duration dayShift) {
+        arriveTime = arriveTime - dayShift;
+        leaveTime = leaveTime - dayShift;
+    }
+
     std::string getStationName() const {
         return stationName;
     }
