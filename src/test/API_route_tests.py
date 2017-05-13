@@ -6,20 +6,20 @@ s = requests.Session()
 s.headers.update({"Cache-Control": "no-cache"})
 
 route = {
-    "name": "G105",
+    "name": "G999",
     "n":2,
     "informations": [
         {
             "stationName": "Changzhou-North",
             "distance": 1,
             "flags": 1,
-            "leaveTime": "2017/5/5 12:23"
+            "leaveTime": "12:23"
         },
         {
             "stationName": "Shanghai-Hong-Qiao",
             "distance": 2,
             "flags": 2,
-            "arriveTime": "2017/5/5 13:15"
+            "arriveTime": "13:15"
         }
     ],
     "segments": [
@@ -51,27 +51,25 @@ res = s.post(url + "/routes", json = route);
 #print json.dumps(res.json(), indent=4)
 routeId0 = res.json()["id"]
 
-res = s.get(url + "/routes/" + routeId0 + "/start");
+#res = s.get(url + "/routes/" + routeId0 + "/start");
 #print json.dumps(res.json(), indent=4)
-assert res.json()["type"] == "success", "Failed to start the route!"
-print "Start route check passed!"
+#assert res.json()["type"] == "success", "Failed to start the route!"
+#print "Start route check passed!"
 
 res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationName": "Shanghai-Hong-Qiao",
-    "date": "2017/5/5"
     })
 #print json.dumps(res.json(), indent=4)
 result = res.json()["routes"]
 assert len(result) == 1 and result[0]["data"]["routeId"] == routeId0, "Query check failed!"
 print "1st route test passed!"
 
-route["name"] = "G106"
+route["name"] = "G998"
 res = s.post(url + "/routes", json = route);
 routeId1 = res.json()["id"]
-res = s.get(url + "/routes/" + routeId1 + "/start");
+#res = s.get(url + "/routes/" + routeId1 + "/start");
 res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationName": "Shanghai-Hong-Qiao",
-    "date": "2017/5/5"
     })
 result = res.json()["routes"]
 #print json.dumps(result, indent=4)
@@ -79,23 +77,24 @@ resultRouteId = map(lambda item: item["data"]["routeId"], result)
 assert len(result) == 2 and routeId0 in resultRouteId and routeId1 in resultRouteId, "Query check after 2nd route failed!"
 print "2nd route test passed!"
 
-res = s.get(url + "/routes/" + routeId0 + "/stop");
+res = s.delete(url + "/routes/" + routeId0);
+print json.dumps(res.json(), indent = 4)
 assert res.json()["type"] == "success", "Failed to stop the 1st route!"
 res = s.post(url + "/stations/" + stationId0 + "/routes", json = {
     "stationName": "Shanghai-Hong-Qiao",
-    "date": "2017/5/5"
     })
 result = res.json()["routes"]
 assert len(result) == 1 and result[0]["data"]["routeId"] == routeId1, "Query check after stop 1st route failed!"
 
-res = s.get(url + "/routes/" + routeId0 + "/stop");
-#print json.dumps(res.json(), indent=4)
+res = s.delete(url + "/routes/" + routeId0);
+print json.dumps(res.json(), indent=4)
 assert res.json()["type"] == "error", "Duplicated stop check failed!"
 print "stop test passed!"
 
 res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
     "l": 0,
-    "r": 1
+    "r": 1,
+    "date": "2017/4/1"
     })
 
 #print json.dumps(res.json(), indent=4)
@@ -109,6 +108,7 @@ data = {
     "userId": userId,
     "l": 0,
     "r": 1,
+    "date": "2017/4/1",
     "ticketType": "first class",
     "ticketNumber": 1000
     }
@@ -121,6 +121,7 @@ data = {
     "userId": userId,
     "l": 0,
     "r": 1,
+    "date": "2017/4/1",
     "ticketType": "first class",
     "ticketNumber": 2
     }
@@ -129,6 +130,7 @@ res = s.put(url + "/routes/" + routeId1 + "/tickets", json = {
     "userId": userId,
     "l": 0,
     "r": 1,
+    "date": "2017/4/1",
     "ticketType": "first class",
     "ticketNumber": 2
     })
@@ -150,7 +152,8 @@ print "Order attaching check passed!"
 
 res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
     "l": 0,
-    "r": 1 
+    "r": 1,
+    "date": "2017/4/1"
     })
 assert res.json()["tickets"]["first class"]["number"] == 15, "Query tickets after booking check failed!"
 print "Query tickets after booking check passed!"

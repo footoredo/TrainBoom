@@ -229,7 +229,7 @@ public:
 				std::cout << "Duplicated route found [" + tmp.getName() << "]" << std::endl;
 			}
 
-			// if (i > 150) break;
+//			if (i > 150) break;
 		}
 
 		std::cout << "Import done." << std::endl;
@@ -287,6 +287,7 @@ public:
 		}
 		// std::cout << "new route [" << route.getName() << "] => " << route.getId() << std::endl;
 		routes.insert(util::make_pair(route.getId(), route));
+        routeNameMap.insert(util::make_pair(route.getName(), route.getId()));
         startRoute(route.getId());
 		// trains[train.getId()] = train;
 	}

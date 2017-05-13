@@ -11,7 +11,13 @@ int main(int argc, char **argv) {
         DataManager::load(std::string(argv[1]));
         std::cout << "DataManager load done." << std::endl;
 //        std::cout << std::string(argv[2]) << std::endl;
-        trainBoom->inside_load(std::string(argv[2]));
+        try {
+            trainBoom->inside_load(std::string(argv[2]));
+        }
+        catch (const exception& e) {
+            std::cout << e.what() << std::endl;
+            throw;
+        }
     }
     else trainBoom->loadFromCSV("test/test.csv");
 //    trainBoom->listRouteCnt();
