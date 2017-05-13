@@ -17,13 +17,13 @@ int main() {
     util::stupid_array<Duration> arriveTime(
         new Duration[2]{
             Duration::parse("23:39"),
-            Duration::parse("23:59")
+            Duration::parse("24:59")
         }, 2
     );
     util::stupid_array<Duration> leaveTime(
         new Duration[2]{
             Duration::parse("23:19"),
-            Duration::parse("23:49")
+            Duration::parse("24:49")
         }, 2
     );
     stupid_ptr<Segment> s0 = make_stupid<Segment>();
@@ -64,6 +64,10 @@ int main() {
     assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 7773.12453 + 1522) && q.getTickets()["人民的名义"].number == 0);
 //
     std::cout << "modify test passed!" << std::endl;
+
+    q = route.queryTickets(Datetime::parse("2017/3/29"), 1, 2);
+    assert(q.getTickets().count("APTV") && equal(q.getTickets()["APTV"].price, 15) && q.getTickets()["APTV"].number == 20);
+    assert(q.getTickets().count("人民的名义") && equal(q.getTickets()["人民的名义"].price, 1522) && q.getTickets()["人民的名义"].number == 14);
 
     try {
         route.startSelling(Datetime::parse("2017/4/1"));

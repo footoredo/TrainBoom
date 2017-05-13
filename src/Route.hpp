@@ -311,6 +311,8 @@ public:
 
     Segment queryTickets(Datetime date, unsigned l, unsigned r) {
         // auto interval = getInterval(startStation, endStation);
+        Duration dayShift = informations[l]->getLeaveTime().setToDay();
+        date = date - dayShift;
         if (!selling[date]) {
             throw not_selling(date);
         }
@@ -328,17 +330,19 @@ public:
     }
 
     Order bookTickets(Datetime date, unsigned l, unsigned r, const std::string& ticketType, unsigned ticketNumber) {
-        if (!selling[date]) {
-            throw not_selling(date);
-        }
         if (isNonstop(date, l, ticketType))
             throw nonstop_station("start station", ticketType);
         if (isNonstop(date, r, ticketType))
             throw nonstop_station("end station", ticketType);
+        Duration dayShift = informations[l]->getLeaveTime().setToDay();
+        date = date - dayShift;
+        if (!selling[date]) {
+            throw not_selling(date);
+        }
         Segment segment = segmentsIntervalManip[date]->query(l, r - 1);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();
-        Order order(RouteInterval(id, name, l, r, informations[l]->getLeaveTime()), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
+        Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
         TicketDelta ticketDelta;
         ticketDelta[ticketType] = - (int)ticketNumber;
         segmentsIntervalManip[date]->modify(l, r - 1, ticketDelta);

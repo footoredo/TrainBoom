@@ -538,6 +538,10 @@ public:
         document.Accept(writer);
     	return sb.GetString();
     }
+
+/*    ~Json() {
+        Value(kObjectType).Swap(document);
+    }*/
 };
 
 } // json
