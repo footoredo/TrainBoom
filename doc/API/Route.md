@@ -215,7 +215,7 @@ POST /routes/:routeId/tickets
 
 ### HTTP Request
 ```
-PUT /routes/:routeId/tickets
+POST /routes/:routeId/tickets/book
 ```
 
 ### Request body
@@ -252,5 +252,24 @@ PUT /routes/:routeId/tickets
     },
     "id": "6bbf03d66511bff98746a98bf0f12a786df50d47",
     "type": "order"
+}
+```
+
+## refundTickets
+
+### HTTP Request
+```
+POST /routes/:routeId/tickets/refund
+```
+
+### Request body
+```json
+{
+    "date": "2017/5/5",
+    "l": 0,
+    "r": 1,
+    "ticketNumber": 2,
+    "userId": "756b418e1d5b6aaf482f9db33112a20fb0350fe1",
+    "ticketType": "first class"
 }
 ```
