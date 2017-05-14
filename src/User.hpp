@@ -54,26 +54,36 @@ public:
 //        std::cout << "!" << std::endl;
 //        std::cout << json.toString() << std::endl;
         if (json.HasMember("password")) password = json["password"].as<std::string>();
+        else if (json.HasMember("p")) password = json["p"].as<std::string>();
         else {
             throw information_missing("password");
         }
         if (json.HasMember("salt")) salt = json["salt"].as<std::string>();
+        else if (json.HasMember("s")) salt = json["s"].as<std::string>();
         else {
             throw information_missing("salt");
         }
         if (json.HasMember("username")) username = json["username"].as<std::string>();
+        else if (json.HasMember("u")) username = json["u"].as<std::string>();
         else {
             throw information_missing("username");
         }
 //        std::cout << username << std::endl;
 //        assert(!json.HasMember("avatar"));
         if (json.HasMember("avatar")) avatar = json["avatar"].as<std::string>();
+        else if (json.HasMember("a")) avatar = json["a"].as<std::string>();
         if (json.HasMember("realname")) realname = json["realname"].as<std::string>();
+        else if (json.HasMember("r")) realname = json["r"].as<std::string>();
         if (json.HasMember("phone")) phone = json["phone"].as<std::string>();
+        else if (json.HasMember("ph")) phone = json["ph"].as<std::string>();
         if (json.HasMember("email")) email = json["email"].as<std::string>();
+        else if (json.HasMember("e")) email = json["e"].as<std::string>();
         if (json.HasMember("motto")) motto = json["motto"].as<std::string>();
+        else if (json.HasMember("m")) motto = json["m"].as<std::string>();
         if (json.HasMember("gender")) gender = Gender(json["gender"].as<int>());
+        else if (json.HasMember("g")) gender= Gender(json["g"].as<int>());
         if (json.HasMember("isRoot")) isRoot = json["isRoot"].as<bool>();
+        else if (json.HasMember("i")) isRoot = json["i"].as<int>();
 
         if (json.HasMember("ordersId")) {
             std::string ordersId = json["ordersId"];
@@ -154,25 +164,32 @@ public:
 	std::vector<Id> getOrder(Id UserId) {}
 	void getLog(Id UserId) {}//ROOT*/
 
-    util::Json toJson() const {
+    util::Json toJson(bool simple = false) const {
         util::Json json("user", id);
-        json["username"] = username;
-        json["salt"] = salt;
-        json["password"] = password;
-        if (avatar.size()) json["avatar"] = avatar;
-        if (realname.size()) json["realname"] = realname;
-        if (phone.size()) json["phone"] = phone;
-        if (email.size()) json["email"] = email;
-        if (motto.size()) json["motto"] = motto;
-        json["gender"] = gender;
-        json["isRoot"] = isRoot;
+        json[simple ? "u" : "username"] = username;
+        json[simple ? "s" : "salt"] = salt;
+        json[simple ? "p" : "password"] = password;
+        if (avatar.size()) json[simple ? "a" : "avatar"] = avatar;
+        if (realname.size()) json[simple ? "r" : "realname"] = realname;
+        if (phone.size()) json[simple ? "ph" : "phone"] = phone;
+        if (email.size()) json[simple ? "e" : "email"] = email;
+        if (motto.size()) json[simple ? "m" : "motto"] = motto;
+        json[simple ? "g" : "gender"] = gender;
+        if (simple) {
+            json["i"] = int(isRoot);
+        }
+        else {
+            json["isRoot"] = isRoot;
+        }
         return json;
     }
 
     void save() {
-        Json tmp = toJson();
-        orders.save();
-        tmp["ordersId"] = orders.getId();
+        Json tmp = toJson(true);
+        if (!orders.empty()) {
+            orders.save();
+            tmp["ordersId"] = orders.getId();
+        }
         // tmp.write(DataManager::getFile(id));
         DataManager::save(tmp);
     }

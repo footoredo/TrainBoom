@@ -32,10 +32,23 @@ class Attribute {
 			// type = t.type;
 		}
 
-		Attribute(const util::Json& json): price(json["price"].as<double>()),
-		 	number(json.HasMember("number") ? json["number"].as<unsigned>() : 2000),
-			nonstop(json.HasMember("nonstop") ? json["nonstop"].as<bool>() : false) {
-//				assert(json.getType() == "attribute");
+		Attribute(const util::Json& json) {
+            if (json.HasMember("p")) 
+                price = (double)(json["p"].as<int>()) / 2;
+            else 
+                price = json["price"].as<double>();
+            if (json.HasMember("nu"))
+                number = json["nu"].as<unsigned>();
+            else if (json.HasMember("number"))
+                number = json["number"].as<unsigned>();
+            else 
+                number = 2000;
+            if (json.HasMember("no"))
+                nonstop = json["no"].as<int>();
+            else if (json.HasMember("nonstop"))
+                nonstop = json["nonstop"].as<bool>();
+            else
+                nonstop = false;
 		}
 
 		~Attribute(){}
@@ -85,6 +98,14 @@ class Attribute {
 			json["price"] = price;
 			json["number"] = number;
 			json["nonstop"] = nonstop;
+			return json;
+		}
+
+		util::Json toJsonSimp() const {
+			util::Json json;
+			json["p"] = int(price * 2 + 0.5);
+			json["nu"] = number;
+			if (nonstop) json["no"] = int(nonstop);
 			return json;
 		}
 

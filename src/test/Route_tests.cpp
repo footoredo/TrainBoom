@@ -28,7 +28,7 @@ int main() {
     );
     util::map<std::string, Ticket::Attribute> s0m;
     s0m.insert(util::make_pair(Ticket::Type("APTV"), Ticket::Attribute(998, 10000)));
-    s0m.insert(util::make_pair(Ticket::Type("人民的名义"), Ticket::Attribute(7773.12453, 1)));
+    s0m.insert(util::make_pair(Ticket::Type("人民的名义"), Ticket::Attribute(7773.5, 1)));
     stupid_ptr<Segment> s0 = make_stupid<Segment>(s0m);
     std::cout << "create segment done." << std::endl;
     std::cout << s0->toJson().toString() << std::endl;
@@ -52,7 +52,7 @@ int main() {
     auto q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
 // //    q.display();
     assert(q.count("APTV") && equal(q.ticket("APTV").price, 998 + 15) && q.ticket("APTV").number == 15);
-    assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.12453 + 1522) && q.ticket("人民的名义").number == 1);
+    assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.5 + 1522) && q.ticket("人民的名义").number == 1);
     std::cout << "query test passed!" << std::endl;
 //
     TicketDelta order;
@@ -65,7 +65,7 @@ int main() {
     q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
 // //    q.display();
     assert(q.count("APTV") && equal(q.ticket("APTV").price, 998 + 15) && q.ticket("APTV").number == 20);
-    assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.12453 + 1522) && q.ticket("人民的名义").number == 0);
+    assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.5 + 1522) && q.ticket("人民的名义").number == 0);
 //
     std::cout << "modify test passed!" << std::endl;
 
@@ -118,7 +118,8 @@ int main() {
     try {
         Route newRoute(Route::load(route.getId()));
         // std::cout << "done " << std::endl;
-        // std::cout << newRoute.toJson().toString() << std::endl;
+//        std::cout << route.toJson().toString() << std::endl;
+//        std::cout << newRoute.toJson().toString() << std::endl;
         assert(newRoute.toJson().toString() == route.toJson().toString());
         std::cout << "save & load test passed!" << std::endl;
     }

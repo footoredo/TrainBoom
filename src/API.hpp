@@ -115,11 +115,13 @@ namespace trainBoom {
                     Routes::Get(router, "/routes/:routeId", Routes::bind(&StatsEndpoint::getRoute, this));
                     ROUTING(Put, "/routes/:routeId", updateRoute);
                     ROUTING(Delete, "/routes/:routeId", deleteRoute);
+                    ROUTING(Post, "routes/name", getByRouteName);
                     //                    Routes::Put(router,)
                     //Routes::Get(router, "/routes/:routeId/start", Routes::bind(&StatsEndpoint::startRoute, this));
                     //Routes::Get(router, "/routes/:routeId/stop", Routes::bind(&StatsEndpoint::stopRoute, this));
-                    Routes::Post(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
-                    Routes::Put(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
+                    Routes::Get(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
+                    Routes::Post(router, "/routes/:routeId/tickets/book", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
+                    Routes::Delete(router, "/routes/:routeId/tickets/refund", Routes::bind(&StatsEndpoint::refundTicketsRoute, this));
 
                     ROUTING(Post, "/routeInterval/get", getRouteInterval);
                     //                    ROUTING(Post, "/routeInterval/query", queryRouteInterval);
@@ -360,6 +362,17 @@ namespace trainBoom {
                     HANDLEERR;
                 }
 
+                APIHANDLER(getByRouteName) {
+                    try {
+                        std::string routeName = Json().Parse(request.body())["name"];
+                        std::string routeId = trainBoom->idByRouteName(routeName);
+                        Json tmp;
+                        tmp["routeId"] = routeId;
+                        SENDJSON(tmp);
+                    }
+                    HANDLEERR;
+                }
+
                 void listRoutes(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     Generic::sendJson(response, Generic::vec2Json(trainBoom->listRoutes(), "route"));
                 }
@@ -440,8 +453,37 @@ namespace trainBoom {
                                 json["ticketType"].as<std::string>(),
                                 json["ticketNumber"].as<unsigned>()
                                 );
-                        user.addOrder(order);
-                        Generic::sendJson(response, order.toJson());
+                        if (!json.HasMember("attach") ||
+                                json["attach"].as<bool>()) {
+                            user.addOrder(order);
+                            Generic::sendJson(response, order.toJson());
+                        }
+                        else {
+                            SENDSUCC("book tickets succeeded!");
+                        }
+                    }
+                    catch (const exception& e) {
+                        Generic::sendJson(response, Generic::error(e.what()));
+                    }
+                }
+
+                void refundTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    try {
+                        Json json; json.Parse(request.body());
+                        std::string routeId = request.param(":routeId").as<std::string>();
+                        Route& route = trainBoom->route(routeId);
+                        Datetime date = Datetime::parse(json["date"].as<std::string>());
+                        std::string userId = json["userId"].as<std::string>();
+                        User& user = trainBoom->user(userId);
+
+                        route.refundTickets(
+                                date,
+                                json["l"].as<unsigned>(),
+                                json["r"].as<unsigned>(),
+                                json["ticketType"].as<std::string>(),
+                                json["ticketNumber"].as<unsigned>()
+                                );
+                        SENDSUCC("refund tickets succeeded!");
                     }
                     catch (const exception& e) {
                         Generic::sendJson(response, Generic::error(e.what()));

@@ -111,20 +111,24 @@ public:
         }
     }
     Segment(const util::Json& json) {
-//        assert(json.getType() == "segment");
-        // if (json.getId() != "") id = json.getId();
-        // else id = Id("Segment");
-        _size = json["tickets"].Size();
-        // type = make_array<std::string>(_size);
-        // attr = make_array<Ticket::Attribute>(_size);
+        if (json.HasMember("tickets"))
+            _size = json["tickets"].Size();
+        else
+            _size = json["t"].Size();
         tickets = make_array<util::pair<std::string, Ticket::Attribute>>(_size);
         size_t i = 0;
-        json["tickets"].forEach([&](const std::string& _type, util::Json _attr) {
-            // type[i] = _type;
-            // attr[i] = Ticket::Attribute(_attr);
-            tickets[i] = util::make_pair(_type, Ticket::Attribute(_attr));
-            ++ i;
-        });
+        if (json.HasMember("tickets")) {
+            json["tickets"].forEach([&](const std::string& _type, util::Json _attr) {
+                    tickets[i] = util::make_pair(_type, Ticket::Attribute(_attr));
+                    ++ i;
+                    });
+        }
+        else {
+            json["t"].forEach([&](const std::string& _type, util::Json _attr) {
+                    tickets[i] = util::make_pair(_type, Ticket::Attribute(_attr));
+                    ++ i;
+                    });
+        }
         tickets.sort();
     }
 
@@ -216,6 +220,17 @@ public:
 
         for (size_t i = 0; i < _size; ++ i) {
             json["tickets"][tickets[i].first] = tickets[i].second.toJson();
+        }
+
+        return json;
+    }
+
+    util::Json toJsonSimp() const {
+        util::Json json;
+        json["t"].SetObject();
+
+        for (size_t i = 0; i < _size; ++ i) {
+            json["t"][tickets[i].first] = tickets[i].second.toJsonSimp();
         }
 
         return json;

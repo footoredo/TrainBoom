@@ -228,9 +228,9 @@ public:
 		// }
 		// std::cout << tmp.toString() << std::endl;
 		id = tmp.getId();
-		_size = tmp["size"].as<unsigned>();
-		if (tmp.HasMember("root")) {
-			std::string rootId = tmp["root"].as<std::string>();
+		_size = tmp["s"].as<unsigned>();
+		if (tmp.HasMember("r")) {
+			std::string rootId = tmp["r"].as<std::string>();
 			root = util::make_stupid<Node>(DataManager::getJson(rootId));
 			root->link_child(root);
 			min_p = find_min(root); max_p = find_max(root);
@@ -502,8 +502,8 @@ public:
 
 	Json toJson() const {
 		Json json("map", id);
-		json["size"] = _size;
-		if (root) json["root"] = root->id;
+		json["s"] = _size;
+		if (root) json["r"] = root->id;
 		return json;
 	}
 
@@ -547,17 +547,17 @@ private:
 		Node (const Json& tmp) {
 			// std::cout << tmp.toString() << std::endl;
 			id = tmp.getId();
-			std::string valueId = tmp["value"].as<std::string>();
-			value = util::make_stupid<value_type>(Key(tmp["key"].as<std::string>()), T::load(valueId));
-			color = tmp["color"].as<bool>();
+			std::string valueId = tmp["v"].as<std::string>();
+			value = util::make_stupid<value_type>(Key(tmp["k"].as<std::string>()), T::load(valueId));
+			color = tmp["c"].as<int>();
 			// std::cout << Json(tmp["child0"]).toString() << std::endl;
 			// std::cout << color << std::endl;
-			if (tmp.HasMember("child0")) {
-				std::string childId = tmp["child0"].as<std::string>();
+			if (tmp.HasMember("c0")) {
+				std::string childId = tmp["c0"].as<std::string>();
 				child[0] = make_stupid<Node>(DataManager::getJson(childId));
 			}
-			if (tmp.HasMember("child1")) {
-				std::string childId = tmp["child1"].as<std::string>();
+			if (tmp.HasMember("c1")) {
+				std::string childId = tmp["c1"].as<std::string>();
 				child[1] = make_stupid<Node>(DataManager::getJson(childId));
 			}
 		}
@@ -597,14 +597,14 @@ private:
 
 		Json toJson() const {
 			Json json("node", id);
-			json["key"] = std::string(value->first);
-			json["value"] = value->second.getId();
-			json["color"] = color;
+			json["k"] = std::string(value->first);
+			json["v"] = value->second.getId();
+			json["c"] = int(color);
 			if (child[0]) {
-				json["child0"] = child[0]->id;
+				json["c0"] = child[0]->id;
 			}
 			if (child[1]) {
-				json["child1"] = child[1]->id;
+				json["c1"] = child[1]->id;
 			}
 			return json;
 		}

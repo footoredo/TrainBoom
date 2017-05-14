@@ -195,8 +195,8 @@ public:
 				// std::cout << "User [" + id + ":" + realname + "] not waterloo." << std::endl;
 			}
 			catch (const exception& e) {
-				std::cout << e.what() << std::endl;
-				std::cout << "User [" + id + ":" + realname + "] waterloo." << std::endl;
+//				std::cout << e.what() << std::endl;
+//				std::cout << "User [" + id + ":" + realname + "] waterloo." << std::endl;
 			}
 
 			++ cnt;

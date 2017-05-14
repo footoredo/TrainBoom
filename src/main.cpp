@@ -20,15 +20,9 @@ int main(int argc, char **argv) {
         }
     }
     else {
-        trainBoom->loadFromCSV("test/test.csv");
-        trainBoom->loadModifications("test/FinalMushroom.out");
+        trainBoom->loadFromCSV("src/test/test.csv");
+        trainBoom->loadModifications("src/test/FinalMushroom.out");
     }
-//    trainBoom->listRouteCnt();
     API::APIServer apiServer(trainBoom, 3000);
-//    API::APIServer apiServer(util::make_stupid<TrainBoom::TrainBoom>(), 3000);
     apiServer.run(1);
-
-//    std::cout << trainBoom->getId() << std::endl;
-//    trainBoom->save();
-//    apiServer.shutdown();
 }

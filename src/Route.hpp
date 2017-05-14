@@ -232,13 +232,6 @@ public:
                     _segments[i] = make_stupid<Segment>(tmp[i]);
                 }
                 segments[i] = _segments;
-                // segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
-                // std::cout << "1" << std::endl;
-                // segments.insert(util::make_pair(date, _segments));
-                // std::cout << "2" << std::endl;
-                // segmentsIntervalManip.insert(util::make_pair(date, make_stupid<SegmentsInvervalManip>(_segments, n - 1)));
-                // std::cout << "3" << std::endl;
-                // auto _segmentsIntervalManip = make_stupid<SegmentsInvervalManip>(segments, n - 1);
             }
         }
         else {
@@ -251,11 +244,6 @@ public:
                     _segments[j] = make_stupid<Segment>(json["segments"][j]);
                 }
                 segments[i] = _segments;
-//                segmentsIntervalManip[i] = make_stupid<SegmentsInvervalManip>(_segments, n - 1);
-                // std::cout << "1" << std::endl;
-                // segments.insert(util::make_pair(curDate, _segments));
-                // std::cout << "2" << std::endl;
-                // segmentsIntervalManip.insert(util::make_pair(curDate, make_stupid<SegmentsInvervalManip>(_segments, n - 1)));
             }
         }
 
@@ -473,7 +461,7 @@ public:
         running = x;
     }
 
-    util::Json toJson() {
+    util::Json toJson(bool simple = false) {
         // segmentsIntervalManip->forceApply();
         util::Json json("route", id);
 
@@ -503,7 +491,10 @@ public:
             // segmentsIntervalManip[j]->forceApply();
             Json tmp; tmp.getData().SetArray();
             for (unsigned int i = 0; i < n - 1; ++ i) {
-                tmp.getData().PushBack(segments[j][i]->toJson());
+                if (!simple)
+                    tmp.getData().PushBack(segments[j][i]->toJson());
+                else 
+                    tmp.getData().PushBack(segments[j][i]->toJsonSimp());
             }
             json["dateSegments"].PushBack(tmp);
             json["selling"].PushBack(selling[j]);
@@ -519,7 +510,7 @@ public:
     void save() {
         // std::cout << id << std::endl;
         // toJson().write(DataManager::getFile(id));
-        DataManager::save(toJson());
+        DataManager::save(toJson(true));
     }
 
     // std::string toString() {
