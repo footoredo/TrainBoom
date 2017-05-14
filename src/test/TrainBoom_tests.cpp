@@ -8,7 +8,7 @@ int main() {
     TrainBoom trainBoom;
     DataManager::init();
     trainBoom.loadFromCSV("test/test.csv");
-    trainBoom.loadModifications("../test/FinalMushroom.out");
+    trainBoom.loadModifications("test/FinalMushroom.out");
 
     std::cout << trainBoom.idByUsername("070219000") << std::endl;
     assert(trainBoom.user(trainBoom.idByUsername("070219000")).getRealname() == "朱兰");

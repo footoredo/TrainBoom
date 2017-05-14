@@ -18,3 +18,5 @@ src/build/*
 *.dat
 
 src/.TrainBoom
+
+src/test/*.out
