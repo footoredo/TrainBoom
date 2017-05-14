@@ -128,6 +128,14 @@ public:
         ) {}
     };
 
+    class date_out_of_bound: public exception {
+    public:
+        date_out_of_bound(Datetime date): exception (
+            "date_out_of_bound",
+            date.format() + " is out of bound!!!"
+        ) {}
+    };
+
     explicit Route(): id(Id("Route")), running(false) {}
 
     /*Route(Id id, unsigned n,
@@ -325,6 +333,8 @@ public:
         if (date < startDate)
             throw not_selling(date);
         int idate = (date - startDate).countDay();
+        if (idate < 0 || idate >= lastDays)
+            throw date_out_of_bound(date);
         if (!selling[idate]) {
             throw not_selling(date);
         }
