@@ -33,15 +33,15 @@ class Attribute {
 		}
 
 		Attribute(const util::Json& json) {
-            if (json.HasMember("p")) 
+            if (json.HasMember("p"))
                 price = (double)(json["p"].as<int>()) / 2;
-            else 
+            else
                 price = json["price"].as<double>();
             if (json.HasMember("nu"))
                 number = json["nu"].as<unsigned>();
             else if (json.HasMember("number"))
                 number = json["number"].as<unsigned>();
-            else 
+            else
                 number = 2000;
             if (json.HasMember("no"))
                 nonstop = json["no"].as<int>();
@@ -103,7 +103,7 @@ class Attribute {
 
 		util::Json toJsonSimp() const {
 			util::Json json;
-			json["p"] = int(price * 2 + 0.5);
+			json["p"] = price >= 0 ? int(price * 2 + 0.1) : int(price * 2 - 0.1);
 			json["nu"] = number;
 			if (nonstop) json["no"] = int(nonstop);
 			return json;

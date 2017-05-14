@@ -15,20 +15,22 @@ namespace trainBoom {
         std::string ticketType;
         double ticketPrice;  // Total price.
         unsigned ticketNumber;
+        Datetime date;
 
         std::string id;
 
         Order(RouteInterval routeInterval,
                 std::string startStationName, std::string endStationName,
                 std::string ticketType,
-                double ticketPrice, unsigned ticketNumber):
+                double ticketPrice, unsigned ticketNumber, Datetime date):
             routeInterval(routeInterval), startStationName(startStationName),
             endStationName(endStationName), ticketType(ticketType),
             ticketPrice(ticketPrice), ticketNumber(ticketNumber),
+            date(date),
             id(Id("Order")) {}
 
         Order(const Json& json): routeInterval(json["routeInterval"]) {
-            std::cout << json.toString() << std::endl;
+            // std::cout << json.toString() << std::endl;
             if (json.getId() != "") {
                 id = json.getId();
             }
@@ -40,6 +42,7 @@ namespace trainBoom {
             ticketType = json["ticketType"].as<std::string>();
             ticketPrice = json["ticketPrice"].as<double>();
             ticketNumber = json["ticketNumber"].as<unsigned>();
+            date = Datetime::parse(json["date"].as<std::string>());
         }
 
         // Order(std::string id, stupid_ptr<BinaryFile> bfp): Order(Json().read(id, bfp)) {}
@@ -59,6 +62,7 @@ namespace trainBoom {
             json["ticketType"] = ticketType;
             json["ticketPrice"] = ticketPrice;
             json["ticketNumber"] = ticketNumber;
+            json["date"] = date.format();
             return json;
         }
 

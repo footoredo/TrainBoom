@@ -8,11 +8,11 @@ int main() {
     TrainBoom trainBoom;
     DataManager::init();
     trainBoom.loadFromCSV("test/test.csv");
-    trainBoom.loadModifications("test/FinalMushroom.out");
+    // trainBoom.loadModifications("test/FinalMushroom.out");
 
-    std::cout << trainBoom.idByUsername("070219000") << std::endl;
-    assert(trainBoom.user(trainBoom.idByUsername("070219000")).getRealname() == "朱兰");
-    std::cout << "modification load check done." << std::endl;
+    // std::cout << trainBoom.idByUsername("070219000") << std::endl;
+    // assert(trainBoom.user(trainBoom.idByUsername("070219000")).getRealname() == "朱兰");
+    // std::cout << "modification load check done." << std::endl;
 
     trainBoom.insertUser(User());
     Json info("user");
@@ -106,6 +106,10 @@ int main() {
         }
         assert(newTrainBoom.listRoutes() == trainBoom.listRoutes());
         for (const auto& routeId: newTrainBoom.listRoutes()) {
+            if (newTrainBoom.route(routeId).toJson().toString() != trainBoom.route(routeId).toJson().toString()) {
+                std::cout << "new: " << std::endl << newTrainBoom.route(routeId).toJson().toString() << std::endl;
+                std::cout << "old: " << std::endl << trainBoom.route(routeId).toJson().toString() << std::endl;
+            }
             assert(newTrainBoom.route(routeId).toJson().toString() ==
                     trainBoom.route(routeId).toJson().toString());
         }

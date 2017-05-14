@@ -384,7 +384,7 @@ public:
         Segment segment = queryTickets(idate, l, r);
         if (segment.ticket(ticketType).number < ticketNumber)
             throw not_enough_tickets_left();
-        Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber);
+        Order order(RouteInterval(id, name, l, r), informations[l]->getStationName(), informations[r]->getStationName(), ticketType, segment.ticket(ticketType).price * ticketNumber, ticketNumber, date);
         TicketDelta ticketDelta;
         ticketDelta[ticketType] = - (int)ticketNumber;
         modifyTickets(idate, l, r, ticketDelta);
@@ -493,7 +493,7 @@ public:
             for (unsigned int i = 0; i < n - 1; ++ i) {
                 if (!simple)
                     tmp.getData().PushBack(segments[j][i]->toJson());
-                else 
+                else
                     tmp.getData().PushBack(segments[j][i]->toJsonSimp());
             }
             json["dateSegments"].PushBack(tmp);
