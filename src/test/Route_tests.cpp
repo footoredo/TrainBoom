@@ -49,7 +49,7 @@ int main() {
     // std::cout << route.toJson().toString() << std::endl;
     std::cout << "Initialization test passed!" << std::endl;
 // //    route.display();
-    auto q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
+    auto q = route.queryTickets(Datetime::parse("2017/4/5"), 0, 2);
 // //    q.display();
     assert(q.count("APTV") && equal(q.ticket("APTV").price, 998 + 15) && q.ticket("APTV").number == 15);
     assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.5 + 1522) && q.ticket("人民的名义").number == 1);
@@ -59,17 +59,17 @@ int main() {
     order["APTV"] = 5;
     order["人民的名义"] = -1;
 
-    route.modifyTickets(Datetime::parse("2017/3/28"), 0, 2, order);
+    route.modifyTickets(Datetime::parse("2017/4/5"), 0, 2, order);
 //    route.display();
 
-    q = route.queryTickets(Datetime::parse("2017/3/28"), 0, 2);
+    q = route.queryTickets(Datetime::parse("2017/4/5"), 0, 2);
 // //    q.display();
     assert(q.count("APTV") && equal(q.ticket("APTV").price, 998 + 15) && q.ticket("APTV").number == 20);
     assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 7773.5 + 1522) && q.ticket("人民的名义").number == 0);
 //
     std::cout << "modify test passed!" << std::endl;
 
-    q = route.queryTickets(Datetime::parse("2017/3/29"), 1, 2);
+    q = route.queryTickets(Datetime::parse("2017/4/6"), 1, 2);
     assert(q.count("APTV") && equal(q.ticket("APTV").price, 15) && q.ticket("APTV").number == 20);
     assert(q.count("人民的名义") && equal(q.ticket("人民的名义").price, 1522) && q.ticket("人民的名义").number == 14);
 

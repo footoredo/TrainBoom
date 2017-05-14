@@ -419,12 +419,14 @@ namespace trainBoom {
                 void queryTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string routeId = request.param(":routeId").as<std::string>();
                     Json json; json.Parse(request.body());
+		    std::cout << json.toString() << std::endl;
                     try {
                         Route& route = trainBoom->route(routeId);
                         Datetime date = Datetime::parse(json["date"].as<std::string>());
                         unsigned l = json["l"].as<unsigned>(), r = json["r"].as<unsigned>();
                         const Segment& segment = route.queryTickets(date, l, r);
                         Json ret = segment.toJson();
+			std::cout << "survived!" << std::endl;
                         Information startStation = route.information(l);
                         Information endStation = route.information(r);
                         Duration dayShift = startStation.getLeaveTime().setToDay();
