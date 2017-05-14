@@ -20,3 +20,5 @@ src/build/*
 src/.TrainBoom
 
 src/test/*.out
+
+src/test/*.csv
