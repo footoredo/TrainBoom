@@ -18,6 +18,11 @@ Here is [FrontEnd](https://github.com/zidaneandmessi/TrainBoom_FrontEnd/).
 git clone git@github.com:footoredo/TrainBoom.git
 cd TrainBoom
 cd build
-cmake -G "Unix Makefiles" ..
+cmake ..
 make
+sudo make install
 ```
+
+### Usage
+
+Use `TrainBoom -h` for help.

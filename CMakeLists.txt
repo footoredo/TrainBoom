@@ -25,3 +25,5 @@ include_directories("${Pistache_INCLUDE_DIRS}")
 
 add_executable (TrainBoom ${SRC_DIR}/main.cpp ${SRC_DIR}/${CPP_FILES})
 target_link_libraries(TrainBoom ${Pistache_LIBRARIES})
+
+install (TARGETS TrainBoom DESTINATION bin)

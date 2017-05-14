@@ -92,6 +92,12 @@ public:
                     "route_not_running",
                     "The route you tried to stop is not running!") {}
     };
+    class open_file_failed: public exception {
+        public:
+            open_file_failed(std::string filename): exception(
+                    "open_file_failed",
+                    "Failed to open " + filename + "!") {}
+    };
 	TrainBoom(): id(Id("TrainBoom")) {}
 	TrainBoom(const Json& tmp) {
 		if (tmp.getId() != "") {
@@ -144,6 +150,9 @@ public:
 
 	void loadModifications(std::string modificationFile) {
 		std::ifstream modification(modificationFile);
+        if (!modification.is_open()) {
+            throw open_file_failed(modificationFile);
+        }
 		int cnt = 0;
 		while (!modification.eof()) {
 			std::string trash;
@@ -202,8 +211,6 @@ public:
 			++ cnt;
 			// if (cnt > 100) break;
 		}
-
-		std::cout << "!" << std::endl;
 	}
 
 	void loadFromCSV(std::string csvFile) {
@@ -291,13 +298,13 @@ public:
 				// startRoute(routes[tmp.getId()]);
 			}
 			catch (const routeName_exists& e) {
-				std::cout << "Duplicated route found [" + tmp.getName() << "]" << std::endl;
+//				std::cout << "Duplicated route found [" + tmp.getName() << "]" << std::endl;
 			}
 
 			// if (i > 500) break;
 		}
 
-		std::cout << "Import done." << std::endl;
+//		std::cout << "Import done." << std::endl;
 	}
 
     std::string getId() const {
