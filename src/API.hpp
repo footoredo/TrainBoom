@@ -119,9 +119,9 @@ namespace trainBoom {
                     //                    Routes::Put(router,)
                     //Routes::Get(router, "/routes/:routeId/start", Routes::bind(&StatsEndpoint::startRoute, this));
                     //Routes::Get(router, "/routes/:routeId/stop", Routes::bind(&StatsEndpoint::stopRoute, this));
-                    Routes::Get(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
+                    Routes::Post(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
                     Routes::Post(router, "/routes/:routeId/tickets/book", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
-                    Routes::Delete(router, "/routes/:routeId/tickets/refund", Routes::bind(&StatsEndpoint::refundTicketsRoute, this));
+                    Routes::Post(router, "/routes/:routeId/tickets/refund", Routes::bind(&StatsEndpoint::refundTicketsRoute, this));
 
                     ROUTING(Post, "/routeInterval/get", getRouteInterval);
                     //                    ROUTING(Post, "/routeInterval/query", queryRouteInterval);
