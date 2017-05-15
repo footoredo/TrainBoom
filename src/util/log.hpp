@@ -37,7 +37,7 @@ namespace trainBoom {
             inline void put_now(std::ofstream& fout) {
                 time_t now = std::time(nullptr);
                 std::tm tm = *std::localtime(&now);
-                fout << std::put_time(&tm, "%c %Z");
+                fout << std::put_time(&tm, "<%F %T %Z> ");
             }
 
             void touch_dir(const char* dir) {
@@ -65,7 +65,7 @@ namespace trainBoom {
 
                 void log(std::string msg) {
                     put_now(log_file);
-                    log_file << ": " << msg << std::endl;
+                    log_file << msg << std::endl;
                 }
 
                 util::vector<std::string> get() const {

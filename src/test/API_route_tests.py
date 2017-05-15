@@ -101,7 +101,7 @@ res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
 assert res.json()["tickets"]["first class"]["number"] == 17, "Query tickets check failed!"
 print "Query tickets check passed!"
 
-res = s.post(url + "/users", json = {"username": "footoredo", "salt": "iamasalt", "password": "."})
+res = s.post(url + "/users", json = {"username": "redofooto", "salt": "iamasalt", "password": "."})
 userId = res.json()["id"]
 
 data = {
@@ -113,7 +113,7 @@ data = {
     "ticketNumber": 1000
     }
 
-res = s.put(url + "/routes/" + routeId1 + "/tickets", json=data)
+res = s.post(url + "/routes/" + routeId1 + "/tickets/book", json=data)
 #print json.dumps(res.json(), indent=4)
 assert res.json()["type"] == "error"
 print "Overbook ticket test passed!"
@@ -126,7 +126,7 @@ data = {
     "ticketNumber": 2
     }
 
-res = s.put(url + "/routes/" + routeId1 + "/tickets", json = {
+res = s.post(url + "/routes/" + routeId1 + "/tickets/book", json = {
     "userId": userId,
     "l": 0,
     "r": 1,
