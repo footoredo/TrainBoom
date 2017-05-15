@@ -684,7 +684,7 @@ namespace trainBoom {
                     stats->start();
 
                     while (!stats->shutdownFlag) {
-                        //                    sleep(1);
+                        sleep(1);
                     }
                     //                std::cout << "!!" << std::endl;
 

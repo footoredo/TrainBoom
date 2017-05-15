@@ -404,6 +404,12 @@ namespace date_time {
             return Datetime(year, month, day);
         }
 
+        Datetime enableTime() const {
+            if (!initiated)
+                throw not_initiated();
+            return Datetime(year, month, day, 0, 0);
+        }
+
         bool operator<(const Datetime& other) const {
             if (!initiated || !other.initiated)
                 throw not_initiated();

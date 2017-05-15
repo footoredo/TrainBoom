@@ -157,6 +157,7 @@ public:
     }
 
     util::Json toJson(Datetime date) const {
+	    date = date.enableTime();
         util::Json json;
         json["stationName"] = stationName;
         json["distance"] = distance;
