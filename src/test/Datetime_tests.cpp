@@ -60,4 +60,5 @@ int main() {
     std::cout << Duration("24:55") << std::endl;
 
     std::cout << Datetime("2017-5-5") << std::endl;
+    std::cout << Datetime("2017/5/5") - Duration::parse("24:00") << std::endl;
 }

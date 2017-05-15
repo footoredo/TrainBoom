@@ -327,11 +327,18 @@ namespace date_time {
         Datetime operator-(const Duration& duration) const {
             if (!initiated)
                 throw not_initiated();
-            return Datetime (
-                year, month, day,
-                signed_Date_t(hour) - duration.getHour(),
-                signed_Date_t(minute) - duration.getMinute()
-            );
+	    if (dayOnly) {
+		    return Datetime (
+				    year, month, signed_Date_t(day) - duration.getHour() / 24
+				    );
+	    }
+	    else {
+		    return Datetime (
+				    year, month, day,
+				    signed_Date_t(hour) - duration.getHour(),
+				    signed_Date_t(minute) - duration.getMinute()
+				    );
+	    }
         }
 
         Duration operator-(Datetime datetime) const {
