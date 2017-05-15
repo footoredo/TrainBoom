@@ -4,6 +4,8 @@
 
 #include <fstream>
 #include <string>
+#include <functional>
+#include <algorithm>
 #include "exception.hpp"
 
 namespace trainBoom {
@@ -11,6 +13,23 @@ namespace trainBoom {
 namespace util {
 
 namespace CSV {
+
+// trim from start
+static inline std::string ltrim(std::string s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))));
+    return s;
+}
+// trim from end
+static inline std::string rtrim(std::string s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+    return s;
+}
+// trim from both ends
+static inline std::string trim(std::string s) {
+    return ltrim(rtrim(s));
+}
 
 using namespace std;
 
@@ -65,10 +84,10 @@ private:
 			for(int i=0;i<len;i++)
 				if(t[i]==',')
 				{
-					s[tot++]=t.substr(j,i-j);
+					s[tot++]=trim(t.substr(j,i-j));
 					j=i+1;
 				}
-			s[tot++]=t.substr(j,len-j);
+			s[tot++]=trim(t.substr(j,len-j));
 		}
 	};
 	line *a;
