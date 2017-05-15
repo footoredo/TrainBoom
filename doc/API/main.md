@@ -36,7 +36,10 @@ Method|HTTP request|Description
 `update`|`PUT /routes/:routeId`| Update information of a single route.
 `delete`|`DELETE /routes/:routeId`| Delete a single route.
 `queryTickets`|`POST /routes/:routeId/tickets`| Get ticket information of a route.
-`bookTickets`|`PUT /routes/:routeId/tickets`| Book some tickets.
+`bookTickets`|`POST /routes/:routeId/tickets/book`| Book some tickets.
+`refundTickets`|`POST /routes/:routeId/tickets/refund`| Refund some tickets.
+`startTickets`|`POST /routes/:routeId/tickets/start`| Start selling tickets on a given day.
+`stopTickets`|`POST /routes/:routeId/tickets/stop`| Stop selling some tickets on a given day.
 
 ### RouteInterval
 

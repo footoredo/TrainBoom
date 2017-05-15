@@ -158,7 +158,7 @@ POST /routes/name
 ### HTTP Request
 
 ```
-PUT /route/:routeId
+PUT /routes/:routeId
 ```
 
 The rest is same as `insert`, all informations are **required**.
@@ -168,7 +168,7 @@ The rest is same as `insert`, all informations are **required**.
 ### HTTP Request
 
 ```
-DELETE /route/:routeId
+DELETE /routes/:routeId
 ```
 
 ### Response body
@@ -292,5 +292,33 @@ POST /routes/:routeId/tickets/refund
     "ticketNumber": 2,
     "userId": "756b418e1d5b6aaf482f9db33112a20fb0350fe1",
     "ticketType": "first class"
+}
+```
+
+## startTickets
+
+### HTTP Request
+```
+POST /routes/:routeId/tickets/start
+```
+
+### Request body
+```json
+{
+    "date": "2017/5/5"
+}
+```
+
+## stopTickets
+
+### HTTP Request
+```
+POST /routes/:routeId/tickets/stop
+```
+
+### Request body
+```json
+{
+    "date": "2017/5/5"
 }
 ```
