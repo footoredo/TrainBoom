@@ -59,3 +59,6 @@ test_DataManager:
 
 test_Blob:
 	$(CXX) -o $(BIN)/Blob_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/Blob_tests.cpp
+
+test_log:
+	$(CXX) -o $(BIN)/log_tests $(CXXFLAGS) $(CPPFILES) $(SOURCE)/log_tests.cpp
