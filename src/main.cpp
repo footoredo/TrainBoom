@@ -1,6 +1,7 @@
 #include "API.hpp"
 #include "TrainBoom.hpp"
 #include "DataManager.hpp"
+#include "util/log.hpp"
 #include <cxxopts.hpp>
 
 using namespace trainBoom;
@@ -55,6 +56,11 @@ int main(int argc, char **argv) {
         port = options["port"].as<int>();
     }
 
-    API::APIServer apiServer(trainBoom, port);
+    auto user_log = make_stupid<Log>("user");
+    auto route_log = make_stupid<Log>("route");
+    auto station_log = make_stupid<Log>("station");
+    auto api_log = make_stupid<Log>("api");
+
+    API::APIServer apiServer(trainBoom, port, user_log, route_log, station_log, api_log);
     apiServer.run(1);
 }

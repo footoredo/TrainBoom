@@ -156,6 +156,16 @@ public:
         return json;
     }
 
+    util::Json toJson(Datetime date) const {
+        util::Json json;
+        json["stationName"] = stationName;
+        json["distance"] = distance;
+        if (!isStartStation()) json["arriveTime"] = (date + arriveTime).format();
+        if (!isEndStation()) json["leaveTime"] = (date + leaveTime).format();
+        json["flags"] = flags;
+        return json;
+    }
+
     std::string toString() const {
         std::stringstream ss;
         ss << "stationName " << stationName << '\n'

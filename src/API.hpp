@@ -132,6 +132,7 @@ namespace trainBoom {
                     response.send(Http::Code::Ok, "[" + trainBoom->getId() + "] saving...");
                     trainBoom->save();
                     std::string key = DataManager::finish();
+                    api_log->log("save key [" + key + "] + TrainBoom id [" + trainBoom->getId() + "]");
                     std::cout << "key: " << key << std::endl;
                     std::cout << "TrainBoom id: " << trainBoom->getId() << std::endl;
                     std::cout << "save done." << std::endl;
@@ -146,8 +147,12 @@ namespace trainBoom {
 
                 void insertUser(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     try {
-                        User user(Json("user").Parse(request.body()));
+                        Json tmp; tmp.Parse(request.body());
+                        api_log->log("insert user");
+                        api_log->log(tmp.toString());
+                        User user(tmp);
                         trainBoom->insertUser(user);
+                        user_log->log("insert [" + user.getId() + ":" + user.getUsername() + "]");
 
                         Generic::sendJson(response, user.toJson());
                     }
@@ -155,11 +160,13 @@ namespace trainBoom {
                 }
 
                 void listUsers(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    api_log->log("list users");
                     Generic::sendJson(response, Generic::vec2Json(trainBoom->listUsers(), "user"));
                 }
 
                 void getUser(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string userId = request.param(":userId").as<std::string>();
+                    api_log->log("get user [" + userId + "]");
                     //                    std::cout << userId << std::endl;
                     try {
                         const User& user = trainBoom->user(userId);
@@ -170,11 +177,15 @@ namespace trainBoom {
 
                 void updateUser(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string userId = request.param(":userId").as<std::string>();
+                    api_log->log("update user [" + userId + "] ");
                     //                    std::cout << userId << std::endl;
                     try {
                         User& user = trainBoom->user(userId);
                         try {
-                            user.update(Json("user").Parse(request.body()));
+                            Json tmp; tmp.Parse(request.body());
+                            api_log->log()
+                            user.update(tmp);
+                            user_log->log("update [" + user.getId() + ":" user.getUsername() + "]");
                             Generic::sendJson(response, user.toJson());
                         }
                         catch (const User::information_missing& e) {
@@ -186,8 +197,10 @@ namespace trainBoom {
 
                 APIHANDLER(deleteUser) {
                     std::string userId = request.param(":userId").as<std::string>();
+                    api_log->log("delete user [" + userId + "] ");
                     try {
                         trainBoom->deleteUser(userId);
+                        user_log->log("delete [" + user.getId() + ":" + user.getName() + "]");
                         SENDSUCC("Delete user succeeded!");
                     }
                     HANDLEERR;
@@ -195,6 +208,7 @@ namespace trainBoom {
 
                 APIHANDLER(listOrdersUser) {
                     std::string userId = request.param(":userId").as<std::string>();
+                    api_log->log("list user [" + userId + "] " + " orders");
                     try {
                         User& user = trainBoom->user(userId);
                         SENDVEC(user.getOrders(), "order");
@@ -206,6 +220,8 @@ namespace trainBoom {
                     std::string userId = request.param(":userId").as<std::string>(),
                         orderId = request.param(":orderId").as<std::string>();
 
+                    api_log->log("get user [" + userId + "] " + " order [" + orderId + "]");
+
                     try {
                         const User& user = trainBoom->user(userId);
                         const Order& order = user.order(orderId);
@@ -216,19 +232,27 @@ namespace trainBoom {
 
                 APIHANDLER(getByUsername) {
                     Json json; json.Parse(request.body());
+
+                    api_log->log("get by username");
+                    api_log->log("request => " + json.toString());
                     try {
                         const std::string userId = trainBoom->idByUsername(json["username"]);
-                        Json json;
-                        json["userId"] = userId;
-                        SENDJSON(json);
+                        api_log->log("userid: " + userId);
+                        Json tmp;
+                        tmp["userId"] = userId;
+                        SENDJSON(tmp);
                     }
                     HANDLEERR;
                 }
 
                 void insertStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
-                    Station station(Json("station").Parse(request.body()));
+                    Json tmp; tmp.Parse(request.body());
+                    api_log->log("insert station");
+                    api_log->log(tmp.toJson());
+                    Station station(tmp);
                     try {
                         trainBoom->insertStation(station);
+                        station_log->log("insert [" + staion.getId() + ":" + station.getName() + "]");
 
                         Generic::sendJson(response, station.toJson());
                     }
@@ -236,11 +260,13 @@ namespace trainBoom {
                 }
 
                 void listStations(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    api_log->log("list stations");
                     Generic::sendJson(response, Generic::vec2Json(trainBoom->listStations(), "station"));
                 }
 
                 void getStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string stationId = request.param(":stationId").as<std::string>();
+                    api_log->log("get station [" + stationId + "]");
                     //                    std::cout << stationId << std::endl;
                     try {
                         const Station& station = trainBoom->station(stationId);
@@ -251,10 +277,14 @@ namespace trainBoom {
 
                 void updateStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string stationId = request.param(":stationId").as<std::string>();
+                    api_log->log("update station [" + stationId + "]");
                     //                    std::cout << stationId << std::endl;
                     try {
                         Station& station = trainBoom->station(stationId);
-                        station.update(Json("station").Parse(request.body()));
+                        Json tmp; tmp.Parse(request.body());
+                        api_log->log(tmp.toString());
+                        station.update(tmp);
+                        station_log->log("update [" + staion.getId() + ":" + station.getName() + "]");
                         Generic::sendJson(response, station.toJson());
                     }
                     HANDLEERR;
@@ -262,17 +292,23 @@ namespace trainBoom {
 
                 APIHANDLER(deleteStation) {
                     std::string stationId = request.param(":stationId").as<std::string>();
+                    api_log->log("delete station [" + stationId + "]");
                     try {
                         trainBoom->deleteStation(stationId);
+                        station_log->log("delete [" + staion.getId() + ":" + station.getName() + "]");
                         SENDSUCC("delete station succeeded!");
                     }
                     HANDLEERR;
                 }
 
                 APIHANDLER(getByStationName) {
+                    api_log->log("get by station name");
+                    Json json; json.Parse(request.body());
+                    api_log->log("request => " + json.toString());
                     try {
-                        std::string stationName = Json().Parse(request.body())["name"];
+                        std::string stationName = json["name"];
                         std::string stationId = trainBoom->idByStationName(stationName);
+                        api_log->log("stationId: " + stationId);
                         Json tmp;
                         tmp["stationId"] = stationId;
                         SENDJSON(tmp);
@@ -315,7 +351,9 @@ namespace trainBoom {
                 void queryRouteStation(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     //                    std::cout << "Done Routing." << std::endl;
                     std::string stationId = request.param(":stationId").as<std::string>();
+                    api_log->log("query station [" + stationId + "] route");
                     Json json; json.Parse(request.body());
+                    api_log->log("request => " + json.toString());
                     //                   std::cout << "Done Parse." << std::endl;
                     try {
                         Station& station = trainBoom->station(stationId);
@@ -333,9 +371,12 @@ namespace trainBoom {
                 }
 
                 void insertRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    api_log->log("insert route");
                     try {
                         Route route(Json("route").Parse(request.body()));
+                        api_log->log(route.toString());
                         trainBoom->insertRoute(route);
+                        route_log->log("insert route [" + route.getId() + ":" + route.getName() + "]");
 
                         Generic::sendJson(response, route.toJson());
                     }
@@ -344,8 +385,10 @@ namespace trainBoom {
 
                 APIHANDLER(deleteRoute) {
                     std::string routeId = request.param(":routeId").as<std::string>();
+                    api_log->log("delete route [" + routeId + "]");
                     try {
                         trainBoom->deleteRoute(routeId);
+                        route_log->log("delete route [" + route.getId() + ":" + route.getName() + "]");
                         SENDSUCC("delete route succeeded!");
                     }
                     HANDLEERR;
@@ -353,9 +396,15 @@ namespace trainBoom {
 
                 APIHANDLER(updateRoute) {
                     std::string routeId = request.param(":routeId").as<std::string>();
+                    api_log->log("update route [" + routeId + "]");
                     try {
-                        Route route(Json("route").Parse(request.body()));
+                        Json tmp; tmp.Parse(request.body());
+                        api_log->log(tmp.toString());
+                        trainBoom->deleteRoute(routeId);
+                        Route route(tmp);
                         trainBoom->insertRoute(route);
+
+                        route_log->log("update route [" + route.getId() + ":" + route.getName() + "]");
 
                         Generic::sendJson(response, route.toJson());
                     }
@@ -363,9 +412,13 @@ namespace trainBoom {
                 }
 
                 APIHANDLER(getByRouteName) {
+                    api_log->log("get by route name");
+                    Json json; json.Parse(request.body());
+                    api_log->log("request => " + json.toString());
                     try {
-                        std::string routeName = Json().Parse(request.body())["name"];
+                        std::string routeName = json["name"];
                         std::string routeId = trainBoom->idByRouteName(routeName);
+                        api_log->log("routeId: " + routeId);
                         Json tmp;
                         tmp["routeId"] = routeId;
                         SENDJSON(tmp);
@@ -374,11 +427,13 @@ namespace trainBoom {
                 }
 
                 void listRoutes(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    api_log->log("list routes");
                     Generic::sendJson(response, Generic::vec2Json(trainBoom->listRoutes(), "route"));
                 }
 
                 void getRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string routeId = request.param(":routeId").as<std::string>();
+                    api_log->log("get route [" + routeId + "]");
                     try {
                         Route& route = trainBoom->route(routeId);
                         Generic::sendJson(response, route.toJson());
@@ -418,9 +473,11 @@ namespace trainBoom {
 */
                 void queryTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string routeId = request.param(":routeId").as<std::string>();
+                    api_log->log("query route [" + routeId + "] tickets");
                     Json json; json.Parse(request.body());
-		    std::cout << "Query " << std::endl;
-		    std::cout << json.toString() << std::endl;
+                    api_log->log("request => " + json.toString());
+		    // std::cout << "Query " << std::endl;
+		    // std::cout << json.toString() << std::endl;
                     try {
                         Route& route = trainBoom->route(routeId);
                         Datetime date = Datetime::parse(json["date"].as<std::string>());
@@ -432,34 +489,47 @@ namespace trainBoom {
                         Duration dayShift = startStation.getLeaveTime().setToDay();
                         startStation.shift(dayShift);
                         endStation.shift(dayShift);
-                        ret["startStation"] = startStation.toJson();
-                        ret["endStation"] = endStation.toJson();
+                        ret["startStation"] = startStation.toJson(date);
+                        ret["endStation"] = endStation.toJson(date);
                         Generic::sendJson(response, ret);
                     }
                     HANDLEERR;
                 }
 
                 void bookTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    api_log->log("book route [" + routeId + "] tickets");
                     try {
                         Json json; json.Parse(request.body());
-			std::cout << "Book " << std::endl;
-			std::cout << json.toString() << std::endl;
+                        api_log->log("request => " + json.toString());
+			// std::cout << "Book " << std::endl;
+			// std::cout << json.toString() << std::endl;
                         std::string routeId = request.param(":routeId").as<std::string>();
                         Route& route = trainBoom->route(routeId);
                         Datetime date = Datetime::parse(json["date"].as<std::string>());
                         std::string userId = json["userId"].as<std::string>();
                         User& user = trainBoom->user(userId);
 
+                        unsigned l = json["l"].as<unsigned>();
+                        unsigned r = json["r"].as<unsigned>();
+                        std::string ticketType = json["ticketType"].as<std::string>();
+                        unsigned ticketNumber = json["ticketNumber"].as<unsigned>();
+
                         Order order = route.bookTickets(
                                 date,
-                                json["l"].as<unsigned>(),
-                                json["r"].as<unsigned>(),
-                                json["ticketType"].as<std::string>(),
-                                json["ticketNumber"].as<unsigned>()
+                                l,
+                                r,
+                                ticketType,
+                                ticketNumber
                                 );
+
+                        route_log->log("book tickets [" + ticketType + " * " + ticketNumber + "] / " + route.information(l).getStationName() + " -> " + route.information(r).getStationName());
+
                         if (!json.HasMember("attach") ||
                                 json["attach"].as<bool>()) {
                             user.addOrder(order);
+
+                            user_log->log("user [" + user.getId() + ":" + user.getName() + "] attach order [" + order.getId() + "]");
+
                             Generic::sendJson(response, order.toJson());
                         }
                         else {
@@ -472,23 +542,32 @@ namespace trainBoom {
                 }
 
                 void refundTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
+                    api_log->log("refund route [" + routeId + "] tickets");
                     try {
                         Json json; json.Parse(request.body());
-			std::cout << "Refund " << std::endl;
-			std::cout << json.toString() << std::endl;
+                        api_log->log("request => " + json.toString());
+
                         std::string routeId = request.param(":routeId").as<std::string>();
                         Route& route = trainBoom->route(routeId);
                         Datetime date = Datetime::parse(json["date"].as<std::string>());
                         std::string userId = json["userId"].as<std::string>();
                         User& user = trainBoom->user(userId);
 
+                        unsigned l = json["l"].as<unsigned>();
+                        unsigned r = json["r"].as<unsigned>();
+                        std::string ticketType = json["ticketType"].as<std::string>();
+                        unsigned ticketNumber = json["ticketNumber"].as<unsigned>();
+
                         route.refundTickets(
                                 date,
-                                json["l"].as<unsigned>(),
-                                json["r"].as<unsigned>(),
-                                json["ticketType"].as<std::string>(),
-                                json["ticketNumber"].as<unsigned>()
+                                l,
+                                r,
+                                ticketType,
+                                ticketNumber
                                 );
+
+                        route_log->log("refund tickets [" + ticketType + " * " + ticketNumber + "] / " + route.information(l).getStationName() + " -> " + route.information(r).getStationName());
+
                         SENDSUCC("refund tickets succeeded!");
                     }
                     catch (const exception& e) {
@@ -497,8 +576,11 @@ namespace trainBoom {
                 }
 
                 APIHANDLER(getRouteInterval) {
+                    api_log->log("get route interval");
                     try {
                         Json json; json.Parse(request.body());
+                        api_log->log("request => " + json.toString());
+
                         std::string startStationId = trainBoom->idByStationName(json["startStation"]);
                         std::string endStationId = trainBoom->idByStationName(json["endStation"]);
                         const Station& station = trainBoom->station(startStationId);
@@ -557,11 +639,20 @@ namespace trainBoom {
                 util::stupid_ptr<StatsEndpoint> stats;
                 util::stupid_ptr<TrainBoom> trainBoom;
                 Net::Port port;
+                util::stupid_ptr<Log> user_log, route_log, station_log, api_log
 
             public:
-                APIServer(util::stupid_ptr<TrainBoom> trainBoom, unsigned portNum):
-                    trainBoom(trainBoom), port(portNum) {
-                    }
+                APIServer(util::stupid_ptr<TrainBoom> trainBoom, unsigned portNum,
+                    util::stupid_ptr<Log> user_log,
+                    util::stupid_ptr<Log> route_log,
+                    util::stupid_ptr<Log> station_log,
+                    util::stupid_ptr<Log> api_log):
+                        trainBoom(trainBoom), port(portNum),
+                        user_log(user_log),
+                        route_log(route_log),
+                        station_log(station_log),
+                        api_log(api_log) {
+                        }
 
                 void run(int thr = 1) {
                     Net::Address addr(Net::Ipv4::any(), port);
