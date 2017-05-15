@@ -301,7 +301,7 @@ public:
 //				std::cout << "Duplicated route found [" + tmp.getName() << "]" << std::endl;
 			}
 
-			if (i > 500) break;
+			// if (i > 500) break;
 		}
 
 //		std::cout << "Import done." << std::endl;

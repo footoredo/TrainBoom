@@ -419,6 +419,7 @@ namespace trainBoom {
                 void queryTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     std::string routeId = request.param(":routeId").as<std::string>();
                     Json json; json.Parse(request.body());
+		    std::cout << "Query " << std::endl;
 		    std::cout << json.toString() << std::endl;
                     try {
                         Route& route = trainBoom->route(routeId);
@@ -426,7 +427,6 @@ namespace trainBoom {
                         unsigned l = json["l"].as<unsigned>(), r = json["r"].as<unsigned>();
                         const Segment& segment = route.queryTickets(date, l, r);
                         Json ret = segment.toJson();
-			std::cout << "survived!" << std::endl;
                         Information startStation = route.information(l);
                         Information endStation = route.information(r);
                         Duration dayShift = startStation.getLeaveTime().setToDay();
@@ -442,6 +442,8 @@ namespace trainBoom {
                 void bookTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     try {
                         Json json; json.Parse(request.body());
+			std::cout << "Book " << std::endl;
+			std::cout << json.toString() << std::endl;
                         std::string routeId = request.param(":routeId").as<std::string>();
                         Route& route = trainBoom->route(routeId);
                         Datetime date = Datetime::parse(json["date"].as<std::string>());
@@ -472,6 +474,8 @@ namespace trainBoom {
                 void refundTicketsRoute(const Rest::Request& request, Net::Http::ResponseWriter response) {
                     try {
                         Json json; json.Parse(request.body());
+			std::cout << "Refund " << std::endl;
+			std::cout << json.toString() << std::endl;
                         std::string routeId = request.param(":routeId").as<std::string>();
                         Route& route = trainBoom->route(routeId);
                         Datetime date = Datetime::parse(json["date"].as<std::string>());
