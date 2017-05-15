@@ -32,6 +32,7 @@ Method|HTTP request|Description
 `insert`|`POST /routes`| Insert a single route.
 `list`|`GET /routes`| Get the routes list.
 `get`|`GET /routes/:routeId`| Get information of a single route.
+`name`|`POST /routes/name`| Get routeId by its name.
 `update`|`PUT /routes/:routeId`| Update information of a single route.
 `delete`|`DELETE /routes/:routeId`| Delete a single route.
 `queryTickets`|`POST /routes/:routeId/tickets`| Get ticket information of a route.

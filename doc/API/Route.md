@@ -132,6 +132,27 @@ GET /routes/779d46f7840e11bdd20f61d36d5d8ff9cd441909
 }
 ```
 
+## name
+
+### HTTP Reqeust
+```
+POST /routes/name
+```
+
+### Request body
+```json
+{
+    "name": "G998"
+}
+```
+
+### Response body
+```json
+{
+    "routeId": "779d46f7840e11bdd20f61d36d5d8ff9cd441909"
+}
+```
+
 ## update
 
 ### HTTP Request

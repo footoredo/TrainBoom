@@ -96,17 +96,17 @@ DELETE /stations/:stationId
 }
 ```
 
-## username
+## name
 
 ### HTTP Reqeust
 ```
-POST /users/username
+POST /stations/name
 ```
 
 ### Request body
 ```json
 {
-    "name": "Changzhou North"
+    "name": "Changzhou-North"
 }
 ```
 
