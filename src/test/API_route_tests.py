@@ -33,7 +33,7 @@ route = {
                     "price": 74.5
                 },
                 "bussiness class": {
-                    "price": 239.5,
+                    "price": 239,
                     "number": 5
                 }
             }
@@ -157,5 +157,32 @@ res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
     })
 assert res.json()["tickets"]["first class"]["number"] == 15, "Query tickets after booking check failed!"
 print "Query tickets after booking check passed!"
+
+res = s.post(url + "/routes/" + routeId1 + "/tickets/stop", json = {
+    "date": "2017/4/1"
+    })
+assert res.json()["type"] == "success"
+
+res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
+    "l": 0,
+    "r": 1,
+    "date": "2017/4/1"
+    })
+assert res.json()["type"] == "error"
+
+print "stop tickets check passed!"
+
+res = s.post(url + "/routes/" + routeId1 + "/tickets/start", json = {
+    "date": "2017/4/1"
+    })
+assert res.json()["type"] == "success"
+
+res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
+    "l": 0,
+    "r": 1,
+    "date": "2017/4/1"
+    })
+assert res.json()["tickets"]["first class"]["number"] == 15
+print "start tickets check passed!"
 
 print "All tests passed!"

@@ -131,6 +131,8 @@ namespace trainBoom {
                     Routes::Post(router, "/routes/:routeId/tickets", Routes::bind(&StatsEndpoint::queryTicketsRoute, this));
                     Routes::Post(router, "/routes/:routeId/tickets/book", Routes::bind(&StatsEndpoint::bookTicketsRoute, this));
                     Routes::Post(router, "/routes/:routeId/tickets/refund", Routes::bind(&StatsEndpoint::refundTicketsRoute, this));
+                    ROUTING(Post, "/routes/:routeId/tickets/start", startTicketsRoute);
+                    ROUTING(Post, "/routes/:routeId/tickets/stop", stopTicketsRoute);
 
                     ROUTING(Post, "/routeInterval/get", getRouteInterval);
                     //                    ROUTING(Post, "/routeInterval/query", queryRouteInterval);
@@ -535,7 +537,7 @@ namespace trainBoom {
                                 ticketNumber
                                 );
 
-                        route_log->log("book tickets [" + ticketType + " * " + std::to_string(ticketNumber) + "] / " + route.information(l).getStationName() + " -> " + route.information(r).getStationName());
+                        route_log->log("book tickets [" + ticketType + " * " + std::to_string(ticketNumber) + "] / " + route.getName() + "(" + route.information(l).getStationName() + " -> " + route.information(r).getStationName() + ")");
 
                         if (!json.HasMember("attach") ||
                                 json["attach"].as<bool>()) {
@@ -579,13 +581,49 @@ namespace trainBoom {
                                 ticketNumber
                                 );
 
-                        route_log->log("refund tickets [" + ticketType + " * " + std::to_string(ticketNumber) + "] / " + route.information(l).getStationName() + " -> " + route.information(r).getStationName());
+                        route_log->log("refund tickets [" + ticketType + " * " + std::to_string(ticketNumber) + "] / " + route.getName() + "(" + route.information(l).getStationName() + " -> " + route.information(r).getStationName() + ")");
 
                         SENDSUCC("refund tickets succeeded!");
                     }
                     catch (const exception& e) {
                         sendJson(response, error(e.what()));
                     }
+                }
+
+                APIHANDLER(startTicketsRoute) {
+                    std::string routeId = request.param(":routeId").as<std::string>();
+                    api_log->log("start selling route [" + routeId + "] tickets");
+                    try {
+                        Json json; json.Parse(request.body());
+                        api_log->log("request => " + json.toString());
+
+                        Route& route = trainBoom->route(routeId);
+                        Datetime date = Datetime::parse(json["date"].as<std::string>());
+                        route.startSelling(date);
+
+                        route_log->log("start selling tickets on " + date.format() + " / " + route.getName());
+
+                        SENDSUCC("start selling tickets succeeded!");
+                    }
+                    HANDLEERR;
+                }
+
+                APIHANDLER(stopTicketsRoute) {
+                    std::string routeId = request.param(":routeId").as<std::string>();
+                    api_log->log("stop selling route [" + routeId + "] tickets");
+                    try {
+                        Json json; json.Parse(request.body());
+                        api_log->log("request => " + json.toString());
+
+                        Route& route = trainBoom->route(routeId);
+                        Datetime date = Datetime::parse(json["date"].as<std::string>());
+                        route.stopSelling(date);
+
+                        route_log->log("stop selling tickets on " + date.format() + " / " + route.getName());
+
+                        SENDSUCC("stop selling tickets succeeded!");
+                    }
+                    HANDLEERR;
                 }
 
                 APIHANDLER(getRouteInterval) {
