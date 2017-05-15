@@ -98,6 +98,12 @@ public:
                     "open_file_failed",
                     "Failed to open " + filename + "!") {}
     };
+	class tickets_been_sold: public exception {
+        public:
+            tickets_been_sold(std::string routeName): exception(
+                    "tickets_been_sold",
+                    "The route [" + routeName + "] you were trying to delete/update has some tickets that has been sold!!!") {}
+    };
 	TrainBoom(): id(Id("TrainBoom")) {}
 	TrainBoom(const Json& tmp) {
 		if (tmp.getId() != "") {
@@ -383,10 +389,14 @@ public:
 	void deleteRoute(std::string id) {
 		if (!routes.count(id))
 			throw id_not_exist(id);
-        if (routes.at(id).getRunning()) {
+		Route& route = routes.at(id);
+		if (route.getBeenSold()) {
+			throw tickets_been_sold(route.getName());
+		}
+        if (route.getRunning()) {
             stopRoute(id);
         }
-		routeNameMap.erase(routeNameMap.find(routes.at(id).getName()));
+		routeNameMap.erase(routeNameMap.find(route.getName()));
 		routes.erase(routes.find(id));
 	}
 

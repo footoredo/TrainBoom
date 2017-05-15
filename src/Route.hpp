@@ -46,6 +46,8 @@ private:
 
     bool selling[lastDays];
 
+    bool beenSold;
+
 public:
 
     class station_number_too_small : public exception {
@@ -166,7 +168,7 @@ public:
     Route(std::string name, unsigned n,
         const util::stupid_array<util::stupid_ptr<Information>>& informations,
         const util::stupid_array<util::stupid_ptr<Segment>>& _segments
-    ): name(name), n(n), informations(informations), id(Id("Route")), running(false) {
+    ): name(name), n(n), informations(informations), id(Id("Route")), running(false), beenSold(false) {
             if (n < 2) {
                 throw station_number_too_small();
             }
@@ -271,6 +273,13 @@ public:
                 selling[i] = true;
                 // selling.insert(util::make_pair(curDate, true));
             }
+        }
+
+        if (json.HasMember("beenSold")) {
+            beenSold = json["beenSold"].as<bool>();
+        }
+        else {
+            beenSold = false;
         }
     }
 
@@ -471,6 +480,10 @@ public:
         running = x;
     }
 
+    bool getBeenSold() const {
+        return beenSold;
+    }
+
     util::Json toJson(bool simple = false) {
         // segmentsIntervalManip->forceApply();
         util::Json json("route", id);
@@ -509,6 +522,8 @@ public:
             json["dateSegments"].PushBack(tmp);
             json["selling"].PushBack(selling[j]);
         }
+
+        json["beenSold"] = beenSold;
 
         /* for (const auto& item: stationsMap) {
             json["stationsMap"][item.first] = item.second;
