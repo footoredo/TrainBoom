@@ -8,6 +8,8 @@ int main() {
     json.Parse("{\"username\":\"footoredo\",\"1\":[1,2,3]}");
     std::cout << json.getType() << std::endl;
 
+    std::cout << json["1"][0].as<double>() << std::endl;
+
     json["eat"] = "fish";
     json["see"] = 5.5;
 

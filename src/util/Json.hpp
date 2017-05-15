@@ -191,8 +191,13 @@ public:
 
         operator double() const {
             if (!value->IsDouble())
-                throw type_error("double");
-            return value->GetDouble();
+                if (!value->IsInt())
+                    throw type_error("double");
+                else
+                    // throw type_error("double");
+                    return value->GetInt();
+            else
+                return value->GetDouble();
         }
 
         operator bool() const {
