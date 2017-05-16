@@ -185,4 +185,8 @@ res = s.post(url + "/routes/" + routeId1 + "/tickets", json = {
 assert res.json()["tickets"]["first class"]["number"] == 15
 print "start tickets check passed!"
 
+res = s.delete(url + "/routes/" + routeId1);
+assert res.json()["type"] == "error"
+print "not sold check passed!"
+
 print "All tests passed!"

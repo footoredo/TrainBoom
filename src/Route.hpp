@@ -407,6 +407,7 @@ public:
         TicketDelta ticketDelta;
         ticketDelta[ticketType] = - (int)ticketNumber;
         modifyTickets(idate, l, r, ticketDelta);
+        beenSold = true;
         // segmentsIntervalManip[idate]->modify(l, r - 1, ticketDelta);
         return order;
     }
